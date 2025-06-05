@@ -1129,7 +1129,7 @@
                 {                  "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallApplicationRule\"\n| where TimeGenerated > ago(3h)\n| where FirewallResource == "{FirewallResource}" or isempty(\"{FirewallResource}\")\n| project TimeGenerated, Resource, action_s, ruleName_s, fqdn_s, sourceIP_s, clientIP_s, port_s, targetUrl_s, msg_s\n| order by TimeGenerated desc\n| limit 100",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallApplicationRule\"\n| where TimeGenerated > ago(3h)\n| where FirewallResource == \"{FirewallResource}\" or isempty(\"{FirewallResource}\")\n| project TimeGenerated, Resource, action_s, ruleName_s, fqdn_s, sourceIP_s, clientIP_s, port_s, targetUrl_s, msg_s\n| order by TimeGenerated desc\n| limit 100",
                     "size": 0,
                     "title": "Logs de Regras de Aplicação",
                     "timeContext": {"durationMs": 86400000},
