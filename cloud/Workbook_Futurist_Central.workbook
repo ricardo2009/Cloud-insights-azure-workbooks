@@ -15,6 +15,13 @@
             "name": "header-futurist"
           },
           {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"display:flex;align-items:center;justify-content:space-between;background:#e3f2fd;padding:10px 20px;border-radius:10px;margin-bottom:10px;\"><span style=\"font-size:1.1em;color:#003366;\"><b>Bem-vindo ao Futurist Workbook!</b> <span style=\"background:#ffd700;color:#003366;padding:2px 8px;border-radius:6px;font-size:0.9em;\">Novo</span></span><button onclick=\"window.open('https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-overview','_blank')\" style=\"background:#003366;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:0.95em;\">Ajuda & Exemplos</button></div>"
+            },
+            "name": "header-onboarding"
+          },
+          {
             "type": 9,
             "content": {
               "version": "KqlParameterItem/1.0",
@@ -54,6 +61,54 @@
                   "type": 4,
                   "value": {"durationMs": 86400000},
                   "typeSettings": {"selectableValues": [{"durationMs": 3600000}, {"durationMs": 86400000}, {"durationMs": 604800000}]}
+                },
+                {
+                  "id": "rg",
+                  "name": "ResourceGroup",
+                  "label": "Resource Group",
+                  "type": 2,
+                  "isRequired": false,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resourcecontainers | where type == 'microsoft.resources/resourcegroups' | project name",
+                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "dependsOn": ["Subscription"]
+                },
+                {
+                  "id": "region",
+                  "name": "Region",
+                  "label": "Região",
+                  "type": 2,
+                  "isRequired": false,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resources | summarize by location | project location",
+                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "dependsOn": ["Subscription"]
+                },
+                {
+                  "id": "tag",
+                  "name": "Tag",
+                  "label": "Tag",
+                  "type": 2,
+                  "isRequired": false,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "mv-expand tags=tags | summarize by tostring(tags) | project Tag=tags",
+                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "dependsOn": ["Subscription"]
                 }
               ],
               "style": "formVertical",
@@ -61,6 +116,34 @@
               "resourceType": "microsoft.operationalinsights/workspaces"
             },
             "name": "parameters-futurist"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"margin:10px 0 20px 0;display:flex;gap:10px;flex-wrap:wrap;\"><span style=\"background:#1976d2;color:#fff;padding:4px 12px;border-radius:8px;font-size:0.95em;\">🔄 Atualização automática ativada</span><span style=\"background:#ffd700;color:#003366;padding:4px 12px;border-radius:8px;font-size:0.95em;\">⚠️ KPIs em tempo real</span><span style=\"background:#d32f2f;color:#fff;padding:4px 12px;border-radius:8px;font-size:0.95em;\">🔥 Alertas críticos</span></div>"
+            },
+            "name": "badges-status"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"margin-bottom:10px;\"><b>Dica:</b> Passe o mouse sobre os ícones <span style=\"color:#1976d2;font-size:1.2em;\">ℹ️</span> para ver explicações rápidas sobre métricas e gráficos.</div>"
+            },
+            "name": "tooltip-info"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"background:#fff3cd;color:#856404;padding:10px 16px;border-radius:8px;margin-bottom:10px;display:none;\" id=\"placeholder-heavy-graph\"><b>Carregando visualização avançada...</b> <span style=\"font-size:1.1em;\">⏳</span></div>"
+            },
+            "name": "placeholder-heavy-graph"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"margin:10px 0;\"><button onclick=\"exportWorkbook('csv')\" style=\"background:#003366;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:0.95em;\">Exportar CSV</button> <button onclick=\"exportWorkbook('excel')\" style=\"background:#003366;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:0.95em;\">Exportar Excel</button> <button onclick=\"exportWorkbook('pdf')\" style=\"background:#003366;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:0.95em;\">Exportar PDF</button></div>"
+            },
+            "name": "export-buttons"
           },
           {
             "type": 11,
