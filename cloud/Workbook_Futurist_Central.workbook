@@ -281,13 +281,33 @@
             "type": 12,
             "content": {
               "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
+              "groupType": "editable",              "items": [
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "toolbar",
+                    "links": [
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
+                    ]
+                  },
+                  "name": "submenu-networking"
+                },
                 {
                   "type": 1,
                   "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure.</p>"
+                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
                   },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
                   "name": "net-overview-header"
                 }
               ]
