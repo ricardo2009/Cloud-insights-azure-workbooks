@@ -284,6 +284,24 @@
               "groupType": "editable",
               "items": [
                 {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure.</p>"
+                  },
+                  "name": "net-overview-header"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
+            "name": "Network Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
                   "type": 11,
                   "content": {
                     "version": "LinkItem/1.0",
