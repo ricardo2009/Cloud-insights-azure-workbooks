@@ -1,0 +1,582 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "<h1 style=\"color: #00ffe7; background: linear-gradient(90deg,#0f2027,#2c5364); padding: 20px; border-radius: 12px; text-shadow: 0 2px 8px #000; font-size: 2.5em; letter-spacing: 2px;\">🌌 Azure Futurist Observability Center</h1>\n<p style=\"color:#b2f7ef; font-size:1.2em;\">Visão centralizada, interativa e visualmente impactante de toda a sua nuvem Azure. KPIs, status, tendências e insights em tempo real, com navegação intuitiva e legendas explicativas.\n</p>"
+            },
+            "name": "header-futurist"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "sub",
+                  "name": "Subscription",
+                  "label": "Assinatura",
+                  "type": 6,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "value": ["value::all"],
+                  "typeSettings": {"additionalResourceOptions": ["value::all"], "includeAll": true}
+                },
+                {
+                  "id": "ws",
+                  "name": "LogAnalyticsWorkspace",
+                  "label": "Workspace",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "where type =~ 'microsoft.operationalinsights/workspaces' | summarize by id, name | project id",
+                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "timerange",
+                  "name": "timerange",
+                  "label": "Período",
+                  "type": 4,
+                  "value": {"durationMs": 86400000},
+                  "typeSettings": {"selectableValues": [{"durationMs": 3600000}, {"durationMs": 86400000}, {"durationMs": 604800000}]}
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters-futurist"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "toolbar",
+              "links": [
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "Overview", "style": "link", "icon": "Dashboard"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Networking", "subTarget": "Networking", "style": "link", "icon": "Connect"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Apps", "subTarget": "Apps", "style": "link", "icon": "WebApp"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Dados", "subTarget": "Data", "style": "link", "icon": "Database"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Segurança", "subTarget": "Security", "style": "link", "icon": "Lock"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Infraestrutura", "subTarget": "Infra", "style": "link", "icon": "Columns"}
+              ]
+            },
+            "name": "tabs-futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | summarize total=count(), running=sum(iif(type == 'microsoft.compute/virtualmachines' and properties.extended.instanceView.powerState.displayStatus == 'VM running', 1, 0)), stopped=sum(iif(type == 'microsoft.compute/virtualmachines' and properties.extended.instanceView.powerState.displayStatus != 'VM running', 1, 0)), unhealthy=sum(iif(type == 'microsoft.web/sites' and properties.state != 'Running', 1, 0)) | project total, running, stopped, unhealthy",
+                    "size": 1,
+                    "title": "Status Global de Recursos",
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {"columnMatch": "total", "formatter": 1},
+                      "leftContent": {"columnMatch": "running", "formatter": 12, "formatOptions": {"palette": "auto"}},
+                      "rightContent": {"columnMatch": "unhealthy", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [ {"operator": ">=", "thresholdValue": "10", "representation": "error", "text": "Ruim"}, {"operator": ">=", "thresholdValue": "3", "representation": "warning", "text": "Atenção"}, {"operator": "Default", "representation": "success", "text": "Excelente"} ] } }
+                    },
+                    "gridSettings": {"formatters": [{"columnMatch": "unhealthy", "formatter": 0, "numberFormat": {"unit": 1, "options": {"style": "decimal"}}}]},
+                    "legend": "<b>Legenda:</b> <span style='color:#ff4c4c'>Ruim</span> ≥ 10 | <span style='color:#ffd700'>Atenção</span> ≥ 3 | <span style='color:#00ff99'>Excelente</span> < 3"
+                  },
+                  "name": "kpi-global-status"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:rgba(0,255,231,0.08);border-radius:8px;padding:10px;margin-top:10px;\"><b>Legenda dos KPIs:</b> <br> <span style=\"color:#ff4c4c\">Ruim</span>: Muitos recursos com falha ou parados. <br> <span style=\"color:#ffd700\">Atenção</span>: Alguns recursos com problemas. <br> <span style=\"color:#00ff99\">Excelente</span>: Ambiente saudável. <br> <i>Ícones e cores mudam conforme o status em tempo real.</i></div>"
+                  },
+                  "name": "legenda-kpi"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Overview"},
+            "name": "Overview Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "toolbar",
+                    "links": [
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
+                    ]
+                  },
+                  "name": "submenu-networking"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#0078d4\">Networking</h2><p>Visão detalhada de recursos de rede. Selecione um submenu acima.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
+                  "name": "net-overview"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Virtual Network</b> - KPIs, status, topologia, tráfego, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnet"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Load Balancer</b> - KPIs, status, conexões, health probes, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "LB"},
+                  "name": "net-lb"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Application Gateway</b> - KPIs, listeners, regras, performance, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>VPN Gateway</b> - KPIs, conexões, status de túneis, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>ExpressRoute</b> - KPIs, circuitos, status, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ExpressRoute"},
+                  "name": "net-expressroute"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Firewall</b> - KPIs, regras, tráfego bloqueado, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>NSG</b> - KPIs, regras, bloqueios, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
+                  "name": "net-nsg"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>ASG</b> - Application Security Groups, associações, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
+                  "name": "net-asg"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Traffic Manager</b> - KPIs, endpoints, status, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-trafficmanager"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
+            "name": "Networking Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "toolbar",
+                    "links": [
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "AppOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "App Service", "subTarget": "AppService", "style": "link", "icon": "WebApp"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Functions", "subTarget": "Functions", "style": "link", "icon": "LightningBolt"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Logic Apps", "subTarget": "LogicApps", "style": "link", "icon": "LogicApp"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "API Management", "subTarget": "APIManagement", "style": "link", "icon": "ApiManagement"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Container Apps", "subTarget": "ContainerApps", "style": "link", "icon": "ContainerApps"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "App Gateway", "subTarget": "AppGateway", "style": "link", "icon": "Gateway"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "AKS", "subTarget": "AKS", "style": "link", "icon": "Kubernetes"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "ARO", "subTarget": "ARO", "style": "link", "icon": "OpenShift"}
+                    ]
+                  },
+                  "name": "submenu-apps"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#0078d4\">Apps</h2><p>Visão detalhada de aplicações. Selecione um submenu acima.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppOverview"},
+                  "name": "apps-overview"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>App Service</b> - KPIs, disponibilidade, slots, performance, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
+                  "name": "apps-appservice"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Functions</b> - Execuções, falhas, cold start, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "Functions"},
+                  "name": "apps-functions"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Logic Apps</b> - Execuções, falhas, integrações, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "LogicApps"},
+                  "name": "apps-logicapps"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>API Management</b> - APIs, gateways, políticas, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "APIManagement"},
+                  "name": "apps-apimanagement"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Container Apps</b> - Containers, pods, escalabilidade, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "ContainerApps"},
+                  "name": "apps-containerapps"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>App Gateway</b> - Listeners, regras, performance, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppGateway"},
+                  "name": "apps-appgateway"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>AKS</b> - Clusters, nodes, pods, escalabilidade, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "apps-aks"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>ARO</b> - OpenShift clusters, nodes, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "apps-aro"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Apps"},
+            "name": "Apps Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "toolbar",
+                    "links": [
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "DataOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "SQL Database", "subTarget": "SQLDB", "style": "link", "icon": "Database"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Cosmos DB", "subTarget": "CosmosDB", "style": "link", "icon": "CosmosDb"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Storage Account", "subTarget": "Storage", "style": "link", "icon": "StorageAccount"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Data Lake", "subTarget": "DataLake", "style": "link", "icon": "DataLake"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Synapse", "subTarget": "Synapse", "style": "link", "icon": "Synapse"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Event Hubs", "subTarget": "EventHubs", "style": "link", "icon": "EventHub"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Redis", "subTarget": "Redis", "style": "link", "icon": "Redis"}
+                    ]
+                  },
+                  "name": "submenu-data"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#0078d4\">Dados</h2><p>KPIs e status de bancos, storage, analytics, etc. Selecione um submenu acima.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "DataOverview"},
+                  "name": "data-overview"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>SQL Database</b> - KPIs, DTU, conexões, performance, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
+                  "name": "data-sqldb"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Cosmos DB</b> - Throughput, RU/s, latência, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "CosmosDB"},
+                  "name": "data-cosmosdb"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Storage Account</b> - KPIs, blobs, filas, tabelas, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Storage"},
+                  "name": "data-storage"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Data Lake</b> - KPIs, ingestão, consultas, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "DataLake"},
+                  "name": "data-datalake"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Synapse</b> - Pipelines, pools, performance, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Synapse"},
+                  "name": "data-synapse"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Event Hubs</b> - Eventos, throughput, latência, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "EventHubs"},
+                  "name": "data-eventhubs"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Redis</b> - KPIs, cache hits, performance, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Redis"},
+                  "name": "data-redis"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Data"},
+            "name": "Data Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "toolbar",
+                    "links": [
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "SecOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Entra ID", "subTarget": "EntraID", "style": "link", "icon": "Person"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Secure Score", "subTarget": "SecureScore", "style": "link", "icon": "Shield"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Recomendações", "subTarget": "Recommendations", "style": "link", "icon": "Recommendation"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Alertas", "subTarget": "Alerts", "style": "link", "icon": "Alert"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Políticas", "subTarget": "Policies", "style": "link", "icon": "Policy"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Azure Policy", "subTarget": "AzurePolicy", "style": "link", "icon": "Policy"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Defender", "subTarget": "Defender", "style": "link", "icon": "Defender"}
+                    ]
+                  },
+                  "name": "submenu-security"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#0078d4\">Segurança</h2><p>KPIs, alertas, recomendações, Secure Score, etc. Selecione um submenu acima.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecOverview"},
+                  "name": "security-overview"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Secure Score</b> - Pontuação, tendências, comparativos, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
+                  "name": "security-securescore"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Recomendações</b> - Ações sugeridas, impacto, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Recommendations"},
+                  "name": "security-recommendations"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Alertas</b> - Incidentes, severidade, status, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Alerts"},
+                  "name": "security-alerts"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Políticas</b> - Compliance, regras, auditoria, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Policies"},
+                  "name": "security-policies"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Defender</b> - Proteção, status, ameaças, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Defender"},
+                  "name": "security-defender"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Identidade</b> - Usuários, grupos, MFA, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Identity"},
+                  "name": "security-identity"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Entra ID</b> - Usuários, grupos, MFA, auditoria, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "EntraID"},
+                  "name": "security-entraid"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b>Azure Policy</b> - Compliance, regras, auditoria, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "AzurePolicy"},
+                  "name": "security-azurepolicy"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Security"},
+            "name": "Security Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "toolbar",
+                    "links": [
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "InfraOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Virtual Machines", "subTarget": "VMs", "style": "link", "icon": "VirtualMachine"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Scale Sets", "subTarget": "ScaleSets", "style": "link", "icon": "ScaleSet"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Availability Sets", "subTarget": "AvailSets", "style": "link", "icon": "AvailabilitySet"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Disks", "subTarget": "Disks", "style": "link", "icon": "Disk"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Snapshots", "subTarget": "Snapshots", "style": "link", "icon": "Snapshot"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Images", "subTarget": "Images", "style": "link", "icon": "Image"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Resource Groups", "subTarget": "ResourceGroups", "style": "link", "icon": "ResourceGroup"}
+                    ]
+                  },
+                  "name": "submenu-infra"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#0078d4\">Infraestrutura</h2><p>Visão geral de infraestrutura, KPIs, disponibilidade, escalabilidade, custos e tendências.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "InfraOverview"},
+                  "name": "infra-overview"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.compute/virtualmachines' | summarize count() by tostring(properties.hardwareProfile.vmSize)",
+                    "size": 1,
+                    "title": "VMs por Tamanho",
+                    "visualization": "barchart",
+                    "legend": "Distribuição das VMs por SKU/tamanho."
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "VMs"},
+                  "name": "infra-vms"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.compute/virtualmachinescalesets' | summarize count() by location",
+                    "size": 1,
+                    "title": "Scale Sets por Região",
+                    "visualization": "piechart",
+                    "legend": "Distribuição dos Scale Sets por região."
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "ScaleSets"},
+                  "name": "infra-scalesets"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.compute/availabilitysets' | summarize count() by location",
+                    "size": 1,
+                    "title": "Availability Sets por Região",
+                    "visualization": "tiles",
+                    "legend": "Availability Sets distribuídos por região."
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "AvailSets"},
+                  "name": "infra-availsets"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.compute/disks' | summarize count() by sku.name",
+                    "size": 1,
+                    "title": "Discos por SKU",
+                    "visualization": "barchart",
+                    "legend": "Tipos de discos em uso."
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Disks"},
+                  "name": "infra-disks"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.compute/snapshots' | summarize count() by location",
+                    "size": 1,
+                    "title": "Snapshots por Região",
+                    "visualization": "piechart",
+                    "legend": "Snapshots distribuídos por região."
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Snapshots"},
+                  "name": "infra-snapshots"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.compute/images' | summarize count() by location",
+                    "size": 1,
+                    "title": "Imagens por Região",
+                    "visualization": "tiles",
+                    "legend": "Imagens customizadas por região."
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Images"},
+                  "name": "infra-images"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resourcecontainers | where type == 'microsoft.resources/resourcegroups' | summarize count() by location",
+                    "size": 1,
+                    "title": "Resource Groups por Região",
+                    "visualization": "barchart",
+                    "legend": "Resource Groups distribuídos por região."
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "ResourceGroups"},
+                  "name": "infra-resourcegroups"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Infra"},
+            "name": "Infra Futurist"
+          }
+        ]
+      },
+      "name": "Header Futurist"
+    }
+  ]
+}

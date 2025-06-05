@@ -1,0 +1,145 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "<h1 style=\"color: #1379d2;\">⚖️ Azure Load Balancer Insights</h1>\n<ul>\n<li>Visão detalhada de Load Balancers, regras, probes, backends e status.</li>\n<li>Utilize os parâmetros para filtrar por assinatura, workspace, Load Balancer e período.</li>\n</ul>"
+            },
+            "name": "text - header"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "sub",
+                  "name": "Subscription",
+                  "label": "Assinatura",
+                  "type": 6,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "value": ["value::all"],
+                  "typeSettings": {"additionalResourceOptions": ["value::all"], "includeAll": true}
+                },
+                {
+                  "id": "ws",
+                  "name": "LogAnalyticsWorkspace",
+                  "label": "Workspace",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "where type =~ 'microsoft.operationalinsights/workspaces' | summarize by id, name | project id",
+                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "lb",
+                  "name": "LoadBalancer",
+                  "label": "Load Balancer",
+                  "type": 2,
+                  "isRequired": false,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "resources | where type == 'microsoft.network/loadbalancers' | project name",
+                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "dependsOn": ["Subscription", "LogAnalyticsWorkspace"]
+                },
+                {
+                  "id": "timerange",
+                  "name": "timerange",
+                  "label": "Período",
+                  "type": 4,
+                  "value": {"durationMs": 86400000},
+                  "typeSettings": {"selectableValues": [{"durationMs": 3600000}, {"durationMs": 86400000}, {"durationMs": 604800000}]}
+                }
+              ],
+              "style": "formVertical",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "name": "parameters - 0"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "toolbar",
+              "links": [
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "Overview", "style": "link", "icon": "Monitoring"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Regras", "subTarget": "Rules", "style": "link", "icon": "Columns"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Backends", "subTarget": "Backends", "style": "link", "icon": "Connect"}
+              ]
+            },
+            "name": "links - 1"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:6px;\"><b>Legenda de Cores:</b><br>\n<ul>\n<li><span style=\"color:#1976d2;font-weight:bold;\">Azul</span>: Status saudável/operacional</li>\n<li><span style=\"color:#fbc02d;font-weight:bold;\">Amarelo</span>: Atenção/recurso em alerta</li>\n<li><span style=\"color:#d32f2f;font-weight:bold;\">Vermelho</span>: Erro/crítico</li>\n<li><span style=\"color:#616161;font-weight:bold;\">Cinza</span>: Indisponível/desconhecido</li>\n</ul>\n<i>As cores são aplicadas automaticamente nas visualizações para facilitar a identificação rápida do status dos recursos.</i></div>"
+            },
+            "name": "legenda-cores"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.network/loadbalancers' | summarize count() by location | order by count_ desc",
+                    "size": 1,
+                    "title": "Load Balancers por Região",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"] ,
+                    "visualization": "barchart"
+                  },
+                  "name": "query - 1"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.network/loadbalancers' | project name, location, properties.frontendIPConfigurations, properties.backendAddressPools | order by name asc",
+                    "size": 2,
+                    "title": "Detalhes dos Load Balancers",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"] ,
+                    "visualization": "table",
+                    "gridSettings": {"rowLimit": 1000, "filter": true}
+                  },
+                  "name": "query - 2"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Overview"},
+            "name": "OverviewG"
+          }
+        ]
+      },
+      "name": "Header"
+    }
+  ]
+}
