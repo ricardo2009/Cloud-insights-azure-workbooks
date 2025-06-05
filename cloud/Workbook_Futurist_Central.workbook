@@ -446,12 +446,109 @@
                   "content": {"json": "<b style=\"color:#003366\">Firewall</b> - KPIs, regras, tráfego bloqueado, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
                   "name": "net-fw"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Network Security Groups (NSGs)</h2><p style=\"color:#003366\">Informações detalhadas sobre Network Security Groups, regras de segurança, associações e fluxos de tráfego.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
+                  "name": "net-nsg-header"
                 },
                 {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">NSG</b> - KPIs, regras, bloqueios, etc."},
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/networksecuritygroups'\r\n| extend associatedSubnets = array_length(properties.subnets)\r\n| extend associatedNICs = array_length(properties.networkInterfaces)\r\n| extend inboundRules = array_length(properties.securityRules)\r\n| project name, resourceGroup, location, ['Subnets']=associatedSubnets, ['NICs']=associatedNICs, ['Regras']=inboundRules",
+                    "size": 0,
+                    "title": "Network Security Groups",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Subnets", "formatter": 3, "formatOptions": {"palette": "blue"}},
+                        {"columnMatch": "NICs", "formatter": 3, "formatOptions": {"palette": "turquoise"}},
+                        {"columnMatch": "Regras", "formatter": 3, "formatOptions": {"palette": "orange"}}
+                      ],
+                      "filter": true
+                    }
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
-                  "name": "net-nsg"
+                  "name": "net-nsg-list"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/networksecuritygroups'\r\n| mv-expand rule=properties.securityRules\r\n| extend nsgName = name\r\n| extend ruleName = rule.name\r\n| extend priority = toint(rule.properties.priority)\r\n| extend direction = rule.properties.direction\r\n| extend access = rule.properties.access\r\n| extend sourcePrefix = rule.properties.sourceAddressPrefix\r\n| extend sourcePort = rule.properties.sourcePortRange\r\n| extend destPrefix = rule.properties.destinationAddressPrefix\r\n| extend destPort = rule.properties.destinationPortRange\r\n| extend protocol = rule.properties.protocol\r\n| project nsgName, ruleName, priority, direction, access, sourcePrefix, sourcePort, destPrefix, destPort, protocol\r\n| sort by nsgName asc, priority asc",
+                    "size": 0,
+                    "title": "Regras de NSG",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "priority", "formatter": 0, "numberFormat": {"unit": 0, "options": {"style": "decimal"}}},
+                        {"columnMatch": "direction", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Inbound", "representation": "inbound", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Outbound", "representation": "outbound", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "access", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Allow", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deny", "representation": "blocked", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": ["nsgName"]
+                      },
+                      "labelSettings": [
+                        {"columnId": "nsgName", "label": "NSG"},
+                        {"columnId": "ruleName", "label": "Nome da Regra"},
+                        {"columnId": "priority", "label": "Prioridade"},
+                        {"columnId": "direction", "label": "Direção"},
+                        {"columnId": "access", "label": "Acesso"},
+                        {"columnId": "sourcePrefix", "label": "Origem"},
+                        {"columnId": "sourcePort", "label": "Porta Origem"},
+                        {"columnId": "destPrefix", "label": "Destino"},
+                        {"columnId": "destPort", "label": "Porta Destino"},
+                        {"columnId": "protocol", "label": "Protocolo"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
+                  "name": "net-nsg-rules"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {timerange}\r\n| where FlowType_s == \"MaliciousFlow\"\r\n| project TimeGenerated, NSGRule_s, NSGList_s, AllowedInFlows_d, DeniedInFlows_d, AllowedOutFlows_d, DeniedOutFlows_d\r\n| summarize Allowed=sum(AllowedInFlows_d + AllowedOutFlows_d), Denied=sum(DeniedInFlows_d + DeniedOutFlows_d) by NSGList_s, NSGRule_s\r\n| order by Denied desc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Fluxos Maliciosos por NSG",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Allowed", "formatter": 3, "formatOptions": {"palette": "blue"}},
+                        {"columnMatch": "Denied", "formatter": 3, "formatOptions": {"palette": "red"}}
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
+                  "name": "net-nsg-malicious-flows"
+                }
                 },
                 {
                   "type": 1,
@@ -510,12 +607,159 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppOverview"},
                   "name": "apps-overview"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">App Service</h2><p style=\"color:#003366\">Monitoramento detalhado de aplicativos web no Azure App Service, incluindo disponibilidade, desempenho, solicitações e erros.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
+                  "name": "apps-appservice-header"
                 },
                 {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">App Service</b> - KPIs, disponibilidade, slots, performance, etc."},
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.web/sites'\r\n| extend state = properties.state\r\n| extend hostingPlan = properties.serverFarmId\r\n| extend kind = kind\r\n| project name, resourceGroup, location, state, kind, hostingPlan",
+                    "size": 0,
+                    "title": "App Services",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Running", "representation": "success", "text": "Executando"},
+                          {"operator": "==", "thresholdValue": "Stopped", "representation": "stopped", "text": "Parado"},
+                          {"operator": "Default", "representation": "unknown", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "kind", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "contains", "thresholdValue": "app", "representation": "WebApp", "text": "Web App"},
+                          {"operator": "contains", "thresholdValue": "api", "representation": "Api", "text": "API App"},
+                          {"operator": "contains", "thresholdValue": "function", "representation": "Function", "text": "Function App"},
+                          {"operator": "Default", "representation": "WebApp", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "hostingPlan", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
+                      ],
+                      "filter": true
+                    }
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
-                  "name": "apps-appservice"
+                  "name": "apps-appservice-list"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook1efa2216-beb5-4ea7-b268-0fb09b601c31",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.web/sites",
+                    "metricScope": 0,
+                    "resourceIds": [
+                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Web/sites/*"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Requests", "aggregation": 1, "splitBy": null},
+                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Http5xx", "aggregation": 1, "splitBy": null},
+                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Http4xx", "aggregation": 1, "splitBy": null}
+                    ],
+                    "title": "Requisições e Erros",
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    },
+                    "filters": [
+                      {
+                        "id": "1",
+                        "key": "Microsoft.ResourceGroup",
+                        "operator": 0,
+                        "values": [
+                          "{ResourceGroup}"
+                        ]
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
+                  "name": "apps-appservice-requests-errors"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook5c7a8ffe-9838-4dca-bcca-3d0b5f25eba0",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.web/sites",
+                    "metricScope": 0,
+                    "resourceIds": [
+                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Web/sites/*"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--AverageResponseTime", "aggregation": 4, "splitBy": null},
+                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--CpuTime", "aggregation": 1, "splitBy": null}
+                    ],
+                    "title": "Tempo de Resposta e CPU",
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    },
+                    "filters": [
+                      {
+                        "id": "1",
+                        "key": "Microsoft.ResourceGroup",
+                        "operator": 0,
+                        "values": [
+                          "{ResourceGroup}"
+                        ]
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
+                  "name": "apps-appservice-response-cpu"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook574ac5d7-a44d-402d-9070-f517b8e84296",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.web/sites",
+                    "metricScope": 0,
+                    "resourceIds": [
+                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Web/sites/*"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--MemoryWorkingSet", "aggregation": 4, "splitBy": null}
+                    ],
+                    "title": "Uso de Memória",
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    },
+                    "filters": [
+                      {
+                        "id": "1",
+                        "key": "Microsoft.ResourceGroup",
+                        "operator": 0,
+                        "values": [
+                          "{ResourceGroup}"
+                        ]
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
+                  "name": "apps-appservice-memory"
                 },
                 {
                   "type": 1,
@@ -603,12 +847,149 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "DataOverview"},
                   "name": "data-overview"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">SQL Database</h2><p style=\"color:#003366\">Monitoramento de bancos de dados SQL no Azure, incluindo consumo de DTU/vCore, desempenho, conexões e consultas.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
+                  "name": "data-sqldb-header"
                 },
                 {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">SQL Database</b> - KPIs, DTU, conexões, performance, etc."},
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.sql/servers/databases'\r\n| where name != 'master'\r\n| extend server = extract(\"(.*)/databases/.*\", 1, id)\r\n| extend serverName = extract(\"servers/(.*)\", 1, server)\r\n| extend serverFQDN = strcat(serverName, \".database.windows.net\")\r\n| extend sku = tostring(sku.name)\r\n| extend tier = tostring(sku.tier)\r\n| extend maxSize = properties.maxSizeBytes/1024/1024/1024\r\n| project name, serverName, serverFQDN, tier, sku, ['Max Size (GB)']=maxSize, status=properties.status",
+                    "size": 0,
+                    "title": "SQL Databases",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "tier", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Premium", "representation": "success", "text": "Premium"},
+                          {"operator": "==", "thresholdValue": "Standard", "representation": "info", "text": "Standard"},
+                          {"operator": "==", "thresholdValue": "Basic", "representation": "Normal", "text": "Basic"},
+                          {"operator": "Default", "representation": "info", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "Max Size (GB)", "formatter": 0, "numberFormat": {"unit": 38, "options": {"style": "decimal", "minimumFractionDigits": 0, "maximumFractionDigits": 0}}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "Online"},
+                          {"operator": "!=", "thresholdValue": "Online", "representation": "critical", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true
+                    }
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
-                  "name": "data-sqldb"
+                  "name": "data-sqldb-list"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook4d7f79ca-99d5-4ee1-a9d9-812d835a0248",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.sql/servers/databases",
+                    "metricScope": 0,
+                    "resourceIds": [
+                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Sql/servers/*/databases/*"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--dtu_consumption_percent", "aggregation": 4},
+                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--cpu_percent", "aggregation": 4}
+                    ],
+                    "title": "Consumo de DTU/CPU",
+                    "filters": [
+                      {
+                        "id": "1",
+                        "key": "Microsoft.ResourceGroup",
+                        "operator": 0,
+                        "values": [
+                          "{ResourceGroup}"
+                        ]
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
+                  "name": "data-sqldb-dtu-cpu"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook6f38803a-ceda-4092-b09e-fd91af42d880",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.sql/servers/databases",
+                    "metricScope": 0,
+                    "resourceIds": [
+                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Sql/servers/*/databases/*"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--connection_successful", "aggregation": 1},
+                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--connection_failed", "aggregation": 1}
+                    ],
+                    "title": "Conexões (Bem-sucedidas vs Falhas)",
+                    "filters": [
+                      {
+                        "id": "1",
+                        "key": "Microsoft.ResourceGroup",
+                        "operator": 0,
+                        "values": [
+                          "{ResourceGroup}"
+                        ]
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
+                  "name": "data-sqldb-connections"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbookcc9a292e-1965-4038-aa12-8d712a42469d",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.sql/servers/databases",
+                    "metricScope": 0,
+                    "resourceIds": [
+                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Sql/servers/*/databases/*"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--storage_percent", "aggregation": 4}
+                    ],
+                    "title": "Uso de Armazenamento (%)",
+                    "filters": [
+                      {
+                        "id": "1",
+                        "key": "Microsoft.ResourceGroup",
+                        "operator": 0,
+                        "values": [
+                          "{ResourceGroup}"
+                        ]
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
+                  "name": "data-sqldb-storage"
+                }
                 },
                 {
                   "type": 1,
@@ -690,12 +1071,139 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecOverview"},
                   "name": "security-overview"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Secure Score</h2><p style=\"color:#003366\">Análise detalhada da postura de segurança com Microsoft Defender for Cloud Secure Score, recomendações de segurança e comparativos.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
+                  "name": "security-securescore-header"
                 },
                 {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Secure Score</b> - Pontuação, tendências, comparativos, etc."},
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "securityresources\r\n| where type == \"microsoft.security/securescores\"\r\n| extend SecureScore = properties.score.current, MaxScore = properties.score.max\r\n| project subscriptionId, SecureScore, MaxScore, SecureScorePercentage = SecureScore*100/MaxScore",
+                    "size": 4,
+                    "title": "Secure Score por Assinatura",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "columnMatch": "subscriptionId",
+                        "formatter": 1,
+                        "formatOptions": {
+                          "showIcon": true
+                        }
+                      },
+                      "leftContent": {
+                        "columnMatch": "SecureScorePercentage",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "greenRed"
+                        },
+                        "numberFormat": {
+                          "unit": 1,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 1
+                          }
+                        }
+                      },
+                      "secondaryContent": {
+                        "columnMatch": "SecureScore",
+                        "formatter": 1,
+                        "formatOptions": {
+                          "showIcon": true
+                        },
+                        "numberFormat": {
+                          "unit": 0,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 1
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
-                  "name": "security-securescore"
+                  "name": "security-securescore-subscriptions"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "securityresources\r\n| where type == \"microsoft.security/securescores/securescorecontrols\"\r\n| extend controlName = properties.displayName, controlCategory = properties.securityControlCategory\r\n| extend healthyResources = properties.healthyResourceCount, unhealthyResources = properties.unhealthyResourceCount, notApplicableResources = properties.notApplicableResourceCount\r\n| extend controlScore = properties.score.current, controlMaxScore = properties.score.max\r\n| project controlName, controlCategory, healthyResources, unhealthyResources, notApplicableResources, controlScore, controlMaxScore, controlScorePercent = controlScore * 100.0 / controlMaxScore\r\n| order by controlScorePercent asc",
+                    "size": 0,
+                    "title": "Controles de Segurança",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "healthyResources", "formatter": 8, "formatOptions": {"palette": "green"}},
+                        {"columnMatch": "unhealthyResources", "formatter": 8, "formatOptions": {"palette": "red"}},
+                        {"columnMatch": "controlScorePercent", "formatter": 8, "formatOptions": {"palette": "greenRed", "customColumnWidthSetting": "150px"}, "numberFormat": {"unit": 1, "options": {"style": "decimal", "maximumFractionDigits": 1}}}
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
+                  "name": "security-securescore-controls"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "securityresources\r\n| where type == \"microsoft.security/assessments\"\r\n| extend resourceId = properties.resourceDetails.id\r\n| extend resourceType = properties.resourceDetails.source\r\n| extend status = properties.status.code\r\n| extend cause = properties.status.cause\r\n| extend severity = properties.metadata.severity\r\n| extend description = properties.metadata.description\r\n| extend displayName = properties.displayName\r\n| extend remediationSteps = properties.metadata.remediationDescription\r\n| where status != \"NotApplicable\"\r\n| project displayName, severity, status, cause, resourceType, resourceId, remediationSteps\r\n| sort by severity asc, status asc",
+                    "size": 0,
+                    "title": "Recomendações de Segurança",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "severity", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "High", "representation": "4", "text": "Alta"},
+                          {"operator": "==", "thresholdValue": "Medium", "representation": "2", "text": "Média"},
+                          {"operator": "==", "thresholdValue": "Low", "representation": "1", "text": "Baixa"}
+                        ]}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Healthy", "representation": "success", "text": "Saudável"},
+                          {"operator": "==", "thresholdValue": "Unhealthy", "representation": "critical", "text": "Não Saudável"}
+                        ]}},
+                        {"columnMatch": "resourceId", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}},
+                        {"columnMatch": "remediationSteps", "formatter": 7, "formatOptions": {"linkTarget": "CellDetails", "linkLabel": "Mostrar Passos"}},
+                        {"columnMatch": "resourceType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "contains", "thresholdValue": "virtualMachines", "representation": "Virtual machine", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "storage", "representation": "Storage", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "sql", "representation": "Database", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "displayName", "label": "Recomendação"},
+                        {"columnId": "severity", "label": "Severidade"},
+                        {"columnId": "status", "label": "Status"},
+                        {"columnId": "cause", "label": "Causa"},
+                        {"columnId": "resourceType", "label": "Tipo de Recurso"},
+                        {"columnId": "resourceId", "label": "Recurso"},
+                        {"columnId": "remediationSteps", "label": "Remediação"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
+                  "name": "security-securescore-recommendations"
+                }
                 },
                 {
                   "type": 1,
@@ -899,7 +1407,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" or Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| summarize Requests=count(), SuccessRate=round(100.0 * countif(ResultType == \"Succeeded\") / count(), 2) by Model=RequestUri\r\n| order by Requests desc",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| summarize Requests=count(), SuccessRate=round(100.0 * countif(ResultType == \"Succeeded\") / count(), 2) by Model=RequestUri\r\n| order by Requests desc",
                     "size": 0,
                     "timeContextFromParameter": "timerange",
                     "title": "Taxa de Sucesso por Modelo",
@@ -1689,8 +2197,8 @@
                   "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
                   "name": "ai-cost-token-trend"
                 },
-                {
-                  "type": 1,
+                               {
+                  "type":  1,
                   "content": {
                     "json": "<div style=\"background:#f3f9ff;padding:15px;border-radius:8px;margin-top:10px;\"><b>📊 Sobre Estimativas de Custo:</b><br>Os cálculos de custo neste painel são estimativas baseadas nos preços aproximados dos modelos e uso medido. Para valores precisos e detalhados de faturamento:<br><ul><li>Consulte o <a href='https://portal.azure.com/#blade/Microsoft_Azure_CostManagement/Menu/costanalysis' target='_blank'>Azure Cost Management</a></li><li>Use filtros por recurso (por exemplo, 'Tipo de recurso: cognitiveservices')</li><li>Os custos reais podem variar com base em promoções, acordos empresariais e preços regionais</li></ul>As estimativas de custo de token são baseadas em preços padrão e não incluem descontos ou camadas gratuitas.</div>"
                   },
