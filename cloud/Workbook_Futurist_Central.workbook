@@ -427,10 +427,15 @@
                     "crossComponentResources": [
                       "{Subscription}"
                     ],
-                    "visualization": "table",
-                    "gridSettings": {
+                    "visualization": "table",                      "gridSettings": {
                       "formatters": [
-                        {"columnMatch": "nsg", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
+                        {"columnMatch": "nsgName", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}},
+                        {"columnMatch": "subnet_type", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "contains", "thresholdValue": "Bastion", "representation": "Firewall", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Gateway", "representation": "Globe", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Firewall", "representation": "Shield", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Padrão", "representation": "NetworkInterfaceCard", "text": "{0}"}
+                        ]}}
                       ],
                       "filter": true,
                       "hierarchySettings": {
@@ -439,9 +444,13 @@
                       },
                       "labelSettings": [
                         {"columnId": "vnetName", "label": "Virtual Network"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
                         {"columnId": "subnetName", "label": "Subnet"},
                         {"columnId": "prefix", "label": "Prefix CIDR"},
-                        {"columnId": "nsg", "label": "NSG Associado"}
+                        {"columnId": "cidrSize", "label": "Tamanho CIDR"},
+                        {"columnId": "nsgName", "label": "NSG Associado"},
+                        {"columnId": "subnet_type", "label": "Tipo de Subnet"},
+                        {"columnId": "delegations", "label": "Delegações"}
                       ]
                     }
                   },
