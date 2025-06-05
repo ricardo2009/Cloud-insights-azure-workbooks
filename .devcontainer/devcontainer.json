@@ -1,0 +1,41 @@
+{
+  "name": "Azure Python Terraform DevContainer",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11", 
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "pip install --upgrade pip && pip install jupyter matplotlib seaborn plotly pandas notebook azure-mgmt-resource && npm install -g @azure/functions-core-tools@4",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-vscode.azure-account",
+        "ms-azuretools.vscode-azurelogicapps",
+        "ms-azuretools.vscode-azurearmtools",
+        "ms-azuretools.vscode-bicep",
+        "hashicorp.terraform",
+        "ms-vscode.powershell",
+        "ms-azuretools.vscode-docker",
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "batisteo.vscode-django",
+        "ms-python.isort"
+      ]
+    }
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.azure,target=/root/.azure,type=bind"
+  ],
+  "remoteUser": "vscode",
+  "runArgs": [
+    "--cap-add=SYS_PTRACE",
+    "--security-opt",
+    "seccomp=unconfined"
+  ]
+}
