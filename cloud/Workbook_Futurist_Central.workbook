@@ -10,7 +10,7 @@
           {
             "type": 1,
             "content": {
-              "json": "<h1 style=\"color: #00ffe7; background: linear-gradient(90deg,#0f2027,#2c5364); padding: 20px; border-radius: 12px; text-shadow: 0 2px 8px #000; font-size: 2.5em; letter-spacing: 2px;\">🌌 Azure Futurist Observability Center</h1>\n<p style=\"color:#b2f7ef; font-size:1.2em;\">Visão centralizada, interativa e visualmente impactante de toda a sua nuvem Azure. KPIs, status, tendências e insights em tempo real, com navegação intuitiva e legendas explicativas.\n</p>"
+              "json": "<h1 style=\"color: #003366; background: linear-gradient(90deg,#e6f7ff,#b3c6e6); padding: 20px; border-radius: 12px; text-shadow: 0 2px 8px #000; font-size: 2.5em; letter-spacing: 2px;\">🌌 Azure Futurist Observability Center</h1>\n<p style=\"color:#003366; font-size:1.2em;\">Visão centralizada, interativa e visualmente impactante de toda a sua nuvem Azure. KPIs, status, tendências e insights em tempo real, com navegação intuitiva e legendas explicativas.\n</p>"
             },
             "name": "header-futurist"
           },
@@ -40,11 +40,12 @@
                   "multiSelect": true,
                   "quote": "'",
                   "delimiter": ",",
-                  "query": "where type =~ 'microsoft.operationalinsights/workspaces' | summarize by id, name | project id",
+                  "query": "where type =~ 'microsoft.operationalinsights/workspaces' | summarize by id, name | project id, name",
                   "typeSettings": {"additionalResourceOptions": ["value::all"]},
                   "defaultValue": "value::all",
                   "queryType": 1,
-                  "resourceType": "microsoft.resourcegraph/resources"
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "dependsOn": ["Subscription"]
                 },
                 {
                   "id": "timerange",
@@ -67,12 +68,12 @@
               "version": "LinkItem/1.0",
               "style": "toolbar",
               "links": [
-                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "Overview", "style": "link", "icon": "Dashboard"},
-                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Networking", "subTarget": "Networking", "style": "link", "icon": "Connect"},
-                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Apps", "subTarget": "Apps", "style": "link", "icon": "WebApp"},
-                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Dados", "subTarget": "Data", "style": "link", "icon": "Database"},
-                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Segurança", "subTarget": "Security", "style": "link", "icon": "Lock"},
-                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "Infraestrutura", "subTarget": "Infra", "style": "link", "icon": "Columns"}
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🌐 Visão Geral", "subTarget": "Overview", "style": "link", "icon": "Dashboard"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🕸️ Networking", "subTarget": "Networking", "style": "link", "icon": "Connect"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🧩 Apps", "subTarget": "Apps", "style": "link", "icon": "WebApp"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🗄️ Dados", "subTarget": "Data", "style": "link", "icon": "Database"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🛡️ Segurança", "subTarget": "Security", "style": "link", "icon": "Lock"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🏗️ Infraestrutura", "subTarget": "Infra", "style": "link", "icon": "Columns"}
               ]
             },
             "name": "tabs-futurist"
@@ -104,7 +105,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "<div style=\"background:rgba(0,255,231,0.08);border-radius:8px;padding:10px;margin-top:10px;\"><b>Legenda dos KPIs:</b> <br> <span style=\"color:#ff4c4c\">Ruim</span>: Muitos recursos com falha ou parados. <br> <span style=\"color:#ffd700\">Atenção</span>: Alguns recursos com problemas. <br> <span style=\"color:#00ff99\">Excelente</span>: Ambiente saudável. <br> <i>Ícones e cores mudam conforme o status em tempo real.</i></div>"
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda dos KPIs:</b><br>Os KPIs exibem o total de recursos, quantidade em execução, parados e não saudáveis. Os status seguem a semântica oficial do Azure Monitor:<br><ul><li><span style='color:#00bfae;font-weight:bold;'>Executando</span>: Recurso operacional</li><li><span style='color:#ffd700;font-weight:bold;'>Parado</span>: Recurso desligado</li><li><span style='color:#ff4c4c;font-weight:bold;'>Não saudável</span>: Recurso com falha ou indisponível</li></ul>Para mais detalhes, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial do Azure Monitor</a>.</div>"
                   },
                   "name": "legenda-kpi"
                 }
@@ -125,79 +126,89 @@
                     "version": "LinkItem/1.0",
                     "style": "toolbar",
                     "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
                     ]
                   },
                   "name": "submenu-networking"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<h2 style=\"color:#0078d4\">Networking</h2><p>Visão detalhada de recursos de rede. Selecione um submenu acima.</p>"},
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada de recursos de rede. Selecione um submenu acima.</p>"
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
                   "name": "net-overview"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Virtual Network</b> - KPIs, status, topologia, tráfego, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Virtual Network</b> - KPIs, status, topologia, tráfego, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
                   "name": "net-vnet"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Load Balancer</b> - KPIs, status, conexões, health probes, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Load Balancer</b> - KPIs, status, conexões, health probes, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "LB"},
                   "name": "net-lb"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Application Gateway</b> - KPIs, listeners, regras, performance, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Application Gateway</b> - KPIs, listeners, regras, performance, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
                   "name": "net-appgw"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>VPN Gateway</b> - KPIs, conexões, status de túneis, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">VPN Gateway</b> - KPIs, conexões, status de túneis, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
                   "name": "net-vpngw"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>ExpressRoute</b> - KPIs, circuitos, status, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">ExpressRoute</b> - KPIs, circuitos, status, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ExpressRoute"},
                   "name": "net-expressroute"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Firewall</b> - KPIs, regras, tráfego bloqueado, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Firewall</b> - KPIs, regras, tráfego bloqueado, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
                   "name": "net-fw"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>NSG</b> - KPIs, regras, bloqueios, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">NSG</b> - KPIs, regras, bloqueios, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
                   "name": "net-nsg"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>ASG</b> - Application Security Groups, associações, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">ASG</b> - Application Security Groups, associações, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
                   "name": "net-asg"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Traffic Manager</b> - KPIs, endpoints, status, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, endpoints, status, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
                   "name": "net-trafficmanager"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As cores e ícones representam o status dos recursos de rede conforme padrão do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Saudável/operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção/alerta</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico/erro</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível/desconhecido</li></ul>Para mais informações, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
+                  "name": "legenda-networking"
                 }
               ]
             },
@@ -216,72 +227,82 @@
                     "version": "LinkItem/1.0",
                     "style": "toolbar",
                     "links": [
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "AppOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "App Service", "subTarget": "AppService", "style": "link", "icon": "WebApp"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Functions", "subTarget": "Functions", "style": "link", "icon": "LightningBolt"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Logic Apps", "subTarget": "LogicApps", "style": "link", "icon": "LogicApp"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "API Management", "subTarget": "APIManagement", "style": "link", "icon": "ApiManagement"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "Container Apps", "subTarget": "ContainerApps", "style": "link", "icon": "ContainerApps"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "App Gateway", "subTarget": "AppGateway", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "AKS", "subTarget": "AKS", "style": "link", "icon": "Kubernetes"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "ARO", "subTarget": "ARO", "style": "link", "icon": "OpenShift"}
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "AppOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🖥️ App Service", "subTarget": "AppService", "style": "link", "icon": "WebApp"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "⚡ Functions", "subTarget": "Functions", "style": "link", "icon": "LightningBolt"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🔗 Logic Apps", "subTarget": "LogicApps", "style": "link", "icon": "LogicApp"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🔌 API Management", "subTarget": "APIManagement", "style": "link", "icon": "ApiManagement"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "📦 Container Apps", "subTarget": "ContainerApps", "style": "link", "icon": "ContainerApps"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🌀 App Gateway", "subTarget": "AppGateway", "style": "link", "icon": "Gateway"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "☸️ AKS", "subTarget": "AKS", "style": "link", "icon": "Kubernetes"},
+                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🔴 ARO", "subTarget": "ARO", "style": "link", "icon": "OpenShift"}
                     ]
                   },
                   "name": "submenu-apps"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<h2 style=\"color:#0078d4\">Apps</h2><p>Visão detalhada de aplicações. Selecione um submenu acima.</p>"},
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Apps</h2><p style=\"color:#003366\">Visão detalhada de aplicações. Selecione um submenu acima.</p>"
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppOverview"},
                   "name": "apps-overview"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>App Service</b> - KPIs, disponibilidade, slots, performance, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">App Service</b> - KPIs, disponibilidade, slots, performance, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
                   "name": "apps-appservice"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Functions</b> - Execuções, falhas, cold start, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Functions</b> - Execuções, falhas, cold start, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "Functions"},
                   "name": "apps-functions"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Logic Apps</b> - Execuções, falhas, integrações, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Logic Apps</b> - Execuções, falhas, integrações, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "LogicApps"},
                   "name": "apps-logicapps"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>API Management</b> - APIs, gateways, políticas, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">API Management</b> - APIs, gateways, políticas, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "APIManagement"},
                   "name": "apps-apimanagement"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Container Apps</b> - Containers, pods, escalabilidade, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Container Apps</b> - Containers, pods, escalabilidade, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "ContainerApps"},
                   "name": "apps-containerapps"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>App Gateway</b> - Listeners, regras, performance, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">App Gateway</b> - Listeners, regras, performance, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppGateway"},
                   "name": "apps-appgateway"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>AKS</b> - Clusters, nodes, pods, escalabilidade, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">AKS</b> - Clusters, nodes, pods, escalabilidade, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AKS"},
                   "name": "apps-aks"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>ARO</b> - OpenShift clusters, nodes, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">ARO</b> - OpenShift clusters, nodes, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "ARO"},
                   "name": "apps-aro"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>Os gráficos e tabelas de aplicações seguem a semântica oficial do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Saudável</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Métricas como execuções, falhas e disponibilidade são calculadas conforme <a href='https://learn.microsoft.com/azure/azure-monitor/app/metrics' target='_blank'>documentação oficial</a>.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Apps"},
+                  "name": "legenda-apps"
                 }
               ]
             },
@@ -300,65 +321,75 @@
                     "version": "LinkItem/1.0",
                     "style": "toolbar",
                     "links": [
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "DataOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "SQL Database", "subTarget": "SQLDB", "style": "link", "icon": "Database"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Cosmos DB", "subTarget": "CosmosDB", "style": "link", "icon": "CosmosDb"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Storage Account", "subTarget": "Storage", "style": "link", "icon": "StorageAccount"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Data Lake", "subTarget": "DataLake", "style": "link", "icon": "DataLake"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Synapse", "subTarget": "Synapse", "style": "link", "icon": "Synapse"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Event Hubs", "subTarget": "EventHubs", "style": "link", "icon": "EventHub"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "Redis", "subTarget": "Redis", "style": "link", "icon": "Redis"}
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "DataOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🗄️ SQL Database", "subTarget": "SQLDB", "style": "link", "icon": "Database"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🪐 Cosmos DB", "subTarget": "CosmosDB", "style": "link", "icon": "CosmosDb"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "💾 Storage Account", "subTarget": "Storage", "style": "link", "icon": "StorageAccount"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🌊 Data Lake", "subTarget": "DataLake", "style": "link", "icon": "DataLake"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🔷 Synapse", "subTarget": "Synapse", "style": "link", "icon": "Synapse"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "📡 Event Hubs", "subTarget": "EventHubs", "style": "link", "icon": "EventHub"},
+                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🧠 Redis", "subTarget": "Redis", "style": "link", "icon": "Redis"}
                     ]
                   },
                   "name": "submenu-data"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<h2 style=\"color:#0078d4\">Dados</h2><p>KPIs e status de bancos, storage, analytics, etc. Selecione um submenu acima.</p>"},
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Dados</h2><p style=\"color:#003366\">KPIs e status de bancos, storage, analytics, etc. Selecione um submenu acima.</p>"
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "DataOverview"},
                   "name": "data-overview"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>SQL Database</b> - KPIs, DTU, conexões, performance, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">SQL Database</b> - KPIs, DTU, conexões, performance, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
                   "name": "data-sqldb"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Cosmos DB</b> - Throughput, RU/s, latência, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Cosmos DB</b> - Throughput, RU/s, latência, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "CosmosDB"},
                   "name": "data-cosmosdb"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Storage Account</b> - KPIs, blobs, filas, tabelas, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Storage Account</b> - KPIs, blobs, filas, tabelas, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Storage"},
                   "name": "data-storage"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Data Lake</b> - KPIs, ingestão, consultas, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Data Lake</b> - KPIs, ingestão, consultas, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "DataLake"},
                   "name": "data-datalake"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Synapse</b> - Pipelines, pools, performance, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Synapse</b> - Pipelines, pools, performance, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Synapse"},
                   "name": "data-synapse"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Event Hubs</b> - Eventos, throughput, latência, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Event Hubs</b> - Eventos, throughput, latência, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "EventHubs"},
                   "name": "data-eventhubs"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Redis</b> - KPIs, cache hits, performance, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Redis</b> - KPIs, cache hits, performance, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Redis"},
                   "name": "data-redis"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de dados apresentam métricas oficiais do Azure Monitor e Resource Graph. Cores e status:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Distribuições e KPIs seguem <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Data"},
+                  "name": "legenda-dados"
                 }
               ]
             },
@@ -377,71 +408,81 @@
                     "version": "LinkItem/1.0",
                     "style": "toolbar",
                     "links": [
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "SecOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Entra ID", "subTarget": "EntraID", "style": "link", "icon": "Person"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Secure Score", "subTarget": "SecureScore", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Recomendações", "subTarget": "Recommendations", "style": "link", "icon": "Recommendation"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Alertas", "subTarget": "Alerts", "style": "link", "icon": "Alert"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Políticas", "subTarget": "Policies", "style": "link", "icon": "Policy"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Azure Policy", "subTarget": "AzurePolicy", "style": "link", "icon": "Policy"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "Defender", "subTarget": "Defender", "style": "link", "icon": "Defender"}
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "SecOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "👤 Entra ID", "subTarget": "EntraID", "style": "link", "icon": "Person"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🔐 Secure Score", "subTarget": "SecureScore", "style": "link", "icon": "Shield"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "💡 Recomendações", "subTarget": "Recommendations", "style": "link", "icon": "Recommendation"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🚨 Alertas", "subTarget": "Alerts", "style": "link", "icon": "Alert"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "📜 Políticas", "subTarget": "Policies", "style": "link", "icon": "Policy"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "📋 Azure Policy", "subTarget": "AzurePolicy", "style": "link", "icon": "Policy"},
+                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🛡️ Defender", "subTarget": "Defender", "style": "link", "icon": "Defender"}
                     ]
                   },
                   "name": "submenu-security"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<h2 style=\"color:#0078d4\">Segurança</h2><p>KPIs, alertas, recomendações, Secure Score, etc. Selecione um submenu acima.</p>"},
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Segurança</h2><p style=\"color:#003366\">KPIs, alertas, recomendações, Secure Score, etc. Selecione um submenu acima.</p>"
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecOverview"},
                   "name": "security-overview"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Secure Score</b> - Pontuação, tendências, comparativos, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Secure Score</b> - Pontuação, tendências, comparativos, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
                   "name": "security-securescore"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Recomendações</b> - Ações sugeridas, impacto, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Recomendações</b> - Ações sugeridas, impacto, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Recommendations"},
                   "name": "security-recommendations"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Alertas</b> - Incidentes, severidade, status, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Alertas</b> - Incidentes, severidade, status, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Alerts"},
                   "name": "security-alerts"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Políticas</b> - Compliance, regras, auditoria, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Políticas</b> - Compliance, regras, auditoria, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Policies"},
                   "name": "security-policies"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Defender</b> - Proteção, status, ameaças, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Defender</b> - Proteção, status, ameaças, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Defender"},
                   "name": "security-defender"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Identidade</b> - Usuários, grupos, MFA, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Identidade</b> - Usuários, grupos, MFA, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Identity"},
                   "name": "security-identity"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Entra ID</b> - Usuários, grupos, MFA, auditoria, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Entra ID</b> - Usuários, grupos, MFA, auditoria, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "EntraID"},
                   "name": "security-entraid"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b>Azure Policy</b> - Compliance, regras, auditoria, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Azure Policy</b> - Compliance, regras, auditoria, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "AzurePolicy"},
                   "name": "security-azurepolicy"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>Os indicadores de segurança seguem a semântica do Azure Security Center e Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Saudável/compliance</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção/ação recomendada</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico/não compliance</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Para detalhes sobre Secure Score, recomendações e alertas, consulte a <a href='https://learn.microsoft.com/azure/defender-for-cloud/secure-score-security-controls' target='_blank'>documentação oficial</a>.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Security"},
+                  "name": "legenda-seguranca"
                 }
               ]
             },
@@ -460,21 +501,23 @@
                     "version": "LinkItem/1.0",
                     "style": "toolbar",
                     "links": [
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Visão Geral", "subTarget": "InfraOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Virtual Machines", "subTarget": "VMs", "style": "link", "icon": "VirtualMachine"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Scale Sets", "subTarget": "ScaleSets", "style": "link", "icon": "ScaleSet"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Availability Sets", "subTarget": "AvailSets", "style": "link", "icon": "AvailabilitySet"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Disks", "subTarget": "Disks", "style": "link", "icon": "Disk"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Snapshots", "subTarget": "Snapshots", "style": "link", "icon": "Snapshot"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Images", "subTarget": "Images", "style": "link", "icon": "Image"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "Resource Groups", "subTarget": "ResourceGroups", "style": "link", "icon": "ResourceGroup"}
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "InfraOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "💻 Virtual Machines", "subTarget": "VMs", "style": "link", "icon": "VirtualMachine"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "📈 Scale Sets", "subTarget": "ScaleSets", "style": "link", "icon": "ScaleSet"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "🗃️ Availability Sets", "subTarget": "AvailSets", "style": "link", "icon": "AvailabilitySet"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "💽 Disks", "subTarget": "Disks", "style": "link", "icon": "Disk"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "📸 Snapshots", "subTarget": "Snapshots", "style": "link", "icon": "Snapshot"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "🖼️ Images", "subTarget": "Images", "style": "link", "icon": "Image"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "📦 Resource Groups", "subTarget": "ResourceGroups", "style": "link", "icon": "ResourceGroup"}
                     ]
                   },
                   "name": "submenu-infra"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<h2 style=\"color:#0078d4\">Infraestrutura</h2><p>Visão geral de infraestrutura, KPIs, disponibilidade, escalabilidade, custos e tendências.</p>"},
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Infraestrutura</h2><p style=\"color:#003366\">Visão geral de infraestrutura, KPIs, disponibilidade, escalabilidade, custos e tendências.</p>"
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "InfraOverview"},
                   "name": "infra-overview"
                 },
@@ -568,6 +611,14 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "ResourceGroups"},
                   "name": "infra-resourcegroups"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de infraestrutura utilizam métricas e status oficiais do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Distribuições por região/SKU seguem <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Infra"},
+                  "name": "legenda-infra"
                 }
               ]
             },
