@@ -1167,7 +1167,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallNetworkRule\"\n| where TimeGenerated {timerange}\n| project TimeGenerated, Resource, action_s, ruleName_s, protocol_s, sourceIP_s, sourcePort_s, destinationIP_s, destinationPort_s, msg_s\n| order by TimeGenerated desc",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallNetworkRule\"\n| where TimeGenerated > ago(3h)\n| where FirewallResource == \"{FirewallResource}\" or isempty(\"{FirewallResource}\")\n| project TimeGenerated, Resource, action_s, ruleName_s, protocol_s, sourceIP_s, sourcePort_s, destinationIP_s, destinationPort_s, msg_s\n| order by TimeGenerated desc\n| limit 100",
                     "size": 0,
                     "title": "Logs de Regras de Rede",
                     "timeContext": {"durationMs": 86400000},
@@ -1222,33 +1222,40 @@
                 {                  "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| extend monitorStatus = tostring(properties.monitoringStatus)\r\n| extend profileStatus = tostring(properties.profileStatus)\r\n| extend dnsttl = toint(properties.dnsConfig.ttl)\r\n| extend routingMethod = tostring(properties.trafficRoutingMethod) \r\n| extend monitorProtocol = tostring(properties.monitorConfig.protocol)\r\n| extend monitorPort = toint(properties.monitorConfig.port)\r\n| extend monitorPath = tostring(properties.monitorConfig.path)\r\n| extend endpointCount = iff(isnotempty(properties.endpoints), array_length(properties.endpoints), 0)\r\n| extend status = case(\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Online', 'Healthy', \r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Degraded', 'Degraded',\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'CheckingEndpoint', 'Checking',\r\n    profileStatus =~ 'Disabled', 'Disabled',\r\n    'Unknown')\r\n| project id, name, resourceGroup, location, monitorStatus, profileStatus, dnsttl, routingMethod, monitorProtocol, monitorPort, monitorPath, endpointCount, status\r\n| order by name asc",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| extend monitorStatus = tostring(properties.monitoringStatus)\r\n| extend profileStatus = tostring(properties.profileStatus)\r\n| extend dnsttl = toint(properties.dnsConfig.ttl)\r\n| extend routingMethod = tostring(properties.trafficRoutingMethod) \r\n| extend monitorProtocol = tostring(properties.monitorConfig.protocol)\r\n| extend monitorPort = toint(properties.monitorConfig.port)\r\n| extend monitorPath = tostring(properties.monitorConfig.path)\r\n| extend endpointCount = iff(isnotempty(properties.endpoints), array_length(properties.endpoints), 0)\r\n| extend status = case(\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Online', 'Healthy', \r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Degraded', 'Degraded',\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'CheckingEndpoint', 'Checking',\r\n    profileStatus =~ 'Disabled', 'Disabled',\r\n    'Unknown')\r\n| where id == \"{TrafficManagerResource}\" or isempty(\"{TrafficManagerResource}\")\r\n| project id, name, resourceGroup, location, monitorStatus, profileStatus, dnsttl, routingMethod, monitorProtocol, monitorPort, monitorPath, endpointCount, status\r\n| order by name asc",
                     "size": 0,
                     "title": "Lista de Traffic Manager Profiles",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
                     "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
+                    "gridSettings": {                      "formatters": [
                         {"columnMatch": "monitorStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "CheckingEndpoint", "representation": "pending", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Inactive", "representation": "stopped", "text": "{0}"}
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "✅ {0}"},
+                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "⚠️ {0}"},
+                          {"operator": "==", "thresholdValue": "CheckingEndpoint", "representation": "pending", "text": "🔄 {0}"},
+                          {"operator": "==", "thresholdValue": "Inactive", "representation": "stopped", "text": "⏹️ {0}"}
                         ]}},
                         {"columnMatch": "profileStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Enabled", "representation": "success", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Disabled", "representation": "disabled", "text": "{0}"}
+                          {"operator": "==", "thresholdValue": "Enabled", "representation": "success", "text": "✅ {0}"},
+                          {"operator": "==", "thresholdValue": "Disabled", "representation": "disabled", "text": "⏹️ {0}"}
                         ]}},
                         {"columnMatch": "routingMethod", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Performance", "representation": "1", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Priority", "representation": "2", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Weighted", "representation": "3", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Geographic", "representation": "4", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "MultiValue", "representation": "5", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Subnet", "representation": "6", "text": "{0}"}
-                        ]}}
+                          {"operator": "==", "thresholdValue": "Performance", "representation": "Speedometer", "text": "⚡ {0}"},
+                          {"operator": "==", "thresholdValue": "Priority", "representation": "KnowledgeArticle", "text": "🏆 {0}"},
+                          {"operator": "==", "thresholdValue": "Weighted", "representation": "Scale", "text": "⚖️ {0}"},
+                          {"operator": "==", "thresholdValue": "Geographic", "representation": "Globe", "text": "🌎 {0}"},
+                          {"operator": "==", "thresholdValue": "MultiValue", "representation": "BranchFork", "text": "🔀 {0}"},
+                          {"operator": "==", "thresholdValue": "Subnet", "representation": "Network", "text": "🔧 {0}"}
+                        ]}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Healthy", "representation": "success", "text": "✅ Saudável"},
+                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "⚠️ Degradado"},
+                          {"operator": "==", "thresholdValue": "Checking", "representation": "pending", "text": "🔄 Verificando"},
+                          {"operator": "==", "thresholdValue": "Disabled", "representation": "disabled", "text": "⏹️ Desativado"},
+                          {"operator": "==", "thresholdValue": "Unknown", "representation": "question", "text": "❓ Desconhecido"}
+                        ]}},
+                        {"columnMatch": "id", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
                       ],
                       "filter": true,
                       "labelSettings": [
@@ -1273,24 +1280,31 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| mv-expand endpoint = properties.endpoints\r\n| project profileName = name,\r\n    endpointName = tostring(endpoint.name),\r\n    endpointStatus = tostring(endpoint.properties.endpointStatus),\r\n    weight = toint(endpoint.properties.weight),\r\n    priority = toint(endpoint.properties.priority),\r\n    endpointType = tostring(endpoint.properties.type),\r\n    targetResource = tostring(endpoint.properties.targetResourceId),\r\n    endpointLocation = tostring(endpoint.properties.endpointLocation)\r\n| extend status = case(\r\n    endpointStatus =~ 'Online', 'Saudável', \r\n    endpointStatus =~ 'Degraded', 'Degradado', \r\n    endpointStatus =~ 'Offline', 'Indisponível', \r\n    'Desconhecido')\r\n| order by profileName, priority asc",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| where id == \"{TrafficManagerResource}\" or isempty(\"{TrafficManagerResource}\")\r\n| mv-expand endpoint = properties.endpoints\r\n| project profileName = name,\r\n    endpointName = tostring(endpoint.name),\r\n    endpointStatus = tostring(endpoint.properties.endpointStatus),\r\n    weight = toint(iff(isnotempty(endpoint.properties.weight), endpoint.properties.weight, 0)),\r\n    priority = toint(iff(isnotempty(endpoint.properties.priority), endpoint.properties.priority, 0)),\r\n    endpointType = tostring(endpoint.properties.type),\r\n    targetResource = tostring(iff(isnotempty(endpoint.properties.targetResourceId), endpoint.properties.targetResourceId, endpoint.properties.target)),\r\n    endpointLocation = tostring(endpoint.properties.endpointLocation)\r\n| extend status = case(\r\n    endpointStatus =~ 'Online', 'Saudável ✅', \r\n    endpointStatus =~ 'Degraded', 'Degradado ⚠️', \r\n    endpointStatus =~ 'Offline', 'Indisponível ❌', \r\n    'Desconhecido ❓')\r\n| order by profileName, priority asc",
                     "size": 0,
                     "title": "Lista de Endpoints do Traffic Manager",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
                     "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
+                    "gridSettings": {                      "formatters": [
                         {"columnMatch": "endpointStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
                           {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "{0}"},
                           {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "{0}"},
                           {"operator": "==", "thresholdValue": "Offline", "representation": "failed", "text": "{0}"}
                         ]}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "contains", "thresholdValue": "Saudável", "representation": "success", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Degradado", "representation": "warning", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Indisponível", "representation": "failed", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Desconhecido", "representation": "question", "text": "{0}"}
+                        ]}},
                         {"columnMatch": "endpointType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "success", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "2", "text": "{0}"}
-                        ]}}
+                          {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "Datacenter", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "Globe", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "NestedEndpoint", "representation": "Folder", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "targetResource", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
                       ],
                       "filter": true,
                       "labelSettings": [
