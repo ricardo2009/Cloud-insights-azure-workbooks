@@ -150,11 +150,11 @@
             "content": {
               "version": "LinkItem/1.0",
               "style": "toolbar",
-              "links": [
-                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🌐 Visão Geral", "subTarget": "Overview", "style": "link", "icon": "Dashboard"},
+              "links": [                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🌐 Visão Geral", "subTarget": "Overview", "style": "link", "icon": "Dashboard"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🕸️ Networking", "subTarget": "Networking", "style": "link", "icon": "Connect"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🧩 Apps", "subTarget": "Apps", "style": "link", "icon": "WebApp"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🗄️ Dados", "subTarget": "Data", "style": "link", "icon": "Database"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🧠 IA & ML", "subTarget": "AI", "style": "link", "icon": "CognitiveServicesAI"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🛡️ Segurança", "subTarget": "Security", "style": "link", "icon": "Lock"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🏗️ Infraestrutura", "subTarget": "Infra", "style": "link", "icon": "Columns"}
               ]
@@ -166,8 +166,7 @@
             "content": {
               "version": "NotebookGroup/1.0",
               "groupType": "editable",
-              "items": [
-                {
+              "items": [                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -186,11 +185,56 @@
                   "name": "kpi-global-status"
                 },
                 {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize total=count(), openai=countif(kind =~ 'OpenAI'), cognitive=countif(kind != 'OpenAI'), search=countif(type =~ 'microsoft.search/searchservices'), ml=countif(type =~ 'microsoft.machinelearningservices/workspaces') | project total, openai, cognitive, search, ml",
+                    "size": 1,
+                    "title": "Recursos de IA & ML",
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {"columnMatch": "total", "formatter": 1, "formatOptions": {"showIcon": true}},
+                      "leftContent": {"columnMatch": "openai", "formatter": 12, "formatOptions": {"palette": "purpleBlue"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
+                      "rightContent": {"columnMatch": "ml", "formatter": 12, "formatOptions": {"palette": "greenBlue"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
+                      "secondaryContent": {"columnMatch": "cognitive", "formatter": 12, "formatOptions": {"palette": "purple"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
+                      "showBorder": true
+                    },
+                    "mapSettings": {"locInfo": "LatLong"}
+                  },
+                  "name": "ai-resources-overview"
+                },                {
                   "type": 1,
                   "content": {
                     "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda dos KPIs:</b><br>Os KPIs exibem o total de recursos, quantidade em execução, parados e não saudáveis. Os status seguem a semântica oficial do Azure Monitor:<br><ul><li><span style='color:#00bfae;font-weight:bold;'>Executando</span>: Recurso operacional</li><li><span style='color:#ffd700;font-weight:bold;'>Parado</span>: Recurso desligado</li><li><span style='color:#ff4c4c;font-weight:bold;'>Não saudável</span>: Recurso com falha ou indisponível</li></ul>Para mais detalhes, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial do Azure Monitor</a>.</div>"
                   },
                   "name": "legenda-kpi"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | extend SKU = tostring(sku.name), Kind = kind | join kind=leftouter ( resources | where type =~ 'microsoft.machinelearningservices/workspaces' | extend Kind = 'Machine Learning', SKU = tostring(sku.name) ) on Kind | summarize count() by SKU, Kind | order by Kind, SKU",
+                    "size": 1,
+                    "title": "Distribuição de SKUs de IA por Serviço",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "categoricalbar",
+                    "chartSettings": {
+                      "xAxis": "SKU",
+                      "yAxis": ["count_"],
+                      "group": "Kind",
+                      "createOtherGroup": null
+                    },
+                    "gridSettings": {"filter": true}
+                  },
+                  "name": "ai-sku-distribution"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#f3f9ff;padding:10px;border-radius:8px;margin-top:10px;\"><b>🔍 Sabia mais sobre IA na guia principal:</b><br>Acesse a guia <b>🧠 IA & ML</b> para visualizações detalhadas sobre todos os serviços de IA do Azure, incluindo OpenAI, Azure AI Search, ML Services, Visão Computacional e mais. Métricas detalhadas de uso, performance e disponibilidade estão disponíveis para cada serviço.<br><span style=\"color:#1976d2;\">Clique na guia IA & ML para explorar métricas detalhadas de todos os seus serviços de inteligência artificial.</span></div>"
+                  },
+                  "name": "ai-tab-promo"
                 }
               ]
             },
@@ -571,6 +615,1002 @@
             },
             "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Security"},
             "name": "Security Futurist"
+          },          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "toolbar",
+                    "links": [                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "AIOverview", "style": "link", "icon": "Dashboard"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "💭 Azure OpenAI", "subTarget": "OpenAI", "style": "link", "icon": "AIServices"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🔍 AI Search", "subTarget": "AISearch", "style": "link", "icon": "Search"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "⚙️ ML Services", "subTarget": "MLServices", "style": "link", "icon": "MachineLearning"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🔊 Serviços de Voz", "subTarget": "Speech", "style": "link", "icon": "SpeechService"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🖼️ Serviços de Visão", "subTarget": "Vision", "style": "link", "icon": "ComputerVision"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "📊 Azure Foundry", "subTarget": "Foundry", "style": "link", "icon": "DataFactory"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🤖 Serviços Cognitivos", "subTarget": "CognitiveServices", "style": "link", "icon": "CognitiveServices"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "📈 AI Studio", "subTarget": "AIStudio", "style": "link", "icon": "AIStudio"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "💰 Custo & Consumo", "subTarget": "AICost", "style": "link", "icon": "CostAnalysis"}
+                    ]
+                  },
+                  "name": "submenu-ai"
+                },                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">IA & Machine Learning</h2><p style=\"color:#003366\">Visão centralizada dos serviços de IA do Azure, incluindo métricas de uso, performance, disponibilidade e custo.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
+                  "name": "ai-overview"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize Total=count(), OpenAI=countif(kind =~ 'OpenAI'), CognitiveServices=countif(kind != 'OpenAI'), FreeOrTrial=countif(sku.name =~ 'F' or properties.customSubDomainName endswith 'trial') | project Total, OpenAI, CognitiveServices, FreeOrTrial",
+                    "size": 0,
+                    "title": "Serviços de IA",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {"columnMatch": "Total", "formatter": 1, "formatOptions": {"showIcon": true}},
+                      "leftContent": {"columnMatch": "OpenAI", "formatter": 12, "formatOptions": {"palette": "blue"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
+                      "rightContent": {"columnMatch": "FreeOrTrial", "formatter": 12, "formatOptions": {"palette": "orange"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
+                      "secondaryContent": {"columnMatch": "CognitiveServices", "formatter": 12, "formatOptions": {"palette": "purple"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
+                      "showBorder": true
+                    },
+                    "gridSettings": {"sortBy": [{"itemKey": "$gen_heatmap_Total_0", "sortOrder": 2}]},
+                    "mapSettings": {"locInfo": "LatLong"}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
+                  "name": "ai-services-kpi"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize count() by kind, location | order by kind asc",
+                    "size": 1,
+                    "title": "Serviços de IA por Tipo e Região",
+                    "visualization": "table",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "count_", "formatter": 8, "formatOptions": {"palette": "blue"}},
+                        {"columnMatch": "kind", "formatter": 5}
+                      ]
+                    },
+                    "tileSettings": {"showBorder": false},
+                    "textSettings": {"style": "bignumber"},
+                    "chartSettings": {"createOtherGroup": null, "showLegend": true}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
+                  "name": "ai-resources-overview"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | where properties.apiProperties.openaiApiType =~ 'OpenAI' | summarize count() by name, sku.name, location, tostring(tags) | project ['Modelo']=name, ['SKU']=sku_name, ['Região']=location, ['Tags']=tags",
+                    "size": 1,
+                    "title": "Implementações do Azure OpenAI",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "SKU", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "S0", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S1", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S2", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S3", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S4", "representation": "success", "text": "Standard"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } }
+                      ],
+                      "filter": true,
+                      "sortBy": [
+                        {"itemKey": "Modelo", "sortOrder": 2}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
+                  "name": "openai-deployments"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "union withsource=MetricSource \r\nAzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" or Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| project TimeGenerated, OperationName, ResultType, StatusCode, RequestUri, ResourceId\r\n| summarize RequestCount=count() by bin(TimeGenerated, 1h), OperationName, ResultType",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Requisições OpenAI por Hora",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "areachart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["RequestCount"],
+                      "seriesLabelSettings": [{"seriesName": "Completions", "color": "#0078D4"}, {"seriesName": "Embeddings", "color": "#00BCF2"}, {"seriesName": "ChatCompletions", "color": "#2BC400"}]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
+                  "name": "openai-requests-per-hour"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" or Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| where ResultType != \"Succeeded\" or StatusCode !between (200 .. 299)\r\n| summarize count() by ResultType, StatusCode, bin(TimeGenerated, 1h)\r\n| render timechart",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Erros em Requisições OpenAI",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "linechart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["count_"],
+                      "seriesLabelSettings": [{"seriesName": "429", "label": "429 - Throttling", "color": "#FDD663"}, {"seriesName": "500", "label": "500 - Internal Error", "color": "#FF5F5F"}, {"seriesName": "400", "label": "400 - Bad Request", "color": "#FF8C00"}]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
+                  "name": "openai-request-errors"
+                },                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" or Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| summarize Requests=count(), SuccessRate=round(100.0 * countif(ResultType == \"Succeeded\") / count(), 2) by Model=RequestUri\r\n| order by Requests desc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Taxa de Sucesso por Modelo",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Requests", "formatter": 8, "formatOptions": {"palette": "blue"}},
+                        {"columnMatch": "SuccessRate", "formatter": 8, "formatOptions": {"palette": "greenRed"}, "numberFormat": {"unit": 1, "options": {"style": "decimal", "useGrouping": true, "minimumFractionDigits": 2, "maximumFractionDigits": 2}}}
+                      ],
+                      "filter": true
+                    },
+                    "sortBy": [],
+                    "tileSettings": {"showBorder": false}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
+                  "name": "openai-success-rate"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| where ResultType == \"Succeeded\"\r\n| extend ResponseTime = ResponseTimeMs\r\n| summarize MedianResponseTime=percentile(ResponseTime, 50), P90ResponseTime=percentile(ResponseTime, 90), P99ResponseTime=percentile(ResponseTime, 99) by bin(TimeGenerated, 15m)",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Tempo de Resposta do OpenAI (ms)",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "linechart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["MedianResponseTime", "P90ResponseTime", "P99ResponseTime"],
+                      "seriesLabelSettings": [
+                        {"seriesName": "MedianResponseTime", "label": "Mediana", "color": "#00BCF2"}, 
+                        {"seriesName": "P90ResponseTime", "label": "Percentil 90", "color": "#FDD663"}, 
+                        {"seriesName": "P99ResponseTime", "label": "Percentil 99", "color": "#FF5F5F"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
+                  "name": "openai-response-time"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend ModelName = extract(@\"/deployments/([^/]+)\", 1, RequestUri)\r\n| summarize RequestCount=count(), AverageTokens=avg(CompletionTokens + PromptTokens) by ModelName, bin(TimeGenerated, 1h)\r\n| order by TimeGenerated asc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Uso de Tokens por Modelo",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "areachart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["AverageTokens"],
+                      "seriesLabelSettings": [
+                        {"seriesName": "gpt-4", "color": "#5F9BFC"}, 
+                        {"seriesName": "gpt-4o", "color": "#33FF99"}, 
+                        {"seriesName": "gpt-35-turbo", "color": "#FFC666"}, 
+                        {"seriesName": "gpt-4o-mini", "color": "#79EB79"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
+                  "name": "openai-token-usage"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook046080c4-1dea-4059-83c0-5527a9a4cfa0",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SuccessfulCalls", "aggregation": 1, "splitBy": null},
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--TotalErrors", "aggregation": 1, "splitBy": null}
+                    ],
+                    "title": "Chamadas bem-sucedidas vs. Erros",
+                    "gridSettings": {"rowLimit": 10000},
+                    "showOpenInMeExperience": true,
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
+                  "name": "openai-calls-vs-errors"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">Azure AI Search</b> - Métricas sobre índices, documentos, consultas e latência."},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
+                  "name": "ai-search"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbooka2daf5d8-1a2c-4d9a-8542-b0c77940a9cc",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.search/searchservices",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.search/searchservices/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--SearchQueriesPerSecond", "aggregation": 4},
+                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--QueryLatency", "aggregation": 4},
+                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--ThrottledSearchQueriesPercentage", "aggregation": 4}
+                    ],
+                    "title": "Consultas e Latência (AI Search)",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
+                  "name": "ai-search-queries-metrics"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook53e4f8d1-f685-4c0a-8769-35a99197523a",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.search/searchservices",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.search/searchservices/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--SearchLatency", "aggregation": 4},
+                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--IndexLatency", "aggregation": 4}
+                    ],
+                    "title": "Latência (AI Search)",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
+                  "name": "ai-search-latency-metrics"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbooka2c41dc2-3fdb-41bc-8385-a88a6b8d4805",
+                    "version": "MetricsItem/2.0",
+                    "size": 1,
+                    "chartType": 3,
+                    "resourceType": "microsoft.search/searchservices",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.search/searchservices/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--DocumentCount", "aggregation": 1, "splitBy": null}
+                    ],
+                    "title": "Contagem de Documentos (AI Search)",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
+                  "name": "ai-search-document-count"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.search/searchservices' | project name, sku=sku.name, location, status=properties.status | order by name asc",
+                    "size": 0,
+                    "title": "Azure AI Search Services",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "sku", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "free", "representation": "info", "text": "Free"}, {"operator": "contains", "thresholdValue": "basic", "representation": "info", "text": "Basic"}, {"operator": "contains", "thresholdValue": "standard", "representation": "success", "text": "Standard"}, {"operator": "contains", "thresholdValue": "storage_optimized", "representation": "success", "text": "Storage Optimized"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } },
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "running", "representation": "success", "text": "Running"}, {"operator": "Default", "representation": "warning", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
+                  "name": "ai-search-services"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">ML Services</b> - Workspaces, modelos, pipelines, métricas de execução, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
+                  "name": "ai-ml-services"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook9bd1fe37-8734-4d07-a61e-7edb8d4f833c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.machinelearningservices/workspaces",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.machinelearningservices/workspaces/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--ModelRegisterSucceeded", "aggregation": 1},
+                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--ModelRegisterFailed", "aggregation": 1}
+                    ],
+                    "title": "Registro de Modelos",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
+                  "name": "ml-model-registration"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook9c855ae2-8104-4aed-9a2c-5d08f7add3bf",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.machinelearningservices/workspaces",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.machinelearningservices/workspaces/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--RunSucceeded", "aggregation": 1},
+                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--RunFailed", "aggregation": 1},
+                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--RunCanceled", "aggregation": 1}
+                    ],
+                    "title": "Status de Execução",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
+                  "name": "ml-run-status"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook2f3764fa-166e-4d1f-83b9-8146a4f0f85b",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.machinelearningservices/workspaces",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.machinelearningservices/workspaces/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--DeploymentSucceeded", "aggregation": 1},
+                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--DeploymentFailed", "aggregation": 1}
+                    ],
+                    "title": "Status de Deployment",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
+                  "name": "ml-deployment-status"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.machinelearningservices/workspaces/models' | project name, version=properties.version, framework=properties.framework, lastUpdateTime=properties.lastUpdateTime | order by name, version desc | summarize Versions=count() by name, framework | order by Versions desc",
+                    "size": 0,
+                    "title": "Modelos por Framework",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Versions", "formatter": 8, "formatOptions": {"palette": "blue"}},
+                        {"columnMatch": "framework", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "pytorch", "representation": "1", "text": "PyTorch"}, {"operator": "contains", "thresholdValue": "tensorflow", "representation": "2", "text": "TensorFlow"}, {"operator": "contains", "thresholdValue": "sklearn", "representation": "3", "text": "Scikit-learn"}, {"operator": "contains", "thresholdValue": "onnx", "representation": "4", "text": "ONNX"}, {"operator": "Default", "representation": "Blank", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
+                  "name": "ml-models-by-framework"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.machinelearningservices/workspaces' | project name, location, sku=sku.name, state=properties.workspaceState | order by name asc",
+                    "size": 0,
+                    "title": "Azure ML Workspaces",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "sku", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "free", "representation": "info", "text": "Free"}, {"operator": "contains", "thresholdValue": "basic", "representation": "info", "text": "Basic"}, {"operator": "contains", "thresholdValue": "standard", "representation": "success", "text": "Standard"}, {"operator": "contains", "thresholdValue": "enterprise", "representation": "success", "text": "Enterprise"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } },
+                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Running", "representation": "success", "text": "Running"}, {"operator": "Default", "representation": "warning", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
+                  "name": "ml-workspaces"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">Serviços de Voz</b> - Transcrição, speech-to-text, text-to-speech, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
+                  "name": "ai-speech-services"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and kind == 'SpeechServices' | project name, location, sku=sku.name, properties | order by name asc",
+                    "size": 0,
+                    "title": "Serviços de Voz",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {"filter": true}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
+                  "name": "speech-services-list"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook96c8dfad-c2de-4159-a1a2-0d8aaa8aef80",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SpeechSuccessfulCalls", "aggregation": 1},
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SpeechErrors", "aggregation": 1}
+                    ],
+                    "title": "Chamadas de Voz - Sucesso vs. Erros",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
+                  "name": "speech-calls-success-errors"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook80807db9-399d-4315-b0bd-4114b3fd60ba",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SpeechLatency", "aggregation": 4}
+                    ],
+                    "title": "Latência dos Serviços de Voz",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
+                  "name": "speech-latency"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| where OperationName contains \"speech\"\r\n| summarize count() by OperationName, bin(TimeGenerated, 1h)",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Operações Speech por Hora",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "areachart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["count_"],
+                      "seriesLabelSettings": [
+                        {"seriesName": "SpeechToText", "color": "#00BCF2"}, 
+                        {"seriesName": "TextToSpeech", "color": "#FDD663"}, 
+                        {"seriesName": "SpeechTranslation", "color": "#FF5F5F"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
+                  "name": "speech-operations-per-hour"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">Serviços de Visão</b> - Computer Vision, análise de imagens, OCR, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
+                  "name": "ai-vision-services"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and (kind =~ 'ComputerVision' or kind =~ 'CustomVision.Training' or kind =~ 'CustomVision.Prediction' or kind =~ 'Face') | project name, kind, location, sku=sku.name | order by kind asc",
+                    "size": 0,
+                    "title": "Serviços de Visão Computacional",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "kind", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "ComputerVision", "representation": "Camera", "text": "Computer Vision"}, {"operator": "==", "thresholdValue": "CustomVision.Training", "representation": "Camera", "text": "Custom Vision (Training)"}, {"operator": "==", "thresholdValue": "CustomVision.Prediction", "representation": "Camera", "text": "Custom Vision (Prediction)"}, {"operator": "==", "thresholdValue": "Face", "representation": "Glasses", "text": "Face"}, {"operator": "Default", "representation": "Resource", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
+                  "name": "vision-services-list"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook4e6ea0d4-9e89-4d3b-af61-ef068e86d9b4",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--VisionSuccessfulCalls", "aggregation": 1},
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--VisionErrors", "aggregation": 1}
+                    ],
+                    "title": "Chamadas Vision - Sucesso vs. Erros",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
+                  "name": "vision-calls-success-errors"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbookc3e73a3b-77fc-4d7f-a186-6bc9c5e45975",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--VisionLatency", "aggregation": 4}
+                    ],
+                    "title": "Latência dos Serviços Vision",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
+                  "name": "vision-latency"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| where OperationName contains \"vision\" or OperationName contains \"Vision\"\r\n| summarize count() by OperationName, bin(TimeGenerated, 1h)",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Operações de Visão por Hora",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "areachart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["count_"]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
+                  "name": "vision-operations-per-hour"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Azure Foundry</h2><p style=\"color:#003366\">Monitoramento de registros de modelos, endpoints, deployments e métricas de performance do Azure Foundry, a plataforma de MLOps e gerenciamento de modelos de IA.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
+                  "name": "ai-foundry"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.machineLearningServices/registries' | project name, location, properties, tags | order by name asc",
+                    "size": 0,
+                    "title": "Azure Foundry - Model Registries",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {"filter": true}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
+                  "name": "foundry-registries"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.machineLearningServices/registries/models' | project name, version=properties.version, properties | order by name asc",
+                    "size": 0,
+                    "title": "Modelos em Registries",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {"filter": true}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
+                  "name": "foundry-models"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.machineLearningServices/workspaces/onlineEndpoints' or type =~ 'microsoft.machineLearningServices/registries/onlineEndpoints' | project name, resourceGroup, sku=properties.sku, provisioningState=properties.provisioningState | order by name asc",
+                    "size": 0,
+                    "title": "Endpoints Online",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"}, {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "{0}"}, {"operator": "==", "thresholdValue": "Failed", "representation": "failed", "text": "{0}"}, {"operator": "Default", "representation": "Unknown", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
+                  "name": "foundry-endpoints"
+                },                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.machineLearningServices/workspaces/onlineEndpoints/deployments' or type =~ 'microsoft.machineLearningServices/registries/onlineEndpoints/deployments' | project name, model=properties.model.name, version=properties.model.version, state=properties.state | order by name asc",
+                    "size": 0,
+                    "title": "Deployments de Modelos",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"}, {"operator": "contains", "thresholdValue": "running", "representation": "success", "text": "{0}"}, {"operator": "==", "thresholdValue": "Failed", "representation": "failed", "text": "{0}"}, {"operator": "Default", "representation": "pending", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
+                  "name": "foundry-deployments"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let FoundryEndpoints = resources | where type =~ 'microsoft.machineLearningServices/workspaces/onlineEndpoints' or type =~ 'microsoft.machineLearningServices/registries/onlineEndpoints';\r\nlet AzureMonitorMetrics = FoundryEndpoints\r\n| join kind=inner (\r\n    AzureMetrics\r\n    | where TimeGenerated {timerange}\r\n    | where MetricName in ('RequestLatency', 'RequestsPerMinute', 'CpuUtilizationPercentage', 'MemoryUtilizationPercentage')\r\n    | summarize LatestValue = max(Average) by ResourceId, MetricName\r\n) on ResourceId\r\n| project ResourceName=name, MetricName, LatestValue;\r\n\r\nAzureMonitorMetrics\r\n| summarize ['Latência (ms)']=sumif(LatestValue, MetricName=='RequestLatency'), \r\n           ['Req/Min']=sumif(LatestValue, MetricName=='RequestsPerMinute'), \r\n           ['CPU (%)']=sumif(LatestValue, MetricName=='CpuUtilizationPercentage'),\r\n           ['Memória (%)']=sumif(LatestValue, MetricName=='MemoryUtilizationPercentage')\r\n           by ResourceName\r\n| order by ['Req/Min'] desc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Performance dos Endpoints de Modelos",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Latência (ms)", "formatter": 8, "formatOptions": {"min": 0, "max": 1000, "palette": "greenRed"}},
+                        {"columnMatch": "Req/Min", "formatter": 8, "formatOptions": {"min": 0, "palette": "blue"}},
+                        {"columnMatch": "CPU (%)", "formatter": 8, "formatOptions": {"min": 0, "max": 100, "palette": "yellowGreenBlue"}},
+                        {"columnMatch": "Memória (%)", "formatter": 8, "formatOptions": {"min": 0, "max": 100, "palette": "purpleBlue"}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [{"columnId": "ResourceName", "label": "Endpoint"}, {"columnId": "Latência (ms)"}, {"columnId": "Req/Min"}, {"columnId": "CPU (%)"}, {"columnId": "Memória (%)"}]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
+                  "name": "foundry-endpoint-performance"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.MACHINELEARNINGSERVICES\" \r\n| where Category == \"AmlOnlineEndpointConsoleLog\" \r\n| where TimeGenerated {timerange}\r\n| summarize ErrorCount=countif(Level == \"Error\"), WarningCount=countif(Level == \"Warning\"), InfoCount=countif(Level == \"Information\") by bin(TimeGenerated, 1h), OperationName\r\n| order by TimeGenerated asc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Logs de Endpoint por Hora",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "unstackedbar",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["ErrorCount", "WarningCount", "InfoCount"],
+                      "seriesLabelSettings": [
+                        {"seriesName": "ErrorCount", "label": "Erros", "color": "#FF5F5F"},
+                        {"seriesName": "WarningCount", "label": "Avisos", "color": "#FDD663"},
+                        {"seriesName": "InfoCount", "label": "Informações", "color": "#00BCF2"}
+                      ],
+                      "group": "OperationName"
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
+                  "name": "foundry-endpoint-logs"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">Serviços Cognitivos</b> - KPIs, tipos de serviços, uso, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
+                  "name": "ai-cognitive-services"
+                },                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and kind != 'openai' | project name, kind, location, sku=sku.name | order by kind asc",
+                    "size": 0,
+                    "title": "Serviços Cognitivos",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "kind", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "Face", "representation": "Glasses", "text": "{0}"}, {"operator": "contains", "thresholdValue": "Speech", "representation": "Speaker", "text": "{0}"}, {"operator": "contains", "thresholdValue": "Vision", "representation": "Camera", "text": "{0}"}, {"operator": "contains", "thresholdValue": "Language", "representation": "Globe", "text": "{0}"}, {"operator": "Default", "representation": "Resource", "text": "{0}"} ] } },
+                        {"columnMatch": "sku", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "F", "representation": "info", "text": "Free"}, {"operator": "contains", "thresholdValue": "S", "representation": "success", "text": "Standard"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
+                  "name": "cognitive-services-list"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize count() by kind | order by count_ desc",
+                    "size": 0,
+                    "title": "Distribuição por Tipos de Serviço",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "piechart"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
+                  "name": "cognitive-services-distribution"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook1210c596-9319-4d78-b096-d10f5c01bc0a",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SuccessfulCalls", "aggregation": 7, "splitBy": null},
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--TotalErrors", "aggregation": 7, "splitBy": null},
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--TotalCalls", "aggregation": 7, "splitBy": null}
+                    ],
+                    "title": "Chamadas Totais vs. Erros",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
+                  "name": "cognitive-services-total-calls"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbookd601a8f4-df4a-4d71-b8c6-c2fc90e9cddb",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "metricScope": 0,
+                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--DataIn", "aggregation": 1, "splitBy": null},
+                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--DataOut", "aggregation": 1, "splitBy": null}
+                    ],
+                    "title": "Transferência de Dados",
+                    "gridSettings": {"rowLimit": 10000},
+                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
+                  "name": "cognitive-services-data-transfer"
+                },{
+                  "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">AI Studio</b> - Projetos, avaliações, prompts, métricas, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
+                  "name": "ai-studio"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and kind =~ 'openai' | project name, location, sku=sku.name, state=properties.provisioningState | order by name asc",
+                    "size": 0,
+                    "title": "Recursos OpenAI para AI Studio",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "Provisionado"}, {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "Criando"}, {"operator": "==", "thresholdValue": "Failed", "representation": "failed", "text": "Falhou"}, {"operator": "Default", "representation": "pending", "text": "{0}"} ] } }
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
+                  "name": "ai-studio-resources"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend APIVersion = extract(@\"api-version=([^&]+)\", 1, RequestUri)\r\n| where APIVersion contains \"2023\" or APIVersion contains \"2024\"\r\n| summarize count() by ApiVersion=APIVersion",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Chamadas por Versão da API",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "piechart"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
+                  "name": "ai-studio-api-versions"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| extend CallerIPAddress = extract(@\"Caller IP address: '([^']+)'.\", 1, Message)\r\n| where isnotempty(CallerIPAddress)\r\n| summarize count() by CallerIPAddress, bin(TimeGenerated, 1h)\r\n| order by TimeGenerated asc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Chamadas por IP de origem",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "areachart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["count_"]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
+                  "name": "ai-studio-calls-by-ip"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#f3f9ff;padding:15px;border-radius:8px;margin-top:10px;\"><b>Sobre o Azure AI Studio:</b><br>O Azure AI Studio permite criar, avaliar e implementar soluções de IA generativa de forma simplificada. As métricas acima refletem o uso das APIs por diferentes versões e IPs, sem identificar projetos específicos. Para uma visão mais detalhada:<br><ul><li>Acesse o <a href='https://ai.azure.com' target='_blank'>Azure AI Studio</a> diretamente</li><li>Verifique projetos e avaliações específicas através da interface do AI Studio</li><li>Configure métricas personalizadas para monitoramento através do Azure Application Insights</li></ul></div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
+                  "name": "ai-studio-info"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Custo & Consumo de IA</h2><p style=\"color:#003366\">Análise detalhada de custos, consumo e tendências de uso dos serviços de IA do Azure.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
+                  "name": "ai-cost-overview"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | extend SKU = tostring(sku.name), Kind = kind | join kind=leftouter ( resources | where type =~ 'microsoft.machinelearningservices/workspaces' | extend Kind = 'Machine Learning', SKU = tostring(sku.name) ) on Kind | project type, kind, location, sku_name, name | summarize count() by Categoria=type, Tipo=kind, SKU=sku_name | order by Categoria asc",
+                    "size": 0,
+                    "title": "Distribuição de SKUs por Serviço",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "count_", "formatter": 8, "formatOptions": {"palette": "blue"}}
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
+                  "name": "ai-cost-sku-distribution"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend ModelName = extract(@\"/deployments/([^/]+)\", 1, RequestUri)\r\n| where isnotempty(ModelName) and ModelName != \"\"\r\n| summarize TotalTokens = sum(CompletionTokens + PromptTokens), TotalCalls=count() by ModelName\r\n| extend EstimatedCost = case(\r\n  ModelName contains \"gpt-4\", TotalTokens * 0.00006,\r\n  ModelName contains \"gpt-35\", TotalTokens * 0.000002,\r\n  ModelName contains \"embedding\", TotalTokens * 0.0000001,\r\n  TotalTokens * 0.00001\r\n)\r\n| project-rename ['Modelo'] = ModelName, ['Total de Tokens'] = TotalTokens, ['Total de Chamadas'] = TotalCalls, ['Custo Estimado ($)'] = EstimatedCost\r\n| order by ['Custo Estimado ($)'] desc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Consumo Estimado de Tokens por Modelo",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Total de Tokens", "formatter": 3, "formatOptions": {"palette": "blue"}},
+                        {"columnMatch": "Total de Chamadas", "formatter": 3, "formatOptions": {"palette": "green"}},
+                        {"columnMatch": "Custo Estimado ($)", "formatter": 3, "formatOptions": {"palette": "orange"}, "numberFormat": {"unit": 0, "options": {"style": "currency", "currency": "USD", "minimumFractionDigits": 4, "maximumFractionDigits": 4}}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [{"columnId": "Modelo"}, {"columnId": "Total de Tokens"}, {"columnId": "Total de Chamadas"}, {"columnId": "Custo Estimado ($)"}]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
+                  "name": "ai-cost-token-usage"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend ModelName = extract(@\"/deployments/([^/]+)\", 1, RequestUri)\r\n| where isnotempty(ModelName) and ModelName != \"\"\r\n| summarize TotalTokens = sum(CompletionTokens + PromptTokens) by ModelName, bin(TimeGenerated, 1d)\r\n| order by TimeGenerated asc",
+                    "size": 0,
+                    "timeContextFromParameter": "timerange",
+                    "title": "Tendência de Consumo de Tokens",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "linechart",
+                    "chartSettings": {
+                      "xAxis": "TimeGenerated",
+                      "yAxis": ["TotalTokens"],
+                      "group": "ModelName",
+                      "createOtherGroup": 5,
+                      "showMetrics": false
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
+                  "name": "ai-cost-token-trend"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#f3f9ff;padding:15px;border-radius:8px;margin-top:10px;\"><b>📊 Sobre Estimativas de Custo:</b><br>Os cálculos de custo neste painel são estimativas baseadas nos preços aproximados dos modelos e uso medido. Para valores precisos e detalhados de faturamento:<br><ul><li>Consulte o <a href='https://portal.azure.com/#blade/Microsoft_Azure_CostManagement/Menu/costanalysis' target='_blank'>Azure Cost Management</a></li><li>Use filtros por recurso (por exemplo, 'Tipo de recurso: cognitiveservices')</li><li>Os custos reais podem variar com base em promoções, acordos empresariais e preços regionais</li></ul>As estimativas de custo de token são baseadas em preços padrão e não incluem descontos ou camadas gratuitas.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
+                  "name": "ai-cost-disclaimer"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de IA e ML seguem os padrões do Azure Monitor para serviços cognitivos e IA:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operação normal</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção/Throttling</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico/Falha</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Sem dados</li></ul>Métricas para serviços de IA incluem chamadas por minuto, latência, tokens, custo estimado e erros. Para informações detalhadas sobre cada métrica consulte a <a href='https://learn.microsoft.com/azure/ai-services/openai/how-to/monitoring' target='_blank'>documentação oficial</a>.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "AI"},
+                  "name": "legenda-ai"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "AI"},
+            "name": "AI Futurist"
           },
           {
             "type": 12,
