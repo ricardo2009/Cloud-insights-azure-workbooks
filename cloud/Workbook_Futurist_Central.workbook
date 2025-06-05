@@ -410,12 +410,10 @@
                         {"columnId": "peeringState", "label": "Estado"},
                         {"columnId": "allowGatewayTransit", "label": "Gateway Transit"},
                         {"columnId": "allowForwardedTraffic", "label": "Tráfego Encaminhado"}
-                      ]
-                    }
+                      ]                    }
                   },
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
                   "name": "net-vnets-peerings"
-                }
                 },
                 {
                   "type": 1,
@@ -431,1920 +429,875 @@
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">VPN Gateway</b> - KPIs, conexões, status de túneis, etc."},
+                  "content": {"json": "<h2 style=\"color:#003366\">Application Gateway</h2><p style=\"color:#003366\">Monitoramento e análise de Application Gateways, incluindo status, tráfego, latência e backends.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-header"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.network/applicationgateways' | project id, name, resourceGroup, location, skuName = properties.sku.tier, skuTier = tostring(properties.sku.tier), capacity = tostring(properties.sku.capacity), status = properties.provisioningState, wafMode = properties.webApplicationFirewallConfiguration.enabled, ruleSetType = properties.webApplicationFirewallConfiguration.ruleSetType, ruleSetVersion = properties.webApplicationFirewallConfiguration.ruleSetVersion, customRules = properties.webApplicationFirewallConfiguration.customRules, managedRules = properties.webApplicationFirewallConfiguration.managedRules | order by name asc",
+                    "size": 0,
+                    "title": "Lista de Application Gateways",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "skuName", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "skuTier", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "capacity", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Offline", "representation": "stopped", "text": "{0}"},
+                          {"operator": "Default", "representation": "Unknown", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "wafMode", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Detection", "representation": "2", "text": "Detecção"},
+                          {"operator": "==", "thresholdValue": "Prevention", "representation": "success", "text": "Prevenção"},
+                          {"operator": "==", "thresholdValue": "N/A", "representation": "disabled", "text": "Sem WAF"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "skuName", "label": "SKU"},
+                        {"columnId": "skuTier", "label": "Tier"},
+                        {"columnId": "capacity", "label": "Capacidade"},
+                        {"columnId": "status", "label": "Status"},
+                        {"columnId": "wafMode", "label": "Modo WAF"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-list"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let appGateways = resources | where type == 'microsoft.network/applicationgateways';\r\nlet listeners = appGateways | mvexpand listener = properties.httpListeners | project name = tostring(listener.name), gatewayName = name, protocol = tostring(listener.properties.protocol), port = toint(listener.properties.frontendPort.id), hostName = tostring(listener.properties.hostName), requireServerNameIndication = tobool(listener.properties.requireServerNameIndication), sslCertificate = iif(isnotempty(listener.properties.sslCertificate), 'Configurado', 'Não configurado');\r\nlisteners | project gatewayName, name, protocol, hostName, port, sslCertificate, requireServerNameIndication | order by gatewayName asc, name asc",
+                    "size": 0,
+                    "title": "Listeners de Application Gateway",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "protocol", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Http", "representation": "1", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Https", "representation": "success", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "sslCertificate", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Configurado", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Não configurado", "representation": "disabled", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "gatewayName", "label": "Application Gateway"},
+                        {"columnId": "name", "label": "Listener"},
+                        {"columnId": "protocol", "label": "Protocolo"},
+                        {"columnId": "hostName", "label": "Host Name"},
+                        {"columnId": "port", "label": "Porta"},
+                        {"columnId": "sslCertificate", "label": "Certificado SSL"},
+                        {"columnId": "requireServerNameIndication", "label": "Requer SNI"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-listeners"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let appGateways = resources | where type == 'microsoft.network/applicationgateways';\r\nlet backends = appGateways | mvexpand backend = properties.backendAddressPools | project name = tostring(backend.name), gatewayName = name, addresses = backend.properties.backendAddresses;\r\nbackends | mvexpand address = addresses | project gatewayName, backendName = name, ipAddress = tostring(address.ipAddress), fqdn = tostring(address.fqdn) | where isnotempty(ipAddress) or isnotempty(fqdn) | order by gatewayName asc, backendName asc",
+                    "size": 0,
+                    "title": "Backend Pools de Application Gateway",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "gatewayName", "label": "Application Gateway"},
+                        {"columnId": "backendName", "label": "Backend Pool"},
+                        {"columnId": "ipAddress", "label": "Endereço IP"},
+                        {"columnId": "fqdn", "label": "FQDN"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-backends"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--HealthyHostCount", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--UnhealthyHostCount", "aggregation": 4}
+                    ],
+                    "title": "Hosts Saudáveis vs. Não Saudáveis",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-hosts-health"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--Throughput", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--FailedRequests", "aggregation": 1}
+                    ],
+                    "title": "Throughput e Requisições com Falha",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-throughput"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--ApplicationGatewayTotalTime", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--BackendLastByteResponseTime", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--BackendConnectTime", "aggregation": 4}
+                    ],
+                    "title": "Latência e Tempos de Resposta",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-latency"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 11,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--ResponseStatus", "aggregation": 1}
+                    ],
+                    "title": "Códigos de Resposta HTTP",
+                    "gridFormatType": 1,
+                    "tileSettings": {
+                      "titleContent": {"formatter": 1},
+                      "leftContent": {"formatter": 2, "formatOptions": {"palette": "blue"}},
+                      "rightContent": {"formatter": 1},
+                      "showBorder": false
+                    },
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Subscription", "formatter": 5},
+                        {"columnMatch": "Name", "formatter": 5},
+                        {"columnMatch": "microsoft.network/applicationgateways--ResponseStatus Timeline", "formatter": 5},
+                        {"columnMatch": "microsoft.network/applicationgateways--ResponseStatus", "formatter": 1, "numberFormat": {"unit": 0, "options": {"style": "decimal", "useGrouping": false}}},
+                        {"columnMatch": "Aggregation", "formatter": 5},
+                        {"columnMatch": "Segment", "formatter": 5},
+                        {"columnMatch": "Value", "formatter": 1, "numberFormat": {"unit": 0, "options": {"style": "decimal", "minimumFractionDigits": 0, "maximumFractionDigits": 0}}},
+                        {"columnMatch": "Timeline", "formatter": 9, "formatOptions": {"palette": "multiGreen"}}
+                      ],
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-response-codes"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\"\n| where ResourceId has \"applicationGateways\"\n| project TimeGenerated, host_s, requestUri_s, httpStatus_d, httpMethod_s, userAgent_s, clientIP_s, clientPort_d, serverRouted_s, serverStatus_s, timeTaken_d\n| order by TimeGenerated desc",
+                    "size": 0,
+                    "title": "Logs de Acesso do Application Gateway",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "httpStatus_d", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": ">=", "thresholdValue": "500", "representation": "4", "text": "{0}"},
+                          {"operator": ">=", "thresholdValue": "400", "representation": "warning", "text": "{0}"},
+                          {"operator": ">=", "thresholdValue": "300", "representation": "2", "text": "{0}"},
+                          {"operator": ">=", "thresholdValue": "200", "representation": "success", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "timeTaken_d", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": ">=", "thresholdValue": "1000", "representation": "4", "text": "{0} ms"},
+                          {"operator": ">=", "thresholdValue": "500", "representation": "warning", "text": "{0} ms"},
+                          {"operator": ">=", "thresholdValue": "0", "representation": "success", "text": "{0} ms"}
+                        ]}}
+                      ],
+                      "rowLimit": 100,
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "TimeGenerated", "label": "Data/Hora"},
+                        {"columnId": "host_s", "label": "Host"},
+                        {"columnId": "requestUri_s", "label": "URI"},
+                        {"columnId": "httpStatus_d", "label": "Status HTTP"},
+                        {"columnId": "httpMethod_s", "label": "Método"},
+                        {"columnId": "userAgent_s", "label": "User Agent"},
+                        {"columnId": "clientIP_s", "label": "IP do Cliente"},
+                        {"columnId": "clientPort_d", "label": "Porta do Cliente"},
+                        {"columnId": "serverRouted_s", "label": "Servidor"},
+                        {"columnId": "serverStatus_s", "label": "Status do Backend"},
+                        {"columnId": "timeTaken_d", "label": "Tempo (ms)"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-access-logs"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Os logs de acesso e WAF são visíveis apenas se os diagnósticos do Application Gateway estiverem configurados para enviar logs para o Log Analytics. Se os logs não estiverem aparecendo, verifique a configuração de diagnóstico do recurso.</p>\n</div>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-warning"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">VPN Gateway</b> - KPIs, status, conexões, tunelamento, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
                   "name": "net-vpngw"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">ExpressRoute</b> - KPIs, circuitos, status, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ExpressRoute"},
-                  "name": "net-expressroute"
+                  "content": {"json": "<h2 style=\"color:#003366\">VPN Gateway</h2><p style=\"color:#003366\">Monitoramento e análise de VPN Gateways, incluindo status, conexões, disponibilidade e performance de tunelamento.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-header"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.network/virtualnetworkgateways' and properties.gatewayType =~ 'Vpn' | project id, name, resourceGroup, location, type, skuName = tostring(properties.sku.name), skuTier = tostring(properties.sku.tier), gatewayType = tostring(properties.gatewayType), vpnType = tostring(properties.vpnType), generation = tostring(properties.vpnGatewayGeneration), activeActive = tobool(properties.activeActive), provisioningState = tostring(properties.provisioningState) | extend status = case(provisioningState == 'Succeeded', 'Operational', provisioningState == 'Updating', 'Updating', provisioningState == 'Failed', 'Failed', 'Unknown') | order by name asc",
+                    "size": 0,
+                    "title": "Lista de VPN Gateways",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "skuName", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "skuTier", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "gatewayType", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "vpnType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "RouteBased", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "PolicyBased", "representation": "2", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "activeActive", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Sim"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "2", "text": "Não"}
+                        ]}},
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "3", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "skuName", "label": "SKU"},
+                        {"columnId": "skuTier", "label": "Tier"},
+                        {"columnId": "gatewayType", "label": "Tipo de Gateway"},
+                        {"columnId": "vpnType", "label": "Tipo de VPN"},
+                        {"columnId": "generation", "label": "Geração"},
+                        {"columnId": "activeActive", "label": "Ativo-Ativo"},
+                        {"columnId": "provisioningState", "label": "Estado"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-list"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.network/virtualnetworkgateways' and properties.gatewayType =~ 'Vpn' | mvexpand connection = properties.connections | extend connectionName = tostring(connection.name), connectionId = tostring(connection.id), connectionPropertiesId = tostring(connection.properties.id) | where isnotempty(connectionId) | join kind=leftouter (resources | where type =~ 'microsoft.network/connections' | project connectionId = id, connectionName = name, connectionType = tostring(properties.connectionType), connectionStatus = tostring(properties.connectionStatus), enableBgp = tobool(properties.enableBgp), routingWeight = toint(properties.routingWeight)) on connectionId | project gatewayName = name, connectionName, connectionType, connectionStatus, enableBgp, routingWeight | where isnotempty(connectionName)",
+                    "size": 0,
+                    "title": "Conexões VPN",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "connectionStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Connected", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Connecting", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "NotConnected", "representation": "3", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Unknown", "representation": "1", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "enableBgp", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Habilitado"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "disabled", "text": "Desabilitado"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "gatewayName", "label": "VPN Gateway"},
+                        {"columnId": "connectionName", "label": "Conexão"},
+                        {"columnId": "connectionType", "label": "Tipo"},
+                        {"columnId": "connectionStatus", "label": "Status"},
+                        {"columnId": "enableBgp", "label": "BGP"},
+                        {"columnId": "routingWeight", "label": "Peso de Roteamento"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-connections"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/virtualnetworkgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "VPNGatewayResource",
+                    "resourceIds": ["{VPNGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelIngressBytes", "aggregation": 1},
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelEgressBytes", "aggregation": 1}
+                    ],
+                    "title": "Tráfego de Túneis VPN (Bytes)",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-tunnel-traffic"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/virtualnetworkgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "VPNGatewayResource",
+                    "resourceIds": ["{VPNGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelTotalFlowCount", "aggregation": 1},
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelP2SBandwidth", "aggregation": 1}
+                    ],
+                    "title": "Fluxo de Túneis e Largura de Banda P2S",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-tunnel-flow"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Firewall</b> - KPIs, regras, tráfego bloqueado, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Firewall</b> - KPIs, regras, políticas, tráfego, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
                   "name": "net-fw"
-                },                {
+                },
+                {
                   "type": 1,
-                  "content": {"json": "<h2 style=\"color:#003366\">Network Security Groups (NSGs)</h2><p style=\"color:#003366\">Informações detalhadas sobre Network Security Groups, regras de segurança, associações e fluxos de tráfego.</p>"},
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
-                  "name": "net-nsg-header"
+                  "content": {"json": "<h2 style=\"color:#003366\">Azure Firewall</h2><p style=\"color:#003366\">Monitoramento e análise de Azure Firewalls, incluindo status, regras, políticas e tráfego de rede.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-header"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'microsoft.network/networksecuritygroups'\r\n| extend associatedSubnets = array_length(properties.subnets)\r\n| extend associatedNICs = array_length(properties.networkInterfaces)\r\n| extend inboundRules = array_length(properties.securityRules)\r\n| project name, resourceGroup, location, ['Subnets']=associatedSubnets, ['NICs']=associatedNICs, ['Regras']=inboundRules",
+                    "query": "resources | where type == 'microsoft.network/azurefirewalls' | project id, name, resourceGroup, location, sku = properties.sku.tier, threatIntelMode = tostring(properties.threatIntelMode), zones = array_length(zones), provisioningState = tostring(properties.provisioningState), ipConfigs = array_length(properties.ipConfigurations) | order by name asc",
                     "size": 0,
-                    "title": "Network Security Groups",
+                    "title": "Lista de Azure Firewalls",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
+                    "crossComponentResources": ["{Subscription}"],
                     "visualization": "table",
                     "gridSettings": {
                       "formatters": [
-                        {"columnMatch": "Subnets", "formatter": 3, "formatOptions": {"palette": "blue"}},
-                        {"columnMatch": "NICs", "formatter": 3, "formatOptions": {"palette": "turquoise"}},
-                        {"columnMatch": "Regras", "formatter": 3, "formatOptions": {"palette": "orange"}}
+                        {"columnMatch": "sku", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "threatIntelMode", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Alert", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deny", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Off", "representation": "disabled", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "zones", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": ">=", "thresholdValue": "2", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "1", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "0", "representation": "disabled", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "3", "text": "{0}"}
+                        ]}}
                       ],
-                      "filter": true
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "sku", "label": "SKU"},
+                        {"columnId": "threatIntelMode", "label": "Modo Intel. Ameaças"},
+                        {"columnId": "zones", "label": "Zonas"},
+                        {"columnId": "provisioningState", "label": "Estado"},
+                        {"columnId": "ipConfigs", "label": "IP Configs"}
+                      ]
                     }
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
-                  "name": "net-nsg-list"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-list"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'microsoft.network/networksecuritygroups'\r\n| mv-expand rule=properties.securityRules\r\n| extend nsgName = name\r\n| extend ruleName = rule.name\r\n| extend priority = toint(rule.properties.priority)\r\n| extend direction = rule.properties.direction\r\n| extend access = rule.properties.access\r\n| extend sourcePrefix = rule.properties.sourceAddressPrefix\r\n| extend sourcePort = rule.properties.sourcePortRange\r\n| extend destPrefix = rule.properties.destinationAddressPrefix\r\n| extend destPort = rule.properties.destinationPortRange\r\n| extend protocol = rule.properties.protocol\r\n| project nsgName, ruleName, priority, direction, access, sourcePrefix, sourcePort, destPrefix, destPort, protocol\r\n| sort by nsgName asc, priority asc",
+                    "query": "resources | where type == 'microsoft.network/azurefirewalls' | project id, name, ipConfigs = properties.ipConfigurations | mvexpand ipConfig = ipConfigs | project name, ipConfigName = tostring(ipConfig.name), publicIP = tostring(ipConfig.properties.publicIPAddress.id), subnet = tostring(ipConfig.properties.subnet.id) | extend publicIPName = tostring(split(publicIP, '/')[-1]), subnetName = tostring(split(subnet, '/')[-1]) | project name, ipConfigName, publicIPName, subnetName",
                     "size": 0,
-                    "title": "Regras de NSG",
+                    "title": "Configurações de IP dos Azure Firewalls",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Firewall"},
+                        {"columnId": "ipConfigName", "label": "Nome da Config"},
+                        {"columnId": "publicIPName", "label": "IP Público"},
+                        {"columnId": "subnetName", "label": "Subnet"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-ipconfigs"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--FirewallHealth", "aggregation": 4}
                     ],
-                    "visualization": "table",
+                    "title": "Saúde do Firewall",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "33",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-health"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--DataProcessed", "aggregation": 1}
+                    ],
+                    "title": "Dados Processados",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "33",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-data"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--Throughput", "aggregation": 4}
+                    ],
+                    "title": "Throughput",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "33",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-throughput"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--SNATPortUtilization", "aggregation": 4}
+                    ],
+                    "title": "Utilização de Portas SNAT",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-snatports"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--FirewallConnectionCount", "aggregation": 4}
+                    ],
+                    "title": "Contagem de Conexões",
+                    "gridSettings": {"rowLimit": 10000}
+                  },                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-connections"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallApplicationRule\"\n| where TimeGenerated {timerange}\n| project TimeGenerated, Resource, action_s, ruleName_s, fqdn_s, sourceIP_s, clientIP_s, port_s, targetUrl_s, msg_s\n| order by TimeGenerated desc",
+                    "size": 0,
+                    "title": "Logs de Regras de Aplicação",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
                     "gridSettings": {
                       "formatters": [
-                        {"columnMatch": "priority", "formatter": 0, "numberFormat": {"unit": 0, "options": {"style": "decimal"}}},
-                        {"columnMatch": "direction", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Inbound", "representation": "inbound", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Outbound", "representation": "outbound", "text": "{0}"}
-                        ]}},
-                        {"columnMatch": "access", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                        {"columnMatch": "action_s", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
                           {"operator": "==", "thresholdValue": "Allow", "representation": "success", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "Deny", "representation": "blocked", "text": "{0}"}
+                          {"operator": "==", "thresholdValue": "Deny", "representation": "3", "text": "{0}"}
                         ]}}
                       ],
+                      "rowLimit": 100,
                       "filter": true,
-                      "hierarchySettings": {
-                        "treeType": 1,
-                        "groupBy": ["nsgName"]
-                      },
                       "labelSettings": [
-                        {"columnId": "nsgName", "label": "NSG"},
-                        {"columnId": "ruleName", "label": "Nome da Regra"},
-                        {"columnId": "priority", "label": "Prioridade"},
-                        {"columnId": "direction", "label": "Direção"},
-                        {"columnId": "access", "label": "Acesso"},
-                        {"columnId": "sourcePrefix", "label": "Origem"},
-                        {"columnId": "sourcePort", "label": "Porta Origem"},
-                        {"columnId": "destPrefix", "label": "Destino"},
-                        {"columnId": "destPort", "label": "Porta Destino"},
-                        {"columnId": "protocol", "label": "Protocolo"}
+                        {"columnId": "TimeGenerated", "label": "Data/Hora"},
+                        {"columnId": "Resource", "label": "Recurso"},
+                        {"columnId": "action_s", "label": "Ação"},
+                        {"columnId": "ruleName_s", "label": "Regra"},
+                        {"columnId": "fqdn_s", "label": "FQDN"},
+                        {"columnId": "sourceIP_s", "label": "IP de Origem"},
+                        {"columnId": "clientIP_s", "label": "IP do Cliente"},
+                        {"columnId": "port_s", "label": "Porta"},
+                        {"columnId": "targetUrl_s", "label": "URL de Destino"},
+                        {"columnId": "msg_s", "label": "Mensagem"}
                       ]
                     }
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
-                  "name": "net-nsg-rules"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-app-rules"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureNetworkAnalytics_CL\r\n| where TimeGenerated {timerange}\r\n| where FlowType_s == \"MaliciousFlow\"\r\n| project TimeGenerated, NSGRule_s, NSGList_s, AllowedInFlows_d, DeniedInFlows_d, AllowedOutFlows_d, DeniedOutFlows_d\r\n| summarize Allowed=sum(AllowedInFlows_d + AllowedOutFlows_d), Denied=sum(DeniedInFlows_d + DeniedOutFlows_d) by NSGList_s, NSGRule_s\r\n| order by Denied desc",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallNetworkRule\"\n| where TimeGenerated {timerange}\n| project TimeGenerated, Resource, action_s, ruleName_s, protocol_s, sourceIP_s, sourcePort_s, destinationIP_s, destinationPort_s, msg_s\n| order by TimeGenerated desc",
                     "size": 0,
+                    "title": "Logs de Regras de Rede",
+                    "timeContext": {"durationMs": 86400000},
                     "timeContextFromParameter": "timerange",
-                    "title": "Fluxos Maliciosos por NSG",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": [
-                      "{LogAnalyticsWorkspace}"
-                    ],
-                    "visualization": "table",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
                     "gridSettings": {
                       "formatters": [
-                        {"columnMatch": "Allowed", "formatter": 3, "formatOptions": {"palette": "blue"}},
-                        {"columnMatch": "Denied", "formatter": 3, "formatOptions": {"palette": "red"}}
+                        {"columnMatch": "action_s", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Allow", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deny", "representation": "3", "text": "{0}"}
+                        ]}}
                       ],
-                      "filter": true
+                      "rowLimit": 100,
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "TimeGenerated", "label": "Data/Hora"},
+                        {"columnId": "Resource", "label": "Recurso"},
+                        {"columnId": "action_s", "label": "Ação"},
+                        {"columnId": "ruleName_s", "label": "Regra"},
+                        {"columnId": "protocol_s", "label": "Protocolo"},
+                        {"columnId": "sourceIP_s", "label": "IP de Origem"},
+                        {"columnId": "sourcePort_s", "label": "Porta de Origem"},
+                        {"columnId": "destinationIP_s", "label": "IP de Destino"},
+                        {"columnId": "destinationPort_s", "label": "Porta de Destino"},
+                        {"columnId": "msg_s", "label": "Mensagem"}
+                      ]
                     }
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NSG"},
-                  "name": "net-nsg-malicious-flows"
-                }
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-net-rules"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">ASG</b> - Application Security Groups, associações, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
-                  "name": "net-asg"
+                  "content": {"json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Os logs de acesso e WAF são visíveis apenas se os diagnósticos do Application Gateway estiverem configurados para enviar logs para o Log Analytics. Se os logs não estiverem aparecendo, verifique a configuração de diagnóstico do recurso.</p>\n</div>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-warning"
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, endpoints, status, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, perfis, endpoints, disponibilidade, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
-                  "name": "net-trafficmanager"
+                  "name": "net-tm"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As cores e ícones representam o status dos recursos de rede conforme padrão do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Saudável/operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção/alerta</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico/erro</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível/desconhecido</li></ul>Para mais informações, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-                  "name": "legenda-networking"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Networking Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "AppOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🖥️ App Service", "subTarget": "AppService", "style": "link", "icon": "WebApp"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "⚡ Functions", "subTarget": "Functions", "style": "link", "icon": "LightningBolt"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🔗 Logic Apps", "subTarget": "LogicApps", "style": "link", "icon": "LogicApp"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🔌 API Management", "subTarget": "APIManagement", "style": "link", "icon": "ApiManagement"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "📦 Container Apps", "subTarget": "ContainerApps", "style": "link", "icon": "ContainerApps"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🌀 App Gateway", "subTarget": "AppGateway", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "☸️ AKS", "subTarget": "AKS", "style": "link", "icon": "Kubernetes"},
-                      {"cellValue": "SubTabApp", "linkTarget": "parameter", "linkLabel": "🔴 ARO", "subTarget": "ARO", "style": "link", "icon": "OpenShift"}
-                    ]
-                  },
-                  "name": "submenu-apps"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Apps</h2><p style=\"color:#003366\">Visão detalhada de aplicações. Selecione um submenu acima.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppOverview"},
-                  "name": "apps-overview"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<h2 style=\"color:#003366\">App Service</h2><p style=\"color:#003366\">Monitoramento detalhado de aplicativos web no Azure App Service, incluindo disponibilidade, desempenho, solicitações e erros.</p>"},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
-                  "name": "apps-appservice-header"
+                  "content": {"json": "<h2 style=\"color:#003366\">Traffic Manager</h2><p style=\"color:#003366\">Monitoramento e análise de Traffic Manager, incluindo status, endpoints, disponibilidade e performance.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-header"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'microsoft.web/sites'\r\n| extend state = properties.state\r\n| extend hostingPlan = properties.serverFarmId\r\n| extend kind = kind\r\n| project name, resourceGroup, location, state, kind, hostingPlan",
+                    "query": "resources | where type == 'microsoft.network/trafficmanagerprofiles' | project id, name, resourceGroup, location, monitorStatus = tostring(properties.monitoringStatus), profileStatus = tostring(properties.profileStatus), dnsttl = toint(properties.dnsConfig.ttl), routingMethod = tostring(properties.trafficRoutingMethod), monitorProtocol = tostring(properties.monitorConfig.protocol), monitorPort = toint(properties.monitorConfig.port), monitorPath = tostring(properties.monitorConfig.path), endpointCount = array_length(properties.endpoints) | extend status = case(profileStatus == 'Enabled' && monitorStatus == 'Online', 'Healthy', profileStatus == 'Enabled' && monitorStatus == 'Degraded', 'Degraded', profileStatus == 'Enabled' && monitorStatus == 'CheckingEndpoint', 'Checking', profileStatus == 'Disabled', 'Disabled', 'Unknown') | order by name asc",
                     "size": 0,
-                    "title": "App Services",
+                    "title": "Lista de Traffic Manager Profiles",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
+                    "crossComponentResources": ["{Subscription}"],
                     "visualization": "table",
                     "gridSettings": {
                       "formatters": [
-                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Running", "representation": "success", "text": "Executando"},
-                          {"operator": "==", "thresholdValue": "Stopped", "representation": "stopped", "text": "Parado"},
-                          {"operator": "Default", "representation": "unknown", "text": "{0}"}
+                        {"columnMatch": "monitorStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "CheckingEndpoint", "representation": "pending", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Inactive", "representation": "stopped", "text": "{0}"}
                         ]}},
-                        {"columnMatch": "kind", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "contains", "thresholdValue": "app", "representation": "WebApp", "text": "Web App"},
-                          {"operator": "contains", "thresholdValue": "api", "representation": "Api", "text": "API App"},
-                          {"operator": "contains", "thresholdValue": "function", "representation": "Function", "text": "Function App"},
-                          {"operator": "Default", "representation": "WebApp", "text": "{0}"}
+                        {"columnMatch": "profileStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Enabled", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Disabled", "representation": "disabled", "text": "{0}"}
                         ]}},
-                        {"columnMatch": "hostingPlan", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
-                  "name": "apps-appservice-list"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook1efa2216-beb5-4ea7-b268-0fb09b601c31",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.web/sites",
-                    "metricScope": 0,
-                    "resourceIds": [
-                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Web/sites/*"
-                    ],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {
-                      "durationMs": 86400000
-                    },
-                    "metrics": [
-                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Requests", "aggregation": 1, "splitBy": null},
-                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Http5xx", "aggregation": 1, "splitBy": null},
-                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--Http4xx", "aggregation": 1, "splitBy": null}
-                    ],
-                    "title": "Requisições e Erros",
-                    "gridSettings": {
-                      "rowLimit": 10000
-                    },
-                    "filters": [
-                      {
-                        "id": "1",
-                        "key": "Microsoft.ResourceGroup",
-                        "operator": 0,
-                        "values": [
-                          "{ResourceGroup}"
-                        ]
-                      }
-                    ]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
-                  "name": "apps-appservice-requests-errors"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook5c7a8ffe-9838-4dca-bcca-3d0b5f25eba0",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.web/sites",
-                    "metricScope": 0,
-                    "resourceIds": [
-                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Web/sites/*"
-                    ],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {
-                      "durationMs": 86400000
-                    },
-                    "metrics": [
-                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--AverageResponseTime", "aggregation": 4, "splitBy": null},
-                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--CpuTime", "aggregation": 1, "splitBy": null}
-                    ],
-                    "title": "Tempo de Resposta e CPU",
-                    "gridSettings": {
-                      "rowLimit": 10000
-                    },
-                    "filters": [
-                      {
-                        "id": "1",
-                        "key": "Microsoft.ResourceGroup",
-                        "operator": 0,
-                        "values": [
-                          "{ResourceGroup}"
-                        ]
-                      }
-                    ]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
-                  "name": "apps-appservice-response-cpu"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook574ac5d7-a44d-402d-9070-f517b8e84296",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.web/sites",
-                    "metricScope": 0,
-                    "resourceIds": [
-                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Web/sites/*"
-                    ],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {
-                      "durationMs": 86400000
-                    },
-                    "metrics": [
-                      {"namespace": "microsoft.web/sites", "metric": "microsoft.web/sites--MemoryWorkingSet", "aggregation": 4, "splitBy": null}
-                    ],
-                    "title": "Uso de Memória",
-                    "gridSettings": {
-                      "rowLimit": 10000
-                    },
-                    "filters": [
-                      {
-                        "id": "1",
-                        "key": "Microsoft.ResourceGroup",
-                        "operator": 0,
-                        "values": [
-                          "{ResourceGroup}"
-                        ]
-                      }
-                    ]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppService"},
-                  "name": "apps-appservice-memory"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Functions</b> - Execuções, falhas, cold start, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "Functions"},
-                  "name": "apps-functions"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Logic Apps</b> - Execuções, falhas, integrações, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "LogicApps"},
-                  "name": "apps-logicapps"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">API Management</b> - APIs, gateways, políticas, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "APIManagement"},
-                  "name": "apps-apimanagement"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Container Apps</b> - Containers, pods, escalabilidade, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "ContainerApps"},
-                  "name": "apps-containerapps"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">App Gateway</b> - Listeners, regras, performance, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AppGateway"},
-                  "name": "apps-appgateway"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">AKS</b> - Clusters, nodes, pods, escalabilidade, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "AKS"},
-                  "name": "apps-aks"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">ARO</b> - OpenShift clusters, nodes, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabApp", "comparison": "isEqualTo", "value": "ARO"},
-                  "name": "apps-aro"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>Os gráficos e tabelas de aplicações seguem a semântica oficial do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Saudável</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Métricas como execuções, falhas e disponibilidade são calculadas conforme <a href='https://learn.microsoft.com/azure/azure-monitor/app/metrics' target='_blank'>documentação oficial</a>.</div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Apps"},
-                  "name": "legenda-apps"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Apps"},
-            "name": "Apps Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "DataOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🗄️ SQL Database", "subTarget": "SQLDB", "style": "link", "icon": "Database"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🪐 Cosmos DB", "subTarget": "CosmosDB", "style": "link", "icon": "CosmosDb"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "💾 Storage Account", "subTarget": "Storage", "style": "link", "icon": "StorageAccount"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🌊 Data Lake", "subTarget": "DataLake", "style": "link", "icon": "DataLake"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🔷 Synapse", "subTarget": "Synapse", "style": "link", "icon": "Synapse"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "📡 Event Hubs", "subTarget": "EventHubs", "style": "link", "icon": "EventHub"},
-                      {"cellValue": "SubTabData", "linkTarget": "parameter", "linkLabel": "🧠 Redis", "subTarget": "Redis", "style": "link", "icon": "Redis"}
-                    ]
-                  },
-                  "name": "submenu-data"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Dados</h2><p style=\"color:#003366\">KPIs e status de bancos, storage, analytics, etc. Selecione um submenu acima.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "DataOverview"},
-                  "name": "data-overview"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<h2 style=\"color:#003366\">SQL Database</h2><p style=\"color:#003366\">Monitoramento de bancos de dados SQL no Azure, incluindo consumo de DTU/vCore, desempenho, conexões e consultas.</p>"},
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
-                  "name": "data-sqldb-header"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'microsoft.sql/servers/databases'\r\n| where name != 'master'\r\n| extend server = extract(\"(.*)/databases/.*\", 1, id)\r\n| extend serverName = extract(\"servers/(.*)\", 1, server)\r\n| extend serverFQDN = strcat(serverName, \".database.windows.net\")\r\n| extend sku = tostring(sku.name)\r\n| extend tier = tostring(sku.tier)\r\n| extend maxSize = properties.maxSizeBytes/1024/1024/1024\r\n| project name, serverName, serverFQDN, tier, sku, ['Max Size (GB)']=maxSize, status=properties.status",
-                    "size": 0,
-                    "title": "SQL Databases",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "tier", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Premium", "representation": "success", "text": "Premium"},
-                          {"operator": "==", "thresholdValue": "Standard", "representation": "info", "text": "Standard"},
-                          {"operator": "==", "thresholdValue": "Basic", "representation": "Normal", "text": "Basic"},
-                          {"operator": "Default", "representation": "info", "text": "{0}"}
-                        ]}},
-                        {"columnMatch": "Max Size (GB)", "formatter": 0, "numberFormat": {"unit": 38, "options": {"style": "decimal", "minimumFractionDigits": 0, "maximumFractionDigits": 0}}},
-                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "Online"},
-                          {"operator": "!=", "thresholdValue": "Online", "representation": "critical", "text": "{0}"}
-                        ]}}
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
-                  "name": "data-sqldb-list"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook4d7f79ca-99d5-4ee1-a9d9-812d835a0248",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.sql/servers/databases",
-                    "metricScope": 0,
-                    "resourceIds": [
-                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Sql/servers/*/databases/*"
-                    ],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {
-                      "durationMs": 86400000
-                    },
-                    "metrics": [
-                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--dtu_consumption_percent", "aggregation": 4},
-                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--cpu_percent", "aggregation": 4}
-                    ],
-                    "title": "Consumo de DTU/CPU",
-                    "filters": [
-                      {
-                        "id": "1",
-                        "key": "Microsoft.ResourceGroup",
-                        "operator": 0,
-                        "values": [
-                          "{ResourceGroup}"
-                        ]
-                      }
-                    ]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
-                  "name": "data-sqldb-dtu-cpu"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook6f38803a-ceda-4092-b09e-fd91af42d880",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.sql/servers/databases",
-                    "metricScope": 0,
-                    "resourceIds": [
-                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Sql/servers/*/databases/*"
-                    ],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {
-                      "durationMs": 86400000
-                    },
-                    "metrics": [
-                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--connection_successful", "aggregation": 1},
-                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--connection_failed", "aggregation": 1}
-                    ],
-                    "title": "Conexões (Bem-sucedidas vs Falhas)",
-                    "filters": [
-                      {
-                        "id": "1",
-                        "key": "Microsoft.ResourceGroup",
-                        "operator": 0,
-                        "values": [
-                          "{ResourceGroup}"
-                        ]
-                      }
-                    ]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
-                  "name": "data-sqldb-connections"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbookcc9a292e-1965-4038-aa12-8d712a42469d",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.sql/servers/databases",
-                    "metricScope": 0,
-                    "resourceIds": [
-                      "{Subscription}/resourceGroups/{ResourceGroup}/providers/Microsoft.Sql/servers/*/databases/*"
-                    ],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {
-                      "durationMs": 86400000
-                    },
-                    "metrics": [
-                      {"namespace": "microsoft.sql/servers/databases", "metric": "microsoft.sql/servers/databases--storage_percent", "aggregation": 4}
-                    ],
-                    "title": "Uso de Armazenamento (%)",
-                    "filters": [
-                      {
-                        "id": "1",
-                        "key": "Microsoft.ResourceGroup",
-                        "operator": 0,
-                        "values": [
-                          "{ResourceGroup}"
-                        ]
-                      }
-                    ]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "SQLDB"},
-                  "name": "data-sqldb-storage"
-                }
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Cosmos DB</b> - Throughput, RU/s, latência, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "CosmosDB"},
-                  "name": "data-cosmosdb"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Storage Account</b> - KPIs, blobs, filas, tabelas, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Storage"},
-                  "name": "data-storage"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Data Lake</b> - KPIs, ingestão, consultas, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "DataLake"},
-                  "name": "data-datalake"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Synapse</b> - Pipelines, pools, performance, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Synapse"},
-                  "name": "data-synapse"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Event Hubs</b> - Eventos, throughput, latência, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "EventHubs"},
-                  "name": "data-eventhubs"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Redis</b> - KPIs, cache hits, performance, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabData", "comparison": "isEqualTo", "value": "Redis"},
-                  "name": "data-redis"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de dados apresentam métricas oficiais do Azure Monitor e Resource Graph. Cores e status:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Distribuições e KPIs seguem <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Data"},
-                  "name": "legenda-dados"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Data"},
-            "name": "Data Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "SecOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "👤 Entra ID", "subTarget": "EntraID", "style": "link", "icon": "Person"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🔐 Secure Score", "subTarget": "SecureScore", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "💡 Recomendações", "subTarget": "Recommendations", "style": "link", "icon": "Recommendation"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🚨 Alertas", "subTarget": "Alerts", "style": "link", "icon": "Alert"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "📜 Políticas", "subTarget": "Policies", "style": "link", "icon": "Policy"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "📋 Azure Policy", "subTarget": "AzurePolicy", "style": "link", "icon": "Policy"},
-                      {"cellValue": "SubTabSec", "linkTarget": "parameter", "linkLabel": "🛡️ Defender", "subTarget": "Defender", "style": "link", "icon": "Defender"}
-                    ]
-                  },
-                  "name": "submenu-security"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Segurança</h2><p style=\"color:#003366\">KPIs, alertas, recomendações, Secure Score, etc. Selecione um submenu acima.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecOverview"},
-                  "name": "security-overview"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<h2 style=\"color:#003366\">Secure Score</h2><p style=\"color:#003366\">Análise detalhada da postura de segurança com Microsoft Defender for Cloud Secure Score, recomendações de segurança e comparativos.</p>"},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
-                  "name": "security-securescore-header"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "securityresources\r\n| where type == \"microsoft.security/securescores\"\r\n| extend SecureScore = properties.score.current, MaxScore = properties.score.max\r\n| project subscriptionId, SecureScore, MaxScore, SecureScorePercentage = SecureScore*100/MaxScore",
-                    "size": 4,
-                    "title": "Secure Score por Assinatura",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "visualization": "tiles",
-                    "tileSettings": {
-                      "titleContent": {
-                        "columnMatch": "subscriptionId",
-                        "formatter": 1,
-                        "formatOptions": {
-                          "showIcon": true
-                        }
-                      },
-                      "leftContent": {
-                        "columnMatch": "SecureScorePercentage",
-                        "formatter": 12,
-                        "formatOptions": {
-                          "palette": "greenRed"
-                        },
-                        "numberFormat": {
-                          "unit": 1,
-                          "options": {
-                            "style": "decimal",
-                            "maximumFractionDigits": 1
-                          }
-                        }
-                      },
-                      "secondaryContent": {
-                        "columnMatch": "SecureScore",
-                        "formatter": 1,
-                        "formatOptions": {
-                          "showIcon": true
-                        },
-                        "numberFormat": {
-                          "unit": 0,
-                          "options": {
-                            "style": "decimal",
-                            "maximumFractionDigits": 1
-                          }
-                        }
-                      },
-                      "showBorder": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
-                  "name": "security-securescore-subscriptions"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "securityresources\r\n| where type == \"microsoft.security/securescores/securescorecontrols\"\r\n| extend controlName = properties.displayName, controlCategory = properties.securityControlCategory\r\n| extend healthyResources = properties.healthyResourceCount, unhealthyResources = properties.unhealthyResourceCount, notApplicableResources = properties.notApplicableResourceCount\r\n| extend controlScore = properties.score.current, controlMaxScore = properties.score.max\r\n| project controlName, controlCategory, healthyResources, unhealthyResources, notApplicableResources, controlScore, controlMaxScore, controlScorePercent = controlScore * 100.0 / controlMaxScore\r\n| order by controlScorePercent asc",
-                    "size": 0,
-                    "title": "Controles de Segurança",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "healthyResources", "formatter": 8, "formatOptions": {"palette": "green"}},
-                        {"columnMatch": "unhealthyResources", "formatter": 8, "formatOptions": {"palette": "red"}},
-                        {"columnMatch": "controlScorePercent", "formatter": 8, "formatOptions": {"palette": "greenRed", "customColumnWidthSetting": "150px"}, "numberFormat": {"unit": 1, "options": {"style": "decimal", "maximumFractionDigits": 1}}}
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
-                  "name": "security-securescore-controls"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "securityresources\r\n| where type == \"microsoft.security/assessments\"\r\n| extend resourceId = properties.resourceDetails.id\r\n| extend resourceType = properties.resourceDetails.source\r\n| extend status = properties.status.code\r\n| extend cause = properties.status.cause\r\n| extend severity = properties.metadata.severity\r\n| extend description = properties.metadata.description\r\n| extend displayName = properties.displayName\r\n| extend remediationSteps = properties.metadata.remediationDescription\r\n| where status != \"NotApplicable\"\r\n| project displayName, severity, status, cause, resourceType, resourceId, remediationSteps\r\n| sort by severity asc, status asc",
-                    "size": 0,
-                    "title": "Recomendações de Segurança",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": [
-                      "{Subscription}"
-                    ],
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "severity", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "High", "representation": "4", "text": "Alta"},
-                          {"operator": "==", "thresholdValue": "Medium", "representation": "2", "text": "Média"},
-                          {"operator": "==", "thresholdValue": "Low", "representation": "1", "text": "Baixa"}
-                        ]}},
-                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "Healthy", "representation": "success", "text": "Saudável"},
-                          {"operator": "==", "thresholdValue": "Unhealthy", "representation": "critical", "text": "Não Saudável"}
-                        ]}},
-                        {"columnMatch": "resourceId", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}},
-                        {"columnMatch": "remediationSteps", "formatter": 7, "formatOptions": {"linkTarget": "CellDetails", "linkLabel": "Mostrar Passos"}},
-                        {"columnMatch": "resourceType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "contains", "thresholdValue": "virtualMachines", "representation": "Virtual machine", "text": "{0}"},
-                          {"operator": "contains", "thresholdValue": "storage", "representation": "Storage", "text": "{0}"},
-                          {"operator": "contains", "thresholdValue": "sql", "representation": "Database", "text": "{0}"}
+                        {"columnMatch": "routingMethod", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Performance", "representation": "1", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Priority", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Weighted", "representation": "3", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Geographic", "representation": "4", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "MultiValue", "representation": "5", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Subnet", "representation": "6", "text": "{0}"}
                         ]}}
                       ],
                       "filter": true,
                       "labelSettings": [
-                        {"columnId": "displayName", "label": "Recomendação"},
-                        {"columnId": "severity", "label": "Severidade"},
-                        {"columnId": "status", "label": "Status"},
-                        {"columnId": "cause", "label": "Causa"},
-                        {"columnId": "resourceType", "label": "Tipo de Recurso"},
-                        {"columnId": "resourceId", "label": "Recurso"},
-                        {"columnId": "remediationSteps", "label": "Remediação"}
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "monitorStatus", "label": "Status do Monitor"},
+                        {"columnId": "profileStatus", "label": "Status do Perfil"},
+                        {"columnId": "dnsttl", "label": "DNS TTL"},
+                        {"columnId": "routingMethod", "label": "Método de Roteamento"},
+                        {"columnId": "monitorProtocol", "label": "Protocolo Monitor"},
+                        {"columnId": "monitorPort", "label": "Porta Monitor"},
+                        {"columnId": "monitorPath", "label": "Caminho Monitor"},
+                        {"columnId": "endpointCount", "label": "Qtd. Endpoints"}
                       ]
                     }
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "SecureScore"},
-                  "name": "security-securescore-recommendations"
-                }
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Recomendações</b> - Ações sugeridas, impacto, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Recommendations"},
-                  "name": "security-recommendations"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Alertas</b> - Incidentes, severidade, status, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Alerts"},
-                  "name": "security-alerts"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Políticas</b> - Compliance, regras, auditoria, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Policies"},
-                  "name": "security-policies"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Defender</b> - Proteção, status, ameaças, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Defender"},
-                  "name": "security-defender"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Identidade</b> - Usuários, grupos, MFA, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "Identity"},
-                  "name": "security-identity"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Entra ID</b> - Usuários, grupos, MFA, auditoria, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "EntraID"},
-                  "name": "security-entraid"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Azure Policy</b> - Compliance, regras, auditoria, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabSec", "comparison": "isEqualTo", "value": "AzurePolicy"},
-                  "name": "security-azurepolicy"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>Os indicadores de segurança seguem a semântica do Azure Security Center e Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Saudável/compliance</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção/ação recomendada</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico/não compliance</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Para detalhes sobre Secure Score, recomendações e alertas, consulte a <a href='https://learn.microsoft.com/azure/defender-for-cloud/secure-score-security-controls' target='_blank'>documentação oficial</a>.</div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Security"},
-                  "name": "legenda-seguranca"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Security"},
-            "name": "Security Futurist"
-          },          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "AIOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "💭 Azure OpenAI", "subTarget": "OpenAI", "style": "link", "icon": "AIServices"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🔍 AI Search", "subTarget": "AISearch", "style": "link", "icon": "Search"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "⚙️ ML Services", "subTarget": "MLServices", "style": "link", "icon": "MachineLearning"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🔊 Serviços de Voz", "subTarget": "Speech", "style": "link", "icon": "SpeechService"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🖼️ Serviços de Visão", "subTarget": "Vision", "style": "link", "icon": "ComputerVision"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "📊 Azure Foundry", "subTarget": "Foundry", "style": "link", "icon": "DataFactory"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🤖 Serviços Cognitivos", "subTarget": "CognitiveServices", "style": "link", "icon": "CognitiveServices"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "📈 AI Studio", "subTarget": "AIStudio", "style": "link", "icon": "AIStudio"},
-                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "💰 Custo & Consumo", "subTarget": "AICost", "style": "link", "icon": "CostAnalysis"}
-                    ]
-                  },
-                  "name": "submenu-ai"
-                },                {
-                  "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">IA & Machine Learning</h2><p style=\"color:#003366\">Visão centralizada dos serviços de IA do Azure, incluindo métricas de uso, performance, disponibilidade e custo.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
-                  "name": "ai-overview"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-profiles"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize Total=count(), OpenAI=countif(kind =~ 'OpenAI'), CognitiveServices=countif(kind != 'OpenAI'), FreeOrTrial=countif(sku.name =~ 'F' or properties.customSubDomainName endswith 'trial') | project Total, OpenAI, CognitiveServices, FreeOrTrial",
+                    "query": "resources | where type == 'microsoft.network/trafficmanagerendpoints' | project id, name, resourceGroup, location, endpointStatus = tostring(properties.endpointStatus), weight = toint(properties.weight), priority = toint(properties.priority), endpointType = tostring(properties.endpointType), hostName = tostring(properties.hostName), targetResourceId = tostring(properties.targetResourceId) | extend status = case(endpointStatus == 'Online', 'Saudável', endpointStatus == 'Degraded', 'Degradado', endpointStatus == 'Offline', 'Indisponível', 'Desconhecido') | order by name asc",
                     "size": 0,
-                    "title": "Serviços de IA",
+                    "title": "Lista de Endpoints do Traffic Manager",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "tiles",
-                    "tileSettings": {
-                      "titleContent": {"columnMatch": "Total", "formatter": 1, "formatOptions": {"showIcon": true}},
-                      "leftContent": {"columnMatch": "OpenAI", "formatter": 12, "formatOptions": {"palette": "blue"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
-                      "rightContent": {"columnMatch": "FreeOrTrial", "formatter": 12, "formatOptions": {"palette": "orange"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
-                      "secondaryContent": {"columnMatch": "CognitiveServices", "formatter": 12, "formatOptions": {"palette": "purple"}, "numberFormat": {"unit": 17, "options": {"style": "decimal", "useGrouping": true}}},
-                      "showBorder": true
-                    },
-                    "gridSettings": {"sortBy": [{"itemKey": "$gen_heatmap_Total_0", "sortOrder": 2}]},
-                    "mapSettings": {"locInfo": "LatLong"}
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
-                  "name": "ai-services-kpi"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize count() by kind, location | order by kind asc",
-                    "size": 1,
-                    "title": "Serviços de IA por Tipo e Região",
-                    "visualization": "table",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "count_", "formatter": 8, "formatOptions": {"palette": "blue"}},
-                        {"columnMatch": "kind", "formatter": 5}
-                      ]
-                    },
-                    "tileSettings": {"showBorder": false},
-                    "textSettings": {"style": "bignumber"},
-                    "chartSettings": {"createOtherGroup": null, "showLegend": true}
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
-                  "name": "ai-resources-overview"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | where properties.apiProperties.openaiApiType =~ 'OpenAI' | summarize count() by name, sku.name, location, tostring(tags) | project ['Modelo']=name, ['SKU']=sku_name, ['Região']=location, ['Tags']=tags",
-                    "size": 1,
-                    "title": "Implementações do Azure OpenAI",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
                     "visualization": "table",
                     "gridSettings": {
                       "formatters": [
-                        {"columnMatch": "SKU", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "S0", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S1", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S2", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S3", "representation": "success", "text": "Standard"}, {"operator": "==", "thresholdValue": "S4", "representation": "success", "text": "Standard"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } }
+                        {"columnMatch": "endpointStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Offline", "representation": "failed", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "endpointType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "2", "text": "{0}"}
+                        ]}}
                       ],
                       "filter": true,
-                      "sortBy": [
-                        {"itemKey": "Modelo", "sortOrder": 2}
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "endpointStatus", "label": "Status do Endpoint"},
+                        {"columnId": "weight", "label": "Peso"},
+                        {"columnId": "priority", "label": "Prioridade"},
+                        {"columnId": "endpointType", "label": "Tipo de Endpoint"},
+                        {"columnId": "hostName", "label": "Host Name"},
+                        {"columnId": "targetResourceId", "label": "ID do Recurso Alvo"}
                       ]
                     }
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
-                  "name": "openai-deployments"
-                },                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "union withsource=MetricSource \r\nAzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" or Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| project TimeGenerated, OperationName, ResultType, StatusCode, RequestUri, ResourceId\r\n| summarize RequestCount=count() by bin(TimeGenerated, 1h), OperationName, ResultType",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Requisições OpenAI por Hora",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": [
-                      "{LogAnalyticsWorkspace}"
-                    ],
-                    "visualization": "areachart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["RequestCount"],
-                      "seriesLabelSettings": [{"seriesName": "Completions", "color": "#0078D4"}, {"seriesName": "Embeddings", "color": "#00BCF2"}, {"seriesName": "ChatCompletions", "color": "#2BC400"}]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
-                  "name": "openai-requests-per-hour"
-                },                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" or Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| where ResultType != \"Succeeded\" or StatusCode !between (200 .. 299)\r\n| summarize count() by ResultType, StatusCode, bin(TimeGenerated, 1h)\r\n| render timechart",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Erros em Requisições OpenAI",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": [
-                      "{LogAnalyticsWorkspace}"
-                    ],
-                    "visualization": "linechart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["count_"],
-                      "seriesLabelSettings": [{"seriesName": "429", "label": "429 - Throttling", "color": "#FDD663"}, {"seriesName": "500", "label": "500 - Internal Error", "color": "#FF5F5F"}, {"seriesName": "400", "label": "400 - Bad Request", "color": "#FF8C00"}]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
-                  "name": "openai-request-errors"
-                },                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| summarize Requests=count(), SuccessRate=round(100.0 * countif(ResultType == \"Succeeded\") / count(), 2) by Model=RequestUri\r\n| order by Requests desc",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Taxa de Sucesso por Modelo",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": [
-                      "{LogAnalyticsWorkspace}"
-                    ],
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "Requests", "formatter": 8, "formatOptions": {"palette": "blue"}},
-                        {"columnMatch": "SuccessRate", "formatter": 8, "formatOptions": {"palette": "greenRed"}, "numberFormat": {"unit": 1, "options": {"style": "decimal", "useGrouping": true, "minimumFractionDigits": 2, "maximumFractionDigits": 2}}}
-                      ],
-                      "filter": true
-                    },
-                    "sortBy": [],
-                    "tileSettings": {"showBorder": false}
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
-                  "name": "openai-success-rate"
-                },                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| where ResultType == \"Succeeded\"\r\n| extend ResponseTime = ResponseTimeMs\r\n| summarize MedianResponseTime=percentile(ResponseTime, 50), P90ResponseTime=percentile(ResponseTime, 90), P99ResponseTime=percentile(ResponseTime, 99) by bin(TimeGenerated, 15m)",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Tempo de Resposta do OpenAI (ms)",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": [
-                      "{LogAnalyticsWorkspace}"
-                    ],
-                    "visualization": "linechart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["MedianResponseTime", "P90ResponseTime", "P99ResponseTime"],
-                      "seriesLabelSettings": [
-                        {"seriesName": "MedianResponseTime", "label": "Mediana", "color": "#00BCF2"}, 
-                        {"seriesName": "P90ResponseTime", "label": "Percentil 90", "color": "#FDD663"}, 
-                        {"seriesName": "P99ResponseTime", "label": "Percentil 99", "color": "#FF5F5F"}
-                      ]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
-                  "name": "openai-response-time"
-                },                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend ModelName = extract(@\"/deployments/([^/]+)\", 1, RequestUri)\r\n| summarize RequestCount=count(), AverageTokens=avg(CompletionTokens + PromptTokens) by ModelName, bin(TimeGenerated, 1h)\r\n| order by TimeGenerated asc",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Uso de Tokens por Modelo",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": [
-                      "{LogAnalyticsWorkspace}"
-                    ],
-                    "visualization": "areachart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["AverageTokens"],
-                      "seriesLabelSettings": [
-                        {"seriesName": "gpt-4", "color": "#5F9BFC"}, 
-                        {"seriesName": "gpt-4o", "color": "#33FF99"}, 
-                        {"seriesName": "gpt-35-turbo", "color": "#FFC666"}, 
-                        {"seriesName": "gpt-4o-mini", "color": "#79EB79"}
-                      ]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
-                  "name": "openai-token-usage"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-endpoints"
                 },
                 {
                   "type": 10,
                   "content": {
-                    "chartId": "workbook046080c4-1dea-4059-83c0-5527a9a4cfa0",
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
                     "version": "MetricsItem/2.0",
                     "size": 0,
                     "chartType": 2,
-                    "resourceType": "microsoft.cognitiveservices/accounts",
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
                     "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
                     "timeContextFromParameter": "timerange",
                     "timeContext": {"durationMs": 86400000},
                     "metrics": [
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SuccessfulCalls", "aggregation": 1, "splitBy": null},
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--TotalErrors", "aggregation": 1, "splitBy": null}
+                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--QpsByEndpoint", "aggregation": 1}
                     ],
-                    "title": "Chamadas bem-sucedidas vs. Erros",
-                    "gridSettings": {"rowLimit": 10000},
-                    "showOpenInMeExperience": true,
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                    "title": "QPS por Endpoint"
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
-                  "name": "openai-calls-vs-errors"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Azure AI Search</b> - Métricas sobre índices, documentos, consultas e latência."},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
-                  "name": "ai-search"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-qps"
                 },
                 {
                   "type": 10,
                   "content": {
-                    "chartId": "workbooka2daf5d8-1a2c-4d9a-8542-b0c77940a9cc",
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
                     "version": "MetricsItem/2.0",
                     "size": 0,
                     "chartType": 2,
-                    "resourceType": "microsoft.search/searchservices",
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
                     "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.search/searchservices/*"],
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
                     "timeContextFromParameter": "timerange",
                     "timeContext": {"durationMs": 86400000},
                     "metrics": [
-                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--SearchQueriesPerSecond", "aggregation": 4},
-                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--QueryLatency", "aggregation": 4},
-                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--ThrottledSearchQueriesPercentage", "aggregation": 4}
+                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--EndpointStatusByEndpoint", "aggregation": 3}
                     ],
-                    "title": "Consultas e Latência (AI Search)",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                    "title": "Status dos Endpoints",
+                    "gridSettings": {"rowLimit": 10000}
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
-                  "name": "ai-search-queries-metrics"
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-endpoint-status"
                 },
                 {
                   "type": 10,
                   "content": {
-                    "chartId": "workbook53e4f8d1-f685-4c0a-8769-35a99197523a",
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
                     "version": "MetricsItem/2.0",
                     "size": 0,
                     "chartType": 2,
-                    "resourceType": "microsoft.search/searchservices",
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
                     "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.search/searchservices/*"],
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
                     "timeContextFromParameter": "timerange",
                     "timeContext": {"durationMs": 86400000},
                     "metrics": [
-                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--SearchLatency", "aggregation": 4},
-                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--IndexLatency", "aggregation": 4}
+                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--ProbeAgentCurrentEndpointStateByEndpoint", "aggregation": 3}
                     ],
-                    "title": "Latência (AI Search)",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
+                    "title": "Estado Atual dos Probe Agents",
+                    "gridSettings": {"rowLimit": 10000}
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
-                  "name": "ai-search-latency-metrics"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbooka2c41dc2-3fdb-41bc-8385-a88a6b8d4805",
-                    "version": "MetricsItem/2.0",
-                    "size": 1,
-                    "chartType": 3,
-                    "resourceType": "microsoft.search/searchservices",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.search/searchservices/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.search/searchservices", "metric": "microsoft.search/searchservices--DocumentCount", "aggregation": 1, "splitBy": null}
-                    ],
-                    "title": "Contagem de Documentos (AI Search)",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
-                  "name": "ai-search-document-count"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.search/searchservices' | project name, sku=sku.name, location, status=properties.status | order by name asc",
-                    "size": 0,
-                    "title": "Azure AI Search Services",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "sku", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "free", "representation": "info", "text": "Free"}, {"operator": "contains", "thresholdValue": "basic", "representation": "info", "text": "Basic"}, {"operator": "contains", "thresholdValue": "standard", "representation": "success", "text": "Standard"}, {"operator": "contains", "thresholdValue": "storage_optimized", "representation": "success", "text": "Storage Optimized"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } },
-                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "running", "representation": "success", "text": "Running"}, {"operator": "Default", "representation": "warning", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AISearch"},
-                  "name": "ai-search-services"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">ML Services</b> - Workspaces, modelos, pipelines, métricas de execução, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
-                  "name": "ai-ml-services"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook9bd1fe37-8734-4d07-a61e-7edb8d4f833c",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.machinelearningservices/workspaces",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.machinelearningservices/workspaces/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--ModelRegisterSucceeded", "aggregation": 1},
-                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--ModelRegisterFailed", "aggregation": 1}
-                    ],
-                    "title": "Registro de Modelos",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
-                  "name": "ml-model-registration"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook9c855ae2-8104-4aed-9a2c-5d08f7add3bf",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.machinelearningservices/workspaces",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.machinelearningservices/workspaces/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--RunSucceeded", "aggregation": 1},
-                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--RunFailed", "aggregation": 1},
-                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--RunCanceled", "aggregation": 1}
-                    ],
-                    "title": "Status de Execução",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
-                  "name": "ml-run-status"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook2f3764fa-166e-4d1f-83b9-8146a4f0f85b",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.machinelearningservices/workspaces",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.machinelearningservices/workspaces/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--DeploymentSucceeded", "aggregation": 1},
-                      {"namespace": "microsoft.machinelearningservices/workspaces", "metric": "microsoft.machinelearningservices/workspaces--DeploymentFailed", "aggregation": 1}
-                    ],
-                    "title": "Status de Deployment",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
-                  "name": "ml-deployment-status"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.machinelearningservices/workspaces/models' | project name, version=properties.version, framework=properties.framework, lastUpdateTime=properties.lastUpdateTime | order by name, version desc | summarize Versions=count() by name, framework | order by Versions desc",
-                    "size": 0,
-                    "title": "Modelos por Framework",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "Versions", "formatter": 8, "formatOptions": {"palette": "blue"}},
-                        {"columnMatch": "framework", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "pytorch", "representation": "1", "text": "PyTorch"}, {"operator": "contains", "thresholdValue": "tensorflow", "representation": "2", "text": "TensorFlow"}, {"operator": "contains", "thresholdValue": "sklearn", "representation": "3", "text": "Scikit-learn"}, {"operator": "contains", "thresholdValue": "onnx", "representation": "4", "text": "ONNX"}, {"operator": "Default", "representation": "Blank", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
-                  "name": "ml-models-by-framework"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.machinelearningservices/workspaces' | project name, location, sku=sku.name, state=properties.workspaceState | order by name asc",
-                    "size": 0,
-                    "title": "Azure ML Workspaces",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "sku", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "free", "representation": "info", "text": "Free"}, {"operator": "contains", "thresholdValue": "basic", "representation": "info", "text": "Basic"}, {"operator": "contains", "thresholdValue": "standard", "representation": "success", "text": "Standard"}, {"operator": "contains", "thresholdValue": "enterprise", "representation": "success", "text": "Enterprise"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } },
-                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Running", "representation": "success", "text": "Running"}, {"operator": "Default", "representation": "warning", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "MLServices"},
-                  "name": "ml-workspaces"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Serviços de Voz</b> - Transcrição, speech-to-text, text-to-speech, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
-                  "name": "ai-speech-services"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and kind == 'SpeechServices' | project name, location, sku=sku.name, properties | order by name asc",
-                    "size": 0,
-                    "title": "Serviços de Voz",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {"filter": true}
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
-                  "name": "speech-services-list"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook96c8dfad-c2de-4159-a1a2-0d8aaa8aef80",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.cognitiveservices/accounts",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SpeechSuccessfulCalls", "aggregation": 1},
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SpeechErrors", "aggregation": 1}
-                    ],
-                    "title": "Chamadas de Voz - Sucesso vs. Erros",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
-                  "name": "speech-calls-success-errors"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook80807db9-399d-4315-b0bd-4114b3fd60ba",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.cognitiveservices/accounts",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SpeechLatency", "aggregation": 4}
-                    ],
-                    "title": "Latência dos Serviços de Voz",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
-                  "name": "speech-latency"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| where OperationName contains \"speech\"\r\n| summarize count() by OperationName, bin(TimeGenerated, 1h)",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Operações Speech por Hora",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "areachart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["count_"],
-                      "seriesLabelSettings": [
-                        {"seriesName": "SpeechToText", "color": "#00BCF2"}, 
-                        {"seriesName": "TextToSpeech", "color": "#FDD663"}, 
-                        {"seriesName": "SpeechTranslation", "color": "#FF5F5F"}
-                      ]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Speech"},
-                  "name": "speech-operations-per-hour"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Serviços de Visão</b> - Computer Vision, análise de imagens, OCR, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
-                  "name": "ai-vision-services"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and (kind =~ 'ComputerVision' or kind =~ 'CustomVision.Training' or kind =~ 'CustomVision.Prediction' or kind =~ 'Face') | project name, kind, location, sku=sku.name | order by kind asc",
-                    "size": 0,
-                    "title": "Serviços de Visão Computacional",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "kind", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "ComputerVision", "representation": "Camera", "text": "Computer Vision"}, {"operator": "==", "thresholdValue": "CustomVision.Training", "representation": "Camera", "text": "Custom Vision (Training)"}, {"operator": "==", "thresholdValue": "CustomVision.Prediction", "representation": "Camera", "text": "Custom Vision (Prediction)"}, {"operator": "==", "thresholdValue": "Face", "representation": "Glasses", "text": "Face"}, {"operator": "Default", "representation": "Resource", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
-                  "name": "vision-services-list"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook4e6ea0d4-9e89-4d3b-af61-ef068e86d9b4",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.cognitiveservices/accounts",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--VisionSuccessfulCalls", "aggregation": 1},
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--VisionErrors", "aggregation": 1}
-                    ],
-                    "title": "Chamadas Vision - Sucesso vs. Erros",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
-                  "name": "vision-calls-success-errors"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbookc3e73a3b-77fc-4d7f-a186-6bc9c5e45975",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.cognitiveservices/accounts",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--VisionLatency", "aggregation": 4}
-                    ],
-                    "title": "Latência dos Serviços Vision",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
-                  "name": "vision-latency"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| where OperationName contains \"vision\" or OperationName contains \"Vision\"\r\n| summarize count() by OperationName, bin(TimeGenerated, 1h)",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Operações de Visão por Hora",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "areachart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["count_"]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Vision"},
-                  "name": "vision-operations-per-hour"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<h2 style=\"color:#003366\">Azure Foundry</h2><p style=\"color:#003366\">Monitoramento de registros de modelos, endpoints, deployments e métricas de performance do Azure Foundry, a plataforma de MLOps e gerenciamento de modelos de IA.</p>"},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
-                  "name": "ai-foundry"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.machineLearningServices/registries' | project name, location, properties, tags | order by name asc",
-                    "size": 0,
-                    "title": "Azure Foundry - Model Registries",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {"filter": true}
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
-                  "name": "foundry-registries"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.machineLearningServices/registries/models' | project name, version=properties.version, properties | order by name asc",
-                    "size": 0,
-                    "title": "Modelos em Registries",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {"filter": true}
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
-                  "name": "foundry-models"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.machineLearningServices/workspaces/onlineEndpoints' or type =~ 'microsoft.machineLearningServices/registries/onlineEndpoints' | project name, resourceGroup, sku=properties.sku, provisioningState=properties.provisioningState | order by name asc",
-                    "size": 0,
-                    "title": "Endpoints Online",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"}, {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "{0}"}, {"operator": "==", "thresholdValue": "Failed", "representation": "failed", "text": "{0}"}, {"operator": "Default", "representation": "Unknown", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
-                  "name": "foundry-endpoints"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.machineLearningServices/workspaces/onlineEndpoints/deployments' or type =~ 'microsoft.machineLearningServices/registries/onlineEndpoints/deployments' | project name, model=properties.model.name, version=properties.model.version, state=properties.state | order by name asc",
-                    "size": 0,
-                    "title": "Deployments de Modelos",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"}, {"operator": "contains", "thresholdValue": "running", "representation": "success", "text": "{0}"}, {"operator": "==", "thresholdValue": "Failed", "representation": "failed", "text": "{0}"}, {"operator": "Default", "representation": "pending", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
-                  "name": "foundry-deployments"
-                },
-                {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Serviços Cognitivos</b> - KPIs, tipos de serviços, uso, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
-                  "name": "ai-cognitive-services"
-                },                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and kind != 'openai' | project name, kind, location, sku=sku.name | order by kind asc",
-                    "size": 0,
-                    "title": "Serviços Cognitivos",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "kind", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "Face", "representation": "Glasses", "text": "{0}"}, {"operator": "contains", "thresholdValue": "Speech", "representation": "Speaker", "text": "{0}"}, {"operator": "contains", "thresholdValue": "Vision", "representation": "Camera", "text": "{0}"}, {"operator": "contains", "thresholdValue": "Language", "representation": "Globe", "text": "{0}"}, {"operator": "Default", "representation": "Resource", "text": "{0}"} ] } },
-                        {"columnMatch": "sku", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "contains", "thresholdValue": "F", "representation": "info", "text": "Free"}, {"operator": "contains", "thresholdValue": "S", "representation": "success", "text": "Standard"}, {"operator": "Default", "representation": "info", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
-                  "name": "cognitive-services-list"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize count() by kind | order by count_ desc",
-                    "size": 0,
-                    "title": "Distribuição por Tipos de Serviço",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "piechart"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
-                  "name": "cognitive-services-distribution"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook1210c596-9319-4d78-b096-d10f5c01bc0a",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.cognitiveservices/accounts",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--SuccessfulCalls", "aggregation": 7, "splitBy": null},
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--TotalErrors", "aggregation": 7, "splitBy": null},
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--TotalCalls", "aggregation": 7, "splitBy": null}
-                    ],
-                    "title": "Chamadas Totais vs. Erros",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
-                  "name": "cognitive-services-total-calls"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbookd601a8f4-df4a-4d71-b8c6-c2fc90e9cddb",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.cognitiveservices/accounts",
-                    "metricScope": 0,
-                    "resourceIds": ["{Subscription}/resourceGroups/{ResourceGroup}/providers/microsoft.cognitiveservices/accounts/*"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--DataIn", "aggregation": 1, "splitBy": null},
-                      {"namespace": "microsoft.cognitiveservices/accounts", "metric": "microsoft.cognitiveservices/accounts--DataOut", "aggregation": 1, "splitBy": null}
-                    ],
-                    "title": "Transferência de Dados",
-                    "gridSettings": {"rowLimit": 10000},
-                    "filters": [{"id": "1", "key": "Microsoft.ResourceGroup", "operator": 0, "values": ["{ResourceGroup}"]}]
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "CognitiveServices"},
-                  "name": "cognitive-services-data-transfer"
-                },{
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">AI Studio</b> - Projetos, avaliações, prompts, métricas, etc."},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
-                  "name": "ai-studio"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' and kind =~ 'openai' | project name, location, sku=sku.name, state=properties.provisioningState | order by name asc",
-                    "size": 0,
-                    "title": "Recursos OpenAI para AI Studio",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "state", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [{"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "Provisionado"}, {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "Criando"}, {"operator": "==", "thresholdValue": "Failed", "representation": "failed", "text": "Falhou"}, {"operator": "Default", "representation": "pending", "text": "{0}"} ] } }
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
-                  "name": "ai-studio-resources"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend APIVersion = extract(@\"api-version=([^&]+)\", 1, RequestUri)\r\n| where APIVersion contains \"2023\" or APIVersion contains \"2024\"\r\n| summarize count() by ApiVersion=APIVersion",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Chamadas por Versão da API",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "piechart"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
-                  "name": "ai-studio-api-versions"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"Audit\" \r\n| where TimeGenerated {timerange}\r\n| extend CallerIPAddress = extract(@\"Caller IP address: '([^']+)'.\", 1, Message)\r\n| where isnotempty(CallerIPAddress)\r\n| summarize count() by CallerIPAddress, bin(TimeGenerated, 1h)\r\n| order by TimeGenerated asc",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Chamadas por IP de origem",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "areachart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["count_"]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
-                  "name": "ai-studio-calls-by-ip"
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-probe-agent"
                 },
                 {
                   "type": 1,
                   "content": {
-                    "json": "<div style=\"background:#f3f9ff;padding:15px;border-radius:8px;margin-top:10px;\"><b>Sobre o Azure AI Studio:</b><br>O Azure AI Studio permite criar, avaliar e implementar soluções de IA generativa de forma simplificada. As métricas acima refletem o uso das APIs por diferentes versões e IPs, sem identificar projetos específicos. Para uma visão mais detalhada:<br><ul><li>Acesse o <a href='https://ai.azure.com' target='_blank'>Azure AI Studio</a> diretamente</li><li>Verifique projetos e avaliações específicas através da interface do AI Studio</li><li>Configure métricas personalizadas para monitoramento através do Azure Application Insights</li></ul></div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIStudio"},
-                  "name": "ai-studio-info"
-                },                {
-                  "type": 1,
-                  "content": {"json": "<h2 style=\"color:#003366\">Custo & Consumo de IA</h2><p style=\"color:#003366\">Análise detalhada de custos, consumo e tendências de uso dos serviços de IA do Azure.</p>"},
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
-                  "name": "ai-cost-overview"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | extend SKU = tostring(sku.name), Kind = kind | join kind=leftouter ( resources | where type =~ 'microsoft.machinelearningservices/workspaces' | extend Kind = 'Machine Learning', SKU = tostring(sku.name) ) on Kind | project type, kind, location, sku_name, name | summarize count() by Categoria=type, Tipo=kind, SKU=sku_name | order by Categoria asc",
-                    "size": 0,
-                    "title": "Distribuição de SKUs por Serviço",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "count_", "formatter": 8, "formatOptions": {"palette": "blue"}}
-                      ],
-                      "filter": true
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
-                  "name": "ai-cost-sku-distribution"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend ModelName = extract(@\"/deployments/([^/]+)\", 1, RequestUri)\r\n| where isnotempty(ModelName) and ModelName != \"\"\r\n| summarize TotalTokens = sum(CompletionTokens + PromptTokens), TotalCalls=count() by ModelName\r\n| extend EstimatedCost = case(\r\n  ModelName contains \"gpt-4\", TotalTokens * 0.00006,\r\n  ModelName contains \"gpt-35\", TotalTokens * 0.000002,\r\n  ModelName contains \"embedding\", TotalTokens * 0.0000001,\r\n  TotalTokens * 0.00001\r\n)\r\n| project-rename ['Modelo'] = ModelName, ['Total de Tokens'] = TotalTokens, ['Total de Chamadas'] = TotalCalls, ['Custo Estimado ($)'] = EstimatedCost\r\n| order by ['Custo Estimado ($)'] desc",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Consumo Estimado de Tokens por Modelo",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "Total de Tokens", "formatter": 3, "formatOptions": {"palette": "blue"}},
-                        {"columnMatch": "Total de Chamadas", "formatter": 3, "formatOptions": {"palette": "green"}},
-                        {"columnMatch": "Custo Estimado ($)", "formatter": 3, "formatOptions": {"palette": "orange"}, "numberFormat": {"unit": 0, "options": {"style": "currency", "currency": "USD", "minimumFractionDigits": 4, "maximumFractionDigits": 4}}}
-                      ],
-                      "filter": true,
-                      "labelSettings": [{"columnId": "Modelo"}, {"columnId": "Total de Tokens"}, {"columnId": "Total de Chamadas"}, {"columnId": "Custo Estimado ($)"}]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
-                  "name": "ai-cost-token-usage"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.COGNITIVESERVICES\" \r\n| where Category == \"RequestResponse\" \r\n| where TimeGenerated {timerange}\r\n| extend ModelName = extract(@\"/deployments/([^/]+)\", 1, RequestUri)\r\n| where isnotempty(ModelName) and ModelName != \"\"\r\n| summarize TotalTokens = sum(CompletionTokens + PromptTokens) by ModelName, bin(TimeGenerated, 1d)\r\n| order by TimeGenerated asc",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Tendência de Consumo de Tokens",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "linechart",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["TotalTokens"],
-                      "group": "ModelName",
-                      "createOtherGroup": 5,
-                      "showMetrics": false
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
-                  "name": "ai-cost-token-trend"
-                },
-                               {
-                  "type":  1,
-                  "content": {
-                    "json": "<div style=\"background:#f3f9ff;padding:15px;border-radius:8px;margin-top:10px;\"><b>📊 Sobre Estimativas de Custo:</b><br>Os cálculos de custo neste painel são estimativas baseadas nos preços aproximados dos modelos e uso medido. Para valores precisos e detalhados de faturamento:<br><ul><li>Consulte o <a href='https://portal.azure.com/#blade/Microsoft_Azure_CostManagement/Menu/costanalysis' target='_blank'>Azure Cost Management</a></li><li>Use filtros por recurso (por exemplo, 'Tipo de recurso: cognitiveservices')</li><li>Os custos reais podem variar com base em promoções, acordos empresariais e preços regionais</li></ul>As estimativas de custo de token são baseadas em preços padrão e não incluem descontos ou camadas gratuitas.</div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AICost"},
-                  "name": "ai-cost-disclaimer"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de IA e ML seguem os padrões do Azure Monitor para serviços cognitivos e IA:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operação normal</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção/Throttling</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico/Falha</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Sem dados</li></ul>Métricas para serviços de IA incluem chamadas por minuto, latência, tokens, custo estimado e erros. Para informações detalhadas sobre cada métrica consulte a <a href='https://learn.microsoft.com/azure/ai-services/openai/how-to/monitoring' target='_blank'>documentação oficial</a>.</div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "AI"},
-                  "name": "legenda-ai"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "AI"},
-            "name": "AI Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "🧭 Visão Geral", "subTarget": "InfraOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "💻 Virtual Machines", "subTarget": "VMs", "style": "link", "icon": "VirtualMachine"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "📈 Scale Sets", "subTarget": "ScaleSets", "style": "link", "icon": "ScaleSet"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "🗃️ Availability Sets", "subTarget": "AvailSets", "style": "link", "icon": "AvailabilitySet"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "💽 Disks", "subTarget": "Disks", "style": "link", "icon": "Disk"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "📸 Snapshots", "subTarget": "Snapshots", "style": "link", "icon": "Snapshot"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "🖼️ Images", "subTarget": "Images", "style": "link", "icon": "Image"},
-                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "📦 Resource Groups", "subTarget": "ResourceGroups", "style": "link", "icon": "ResourceGroup"}
-                    ]
-                  },
-                  "name": "submenu-infra"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Infraestrutura</h2><p style=\"color:#003366\">Visão geral de infraestrutura, KPIs, disponibilidade, escalabilidade, custos e tendências.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "InfraOverview"},
-                  "name": "infra-overview"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.compute/virtualmachines' | summarize count() by tostring(properties.hardwareProfile.vmSize)",
-                    "size": 1,
-                    "title": "VMs por Tamanho",
-                    "visualization": "barchart",
-                    "legend": "Distribuição das VMs por SKU/tamanho."
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "VMs"},
-                  "name": "infra-vms"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.compute/virtualmachinescalesets' | summarize count() by location",
-                    "size": 1,
-                    "title": "Scale Sets por Região",
-                    "visualization": "piechart",
-                    "legend": "Distribuição dos Scale Sets por região."
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "ScaleSets"},
-                  "name": "infra-scalesets"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.compute/availabilitysets' | summarize count() by location",
-                    "size": 1,
-                    "title": "Availability Sets por Região",
-                    "visualization": "tiles",
-                    "legend": "Availability Sets distribuídos por região."
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "AvailSets"},
-                  "name": "infra-availsets"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.compute/disks' | summarize count() by sku.name",
-                    "size": 1,
-                    "title": "Discos por SKU",
-                    "visualization": "barchart",
-                    "legend": "Tipos de discos em uso."
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Disks"},
-                  "name": "infra-disks"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.compute/snapshots' | summarize count() by location",
-                    "size": 1,
-                    "title": "Snapshots por Região",
-                    "visualization": "piechart",
-                    "legend": "Snapshots distribuídos por região."
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Snapshots"},
-                  "name": "infra-snapshots"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.compute/images' | summarize count() by location",
-                    "size": 1,
-                    "title": "Imagens por Região",
-                    "visualization": "tiles",
-                    "legend": "Imagens customizadas por região."
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Images"},
-                  "name": "infra-images"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resourcecontainers | where type == 'microsoft.resources/resourcegroups' | summarize count() by location",
-                    "size": 1,
-                    "title": "Resource Groups por Região",
-                    "visualization": "barchart",
-                    "legend": "Resource Groups distribuídos por região."
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "ResourceGroups"},
-                  "name": "infra-resourcegroups"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de infraestrutura utilizam métricas e status oficiais do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Distribuições por região/SKU seguem <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de rede utilizam métricas e status oficiais do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Distribuições por região/SKU seguem <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
                   },
                   "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Infra"},
                   "name": "legenda-infra"
