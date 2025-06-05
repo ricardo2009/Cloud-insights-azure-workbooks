@@ -37,8 +37,7 @@
                   "delimiter": ",",
                   "value": ["value::all"],
                   "typeSettings": {"additionalResourceOptions": ["value::all"], "includeAll": true}
-                },
-                {
+                },                {
                   "id": "ws",
                   "name": "LogAnalyticsWorkspace",
                   "label": "Workspace",
@@ -47,12 +46,22 @@
                   "multiSelect": true,
                   "quote": "'",
                   "delimiter": ",",
-                  "query": "where type =~ 'microsoft.operationalinsights/workspaces' | summarize by id, name | project id, name",
-                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+                  "crossComponentResources": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
                   "defaultValue": "value::all",
                   "queryType": 1,
                   "resourceType": "microsoft.resourcegraph/resources",
-                  "dependsOn": ["Subscription"]
+                  "value": [
+                    "value::all"
+                  ]
                 },
                 {
                   "id": "timerange",
@@ -61,8 +70,7 @@
                   "type": 4,
                   "value": {"durationMs": 86400000},
                   "typeSettings": {"selectableValues": [{"durationMs": 3600000}, {"durationMs": 86400000}, {"durationMs": 604800000}]}
-                },
-                {
+                },                {
                   "id": "rg",
                   "name": "ResourceGroup",
                   "label": "Resource Group",
@@ -72,13 +80,22 @@
                   "quote": "'",
                   "delimiter": ",",
                   "query": "resourcecontainers | where type == 'microsoft.resources/resourcegroups' | project name",
-                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "crossComponentResources": [
+                    "{Subscription}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
                   "defaultValue": "value::all",
                   "queryType": 1,
                   "resourceType": "microsoft.resourcegraph/resources",
-                  "dependsOn": ["Subscription"]
-                },
-                {
+                  "value": [
+                    "value::all"
+                  ]
+                },                {
                   "id": "region",
                   "name": "Region",
                   "label": "Região",
@@ -88,13 +105,22 @@
                   "quote": "'",
                   "delimiter": ",",
                   "query": "resources | summarize by location | project location",
-                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "crossComponentResources": [
+                    "{Subscription}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
                   "defaultValue": "value::all",
                   "queryType": 1,
                   "resourceType": "microsoft.resourcegraph/resources",
-                  "dependsOn": ["Subscription"]
-                },
-                {
+                  "value": [
+                    "value::all"
+                  ]
+                },                {
                   "id": "tag",
                   "name": "Tag",
                   "label": "Tag",
@@ -104,11 +130,21 @@
                   "quote": "'",
                   "delimiter": ",",
                   "query": "mv-expand tags=tags | summarize by tostring(tags) | project Tag=tags",
-                  "typeSettings": {"additionalResourceOptions": ["value::all"]},
+                  "crossComponentResources": [
+                    "{Subscription}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
                   "defaultValue": "value::all",
                   "queryType": 1,
                   "resourceType": "microsoft.resourcegraph/resources",
-                  "dependsOn": ["Subscription"]
+                  "value": [
+                    "value::all"
+                  ]
                 }
               ],
               "style": "formVertical",
@@ -274,12 +310,112 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
                   "name": "net-overview"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Virtual Networks</h2><p style=\"color:#003366\">Visão geral, métricas e status das redes virtuais no Azure.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnet-header"
                 },
                 {
-                  "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Virtual Network</b> - KPIs, status, topologia, tráfego, etc."},
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| extend addressSpace = tostring(properties.addressSpace.addressPrefixes[0])\r\n| extend subnets = array_length(properties.subnets)\r\n| extend peerings = array_length(properties.virtualNetworkPeerings)\r\n| project name, resourceGroup, location, addressSpace, ['Subnets']=subnets, ['Peerings']=peerings",
+                    "size": 0,
+                    "title": "Virtual Networks",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Subnets", "formatter": 3, "formatOptions": {"palette": "blue", "customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "Peerings", "formatter": 3, "formatOptions": {"palette": "green", "customColumnWidthSetting": "15ch"}}
+                      ],
+                      "filter": true
+                    }
+                  },
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
-                  "name": "net-vnet"
+                  "name": "net-vnets-list"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| mv-expand subnet=properties.subnets\r\n| project vnetName = name, subnetName = subnet.name, prefix = subnet.properties.addressPrefix, nsg = subnet.properties.networkSecurityGroup.id\r\n| order by vnetName asc, subnetName asc",
+                    "size": 0,
+                    "title": "Subnets por Virtual Network",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "nsg", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
+                      ],
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": ["vnetName"]
+                      },
+                      "labelSettings": [
+                        {"columnId": "vnetName", "label": "Virtual Network"},
+                        {"columnId": "subnetName", "label": "Subnet"},
+                        {"columnId": "prefix", "label": "Prefix CIDR"},
+                        {"columnId": "nsg", "label": "NSG Associado"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnets-subnets"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| mv-expand peering=properties.virtualNetworkPeerings\r\n| extend peeringName = peering.name\r\n| extend remoteVNet = split(peering.properties.remoteVirtualNetwork.id, '/')[8]\r\n| extend peeringState = peering.properties.peeringState\r\n| extend allowGatewayTransit = peering.properties.allowGatewayTransit\r\n| extend allowForwardedTraffic = peering.properties.allowForwardedTraffic\r\n| project vnetName = name, peeringName, remoteVNet, peeringState, allowGatewayTransit, allowForwardedTraffic\r\n| order by vnetName asc",
+                    "size": 0,
+                    "title": "Peerings de Virtual Networks",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "peeringState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Connected", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Disconnected", "representation": "failed", "text": "{0}"},
+                          {"operator": "Default", "representation": "pending", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "allowGatewayTransit", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Sim"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "disabled", "text": "Não"}
+                        ]}},
+                        {"columnMatch": "allowForwardedTraffic", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Sim"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "disabled", "text": "Não"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "vnetName", "label": "Virtual Network"},
+                        {"columnId": "peeringName", "label": "Nome do Peering"},
+                        {"columnId": "remoteVNet", "label": "VNet Remota"},
+                        {"columnId": "peeringState", "label": "Estado"},
+                        {"columnId": "allowGatewayTransit", "label": "Gateway Transit"},
+                        {"columnId": "allowForwardedTraffic", "label": "Tráfego Encaminhado"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnets-peerings"
+                }
                 },
                 {
                   "type": 1,
@@ -715,8 +851,7 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
                   "name": "openai-deployments"
-                },
-                {
+                },                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -726,6 +861,9 @@
                     "title": "Requisições OpenAI por Hora",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "areachart",
                     "chartSettings": {
                       "xAxis": "TimeGenerated",
@@ -735,8 +873,7 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
                   "name": "openai-requests-per-hour"
-                },
-                {
+                },                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -746,6 +883,9 @@
                     "title": "Erros em Requisições OpenAI",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "linechart",
                     "chartSettings": {
                       "xAxis": "TimeGenerated",
@@ -765,6 +905,9 @@
                     "title": "Taxa de Sucesso por Modelo",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "table",
                     "gridSettings": {
                       "formatters": [
@@ -778,8 +921,7 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
                   "name": "openai-success-rate"
-                },
-                {
+                },                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -789,6 +931,9 @@
                     "title": "Tempo de Resposta do OpenAI (ms)",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "linechart",
                     "chartSettings": {
                       "xAxis": "TimeGenerated",
@@ -802,8 +947,7 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "OpenAI"},
                   "name": "openai-response-time"
-                },
-                {
+                },                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -813,6 +957,9 @@
                     "title": "Uso de Tokens por Modelo",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "areachart",
                     "chartSettings": {
                       "xAxis": "TimeGenerated",
@@ -1296,7 +1443,8 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
                   "name": "foundry-endpoints"
-                },                {
+                },
+                {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
@@ -1315,56 +1463,6 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
                   "name": "foundry-deployments"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "let FoundryEndpoints = resources | where type =~ 'microsoft.machineLearningServices/workspaces/onlineEndpoints' or type =~ 'microsoft.machineLearningServices/registries/onlineEndpoints';\r\nlet AzureMonitorMetrics = FoundryEndpoints\r\n| join kind=inner (\r\n    AzureMetrics\r\n    | where TimeGenerated {timerange}\r\n    | where MetricName in ('RequestLatency', 'RequestsPerMinute', 'CpuUtilizationPercentage', 'MemoryUtilizationPercentage')\r\n    | summarize LatestValue = max(Average) by ResourceId, MetricName\r\n) on ResourceId\r\n| project ResourceName=name, MetricName, LatestValue;\r\n\r\nAzureMonitorMetrics\r\n| summarize ['Latência (ms)']=sumif(LatestValue, MetricName=='RequestLatency'), \r\n           ['Req/Min']=sumif(LatestValue, MetricName=='RequestsPerMinute'), \r\n           ['CPU (%)']=sumif(LatestValue, MetricName=='CpuUtilizationPercentage'),\r\n           ['Memória (%)']=sumif(LatestValue, MetricName=='MemoryUtilizationPercentage')\r\n           by ResourceName\r\n| order by ['Req/Min'] desc",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Performance dos Endpoints de Modelos",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "table",
-                    "gridSettings": {
-                      "formatters": [
-                        {"columnMatch": "Latência (ms)", "formatter": 8, "formatOptions": {"min": 0, "max": 1000, "palette": "greenRed"}},
-                        {"columnMatch": "Req/Min", "formatter": 8, "formatOptions": {"min": 0, "palette": "blue"}},
-                        {"columnMatch": "CPU (%)", "formatter": 8, "formatOptions": {"min": 0, "max": 100, "palette": "yellowGreenBlue"}},
-                        {"columnMatch": "Memória (%)", "formatter": 8, "formatOptions": {"min": 0, "max": 100, "palette": "purpleBlue"}}
-                      ],
-                      "filter": true,
-                      "labelSettings": [{"columnId": "ResourceName", "label": "Endpoint"}, {"columnId": "Latência (ms)"}, {"columnId": "Req/Min"}, {"columnId": "CPU (%)"}, {"columnId": "Memória (%)"}]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
-                  "name": "foundry-endpoint-performance"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\r\n| where ResourceProvider == \"MICROSOFT.MACHINELEARNINGSERVICES\" \r\n| where Category == \"AmlOnlineEndpointConsoleLog\" \r\n| where TimeGenerated {timerange}\r\n| summarize ErrorCount=countif(Level == \"Error\"), WarningCount=countif(Level == \"Warning\"), InfoCount=countif(Level == \"Information\") by bin(TimeGenerated, 1h), OperationName\r\n| order by TimeGenerated asc",
-                    "size": 0,
-                    "timeContextFromParameter": "timerange",
-                    "title": "Logs de Endpoint por Hora",
-                    "queryType": 0,
-                    "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": "unstackedbar",
-                    "chartSettings": {
-                      "xAxis": "TimeGenerated",
-                      "yAxis": ["ErrorCount", "WarningCount", "InfoCount"],
-                      "seriesLabelSettings": [
-                        {"seriesName": "ErrorCount", "label": "Erros", "color": "#FF5F5F"},
-                        {"seriesName": "WarningCount", "label": "Avisos", "color": "#FDD663"},
-                        {"seriesName": "InfoCount", "label": "Informações", "color": "#00BCF2"}
-                      ],
-                      "group": "OperationName"
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "Foundry"},
-                  "name": "foundry-endpoint-logs"
                 },
                 {
                   "type": 1,
