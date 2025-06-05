@@ -96,6 +96,36 @@
                     "value::all"
                   ]
                 },                {
+                  "id": "FirewallResource",
+                  "name": "FirewallResource",
+                  "label": "Azure Firewall",
+                  "type": 5,
+                  "isRequired": false,
+                  "multiSelect": false,
+                  "query": "resources | where type =~ 'microsoft.network/azurefirewalls' | project id, name | order by name asc",
+                  "crossComponentResources": ["{Subscription}"],
+                  "typeSettings": {
+                    "additionalResourceOptions": []
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "TrafficManagerResource",
+                  "name": "TrafficManagerResource",
+                  "label": "Traffic Manager",
+                  "type": 5,
+                  "isRequired": false,
+                  "multiSelect": false,
+                  "query": "resources | where type =~ 'microsoft.network/trafficmanagerprofiles' | project id, name | order by name asc",
+                  "crossComponentResources": ["{Subscription}"],
+                  "typeSettings": {
+                    "additionalResourceOptions": []
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
                   "id": "region",
                   "name": "Region",
                   "label": "Região",
@@ -145,6 +175,51 @@
                   "value": [
                     "value::all"
                   ]
+                },                {
+                  "id": "clusterType",
+                  "name": "ClusterType",
+                  "label": "Tipo de Cluster",
+                  "type": 2,
+                  "isRequired": false,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "jsonData": "[{\"value\":\"AKS\",\"label\":\"Azure Kubernetes Service (AKS)\"},{\"value\":\"ARO\",\"label\":\"Azure Red Hat OpenShift (ARO)\"}]",
+                  "defaultValue": "value::all",
+                  "value": [
+                    "value::all"
+                  ]
+                },                {
+                  "id": "namespace",
+                  "name": "Namespace",
+                  "label": "Namespace",
+                  "type": 2,
+                  "isRequired": false,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "KubePodInventory\n| distinct Namespace\n| order by Namespace asc\n| project Namespace",
+                  "crossComponentResources": [
+                    "{LogAnalyticsWorkspace}"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 0,
+                  "resourceType": "microsoft.operationalinsights/workspaces",
+                  "value": [
+                    "value::all"
+                  ]
                 }
               ],
               "style": "formVertical",
@@ -184,12 +259,13 @@
           {
             "type": 11,
             "content": {
-              "version": "LinkItem/1.0",
+            "version": "LinkItem/1.0",
               "style": "toolbar",
               "links": [                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🌐 Visão Geral", "subTarget": "Overview", "style": "link", "icon": "Dashboard"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🕸️ Networking", "subTarget": "Networking", "style": "link", "icon": "Connect"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🧩 Apps", "subTarget": "Apps", "style": "link", "icon": "WebApp"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🗄️ Dados", "subTarget": "Data", "style": "link", "icon": "Database"},
+                {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "📦 Containers", "subTarget": "Containers", "style": "link", "icon": "Container"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🧠 IA & ML", "subTarget": "AI", "style": "link", "icon": "CognitiveServicesAI"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🛡️ Segurança", "subTarget": "Security", "style": "link", "icon": "Lock"},
                 {"cellValue": "TabMain", "linkTarget": "parameter", "linkLabel": "🏗️ Infraestrutura", "subTarget": "Infra", "style": "link", "icon": "Columns"}
@@ -281,44 +357,6 @@
             "type": 12,
             "content": {
               "version": "NotebookGroup/1.0",
-              "groupType": "editable",              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
-                },
-                {
-                  "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
               "groupType": "editable",
               "items": [
                 {
@@ -344,712 +382,711 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
+                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada de recursos de rede. Selecione um submenu acima.</p>"
                   },
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
+                  "name": "net-overview"
+                },                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Virtual Networks</h2><p style=\"color:#003366\">Visão geral, métricas e status das redes virtuais no Azure.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnet-header"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
+                    "query": "Resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| extend addressSpace = tostring(properties.addressSpace.addressPrefixes[0])\r\n| extend subnets = array_length(properties.subnets)\r\n| extend peerings = array_length(properties.virtualNetworkPeerings)\r\n| project name, resourceGroup, location, addressSpace, ['Subnets']=subnets, ['Peerings']=peerings",
+                    "size": 0,
+                    "title": "Virtual Networks",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Subnets", "formatter": 3, "formatOptions": {"palette": "blue", "customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "Peerings", "formatter": 3, "formatOptions": {"palette": "green", "customColumnWidthSetting": "15ch"}}
+                      ],
+                      "filter": true
+                    }
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnets-list"
+                },
+                {                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| mv-expand subnet=properties.subnets\r\n| extend subnetName = tostring(subnet.name)\r\n| extend prefix = tostring(subnet.properties.addressPrefix)\r\n| extend nsgId = iff(isnotempty(subnet.properties.networkSecurityGroup.id), tostring(subnet.properties.networkSecurityGroup.id), 'Sem NSG')\r\n| extend nsgName = iff(isnotempty(nsgId) and nsgId != 'Sem NSG', split(nsgId, '/')[-1], 'Sem NSG')\r\n| extend delegations = array_length(iff(isnotempty(subnet.properties.delegations), subnet.properties.delegations, dynamic([])))\r\n| project vnetName = name, resourceGroup, subnetName, prefix, cidrSize = split(prefix, '/')[-1], nsgName, subnet_type = iff(subnetName startswith 'AzureBastionSubnet', '🔑 Bastion', iff(subnetName startswith 'GatewaySubnet', '🌐 Gateway', iff(subnetName startswith 'AzureFirewall', '🛡️ Firewall', '🖧 Padrão'))), delegations\r\n| order by tostring(vnetName) asc, tostring(subnetName) asc",
+                    "size": 0,
+                    "title": "Subnets por Virtual Network",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "nsg", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
+                      ],
+                      "filter": true,
+                      "hierarchySettings": {
+                        "treeType": 1,
+                        "groupBy": ["vnetName"]
+                      },
+                      "labelSettings": [
+                        {"columnId": "vnetName", "label": "Virtual Network"},
+                        {"columnId": "subnetName", "label": "Subnet"},
+                        {"columnId": "prefix", "label": "Prefix CIDR"},
+                        {"columnId": "nsg", "label": "NSG Associado"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnets-subnets"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| mv-expand peering=properties.virtualNetworkPeerings\r\n| extend peeringName = peering.name\r\n| extend remoteVNet = split(peering.properties.remoteVirtualNetwork.id, '/')[8]\r\n| extend peeringState = peering.properties.peeringState\r\n| extend allowGatewayTransit = peering.properties.allowGatewayTransit\r\n| extend allowForwardedTraffic = peering.properties.allowForwardedTraffic\r\n| project vnetName = name, peeringName, remoteVNet, peeringState, allowGatewayTransit, allowForwardedTraffic\r\n| order by vnetName asc",
+                    "size": 0,
+                    "title": "Peerings de Virtual Networks",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
+                    "crossComponentResources": [
+                      "{Subscription}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "peeringState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Connected", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Disconnected", "representation": "failed", "text": "{0}"},
+                          {"operator": "Default", "representation": "pending", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "allowGatewayTransit", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Sim"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "disabled", "text": "Não"}
+                        ]}},
+                        {"columnMatch": "allowForwardedTraffic", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Sim"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "disabled", "text": "Não"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "vnetName", "label": "Virtual Network"},
+                        {"columnId": "peeringName", "label": "Nome do Peering"},
+                        {"columnId": "remoteVNet", "label": "VNet Remota"},
+                        {"columnId": "peeringState", "label": "Estado"},
+                        {"columnId": "allowGatewayTransit", "label": "Gateway Transit"},
+                        {"columnId": "allowForwardedTraffic", "label": "Tráfego Encaminhado"}
+                      ]                    }
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "net-vnets-peerings"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
+                  "content": {"json": "<b style=\"color:#003366\">Load Balancer</b> - KPIs, status, conexões, health probes, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "LB"},
+                  "name": "net-lb"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
+                  "content": {"json": "<b style=\"color:#003366\">Application Gateway</b> - KPIs, listeners, regras, performance, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
+                  "content": {"json": "<h2 style=\"color:#003366\">Application Gateway</h2><p style=\"color:#003366\">Monitoramento e análise de Application Gateways, incluindo status, tráfego, latência e backends.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-header"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
+                    "query": "resources | where type == 'microsoft.network/applicationgateways' | project id, name, resourceGroup, location, skuName = properties.sku.tier, skuTier = tostring(properties.sku.tier), capacity = tostring(properties.sku.capacity), status = properties.provisioningState, wafMode = properties.webApplicationFirewallConfiguration.enabled, ruleSetType = properties.webApplicationFirewallConfiguration.ruleSetType, ruleSetVersion = properties.webApplicationFirewallConfiguration.ruleSetVersion, customRules = properties.webApplicationFirewallConfiguration.customRules, managedRules = properties.webApplicationFirewallConfiguration.managedRules | order by name asc",
+                    "size": 0,
+                    "title": "Lista de Application Gateways",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "skuName", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "skuTier", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "capacity", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Offline", "representation": "stopped", "text": "{0}"},
+                          {"operator": "Default", "representation": "Unknown", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "wafMode", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Detection", "representation": "2", "text": "Detecção"},
+                          {"operator": "==", "thresholdValue": "Prevention", "representation": "success", "text": "Prevenção"},
+                          {"operator": "==", "thresholdValue": "N/A", "representation": "disabled", "text": "Sem WAF"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "skuName", "label": "SKU"},
+                        {"columnId": "skuTier", "label": "Tier"},
+                        {"columnId": "capacity", "label": "Capacidade"},
+                        {"columnId": "status", "label": "Status"},
+                        {"columnId": "wafMode", "label": "Modo WAF"}
+                      ]
+                    }
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-list"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
+                    "query": "let appGateways = resources | where type == 'microsoft.network/applicationgateways';\r\nlet listeners = appGateways | mvexpand listener = properties.httpListeners | project name = tostring(listener.name), gatewayName = name, protocol = tostring(listener.properties.protocol), port = toint(listener.properties.frontendPort.id), hostName = tostring(listener.properties.hostName), requireServerNameIndication = tobool(listener.properties.requireServerNameIndication), sslCertificate = iif(isnotempty(listener.properties.sslCertificate), 'Configurado', 'Não configurado');\r\nlisteners | project gatewayName, name, protocol, hostName, port, sslCertificate, requireServerNameIndication | order by gatewayName asc, name asc",
+                    "size": 0,
+                    "title": "Listeners de Application Gateway",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "protocol", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Http", "representation": "1", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Https", "representation": "success", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "sslCertificate", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Configurado", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Não configurado", "representation": "disabled", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "gatewayName", "label": "Application Gateway"},
+                        {"columnId": "name", "label": "Listener"},
+                        {"columnId": "protocol", "label": "Protocolo"},
+                        {"columnId": "hostName", "label": "Host Name"},
+                        {"columnId": "port", "label": "Porta"},
+                        {"columnId": "sslCertificate", "label": "Certificado SSL"},
+                        {"columnId": "requireServerNameIndication", "label": "Requer SNI"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-listeners"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let appGateways = resources | where type == 'microsoft.network/applicationgateways';\r\nlet backends = appGateways | mvexpand backend = properties.backendAddressPools | project name = tostring(backend.name), gatewayName = name, addresses = backend.properties.backendAddresses;\r\nbackends | mvexpand address = addresses | project gatewayName, backendName = name, ipAddress = tostring(address.ipAddress), fqdn = tostring(address.fqdn) | where isnotempty(ipAddress) or isnotempty(fqdn) | order by gatewayName asc, backendName asc",
+                    "size": 0,
+                    "title": "Backend Pools de Application Gateway",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "gatewayName", "label": "Application Gateway"},
+                        {"columnId": "backendName", "label": "Backend Pool"},
+                        {"columnId": "ipAddress", "label": "Endereço IP"},
+                        {"columnId": "fqdn", "label": "FQDN"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-backends"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--HealthyHostCount", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--UnhealthyHostCount", "aggregation": 4}
+                    ],
+                    "title": "Hosts Saudáveis vs. Não Saudáveis",
+                    "gridSettings": {"rowLimit": 10000}
                   },
                   "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-hosts-health"
+                },
                 {
-                  "type": 11,
+                  "type": 10,
                   "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--Throughput", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--FailedRequests", "aggregation": 1}
+                    ],
+                    "title": "Throughput e Requisições com Falha",
+                    "gridSettings": {"rowLimit": 10000}
                   },
-                  "name": "submenu-networking"
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-throughput"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--ApplicationGatewayTotalTime", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--BackendLastByteResponseTime", "aggregation": 4},
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--BackendConnectTime", "aggregation": 4}
+                    ],
+                    "title": "Latência e Tempos de Resposta",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-latency"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 11,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "AppGatewayResource",
+                    "resourceIds": ["{AppGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/applicationgateways", "metric": "microsoft.network/applicationgateways--ResponseStatus", "aggregation": 1}
+                    ],
+                    "title": "Códigos de Resposta HTTP",
+                    "gridFormatType": 1,
+                    "tileSettings": {
+                      "titleContent": {"formatter": 1},
+                      "leftContent": {"formatter": 2, "formatOptions": {"palette": "blue"}},
+                      "rightContent": {"formatter": 1},
+                      "showBorder": false
+                    },
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Subscription", "formatter": 5},
+                        {"columnMatch": "Name", "formatter": 5},
+                        {"columnMatch": "microsoft.network/applicationgateways--ResponseStatus Timeline", "formatter": 5},
+                        {"columnMatch": "microsoft.network/applicationgateways--ResponseStatus", "formatter": 1, "numberFormat": {"unit": 0, "options": {"style": "decimal", "useGrouping": false}}},
+                        {"columnMatch": "Aggregation", "formatter": 5},
+                        {"columnMatch": "Segment", "formatter": 5},
+                        {"columnMatch": "Value", "formatter": 1, "numberFormat": {"unit": 0, "options": {"style": "decimal", "minimumFractionDigits": 0, "maximumFractionDigits": 0}}},
+                        {"columnMatch": "Timeline", "formatter": 9, "formatOptions": {"palette": "multiGreen"}}
+                      ],
+                      "rowLimit": 10000
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-response-codes"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\"\n| where ResourceId has \"applicationGateways\"\n| project TimeGenerated, host_s, requestUri_s, httpStatus_d, httpMethod_s, userAgent_s, clientIP_s, clientPort_d, serverRouted_s, serverStatus_s, timeTaken_d\n| order by TimeGenerated desc",
+                    "size": 0,
+                    "title": "Logs de Acesso do Application Gateway",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "httpStatus_d", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": ">=", "thresholdValue": "500", "representation": "4", "text": "{0}"},
+                          {"operator": ">=", "thresholdValue": "400", "representation": "warning", "text": "{0}"},
+                          {"operator": ">=", "thresholdValue": "300", "representation": "2", "text": "{0}"},
+                          {"operator": ">=", "thresholdValue": "200", "representation": "success", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "timeTaken_d", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": ">=", "thresholdValue": "1000", "representation": "4", "text": "{0} ms"},
+                          {"operator": ">=", "thresholdValue": "500", "representation": "warning", "text": "{0} ms"},
+                          {"operator": ">=", "thresholdValue": "0", "representation": "success", "text": "{0} ms"}
+                        ]}}
+                      ],
+                      "rowLimit": 100,
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "TimeGenerated", "label": "Data/Hora"},
+                        {"columnId": "host_s", "label": "Host"},
+                        {"columnId": "requestUri_s", "label": "URI"},
+                        {"columnId": "httpStatus_d", "label": "Status HTTP"},
+                        {"columnId": "httpMethod_s", "label": "Método"},
+                        {"columnId": "userAgent_s", "label": "User Agent"},
+                        {"columnId": "clientIP_s", "label": "IP do Cliente"},
+                        {"columnId": "clientPort_d", "label": "Porta do Cliente"},
+                        {"columnId": "serverRouted_s", "label": "Servidor"},
+                        {"columnId": "serverStatus_s", "label": "Status do Backend"},
+                        {"columnId": "timeTaken_d", "label": "Tempo (ms)"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-access-logs"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
+                  "content": {"json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Os logs de acesso e WAF são visíveis apenas se os diagnósticos do Application Gateway estiverem configurados para enviar logs para o Log Analytics. Se os logs não estiverem aparecendo, verifique a configuração de diagnóstico do recurso.</p>\n</div>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGW"},
+                  "name": "net-appgw-warning"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
+                  "content": {"json": "<b style=\"color:#003366\">VPN Gateway</b> - KPIs, status, conexões, tunelamento, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
+                  "content": {"json": "<h2 style=\"color:#003366\">VPN Gateway</h2><p style=\"color:#003366\">Monitoramento e análise de VPN Gateways, incluindo status, conexões, disponibilidade e performance de tunelamento.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-header"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
+                    "query": "resources | where type =~ 'microsoft.network/virtualnetworkgateways' and properties.gatewayType =~ 'Vpn' | project id, name, resourceGroup, location, type, skuName = tostring(properties.sku.name), skuTier = tostring(properties.sku.tier), gatewayType = tostring(properties.gatewayType), vpnType = tostring(properties.vpnType), generation = tostring(properties.vpnGatewayGeneration), activeActive = tobool(properties.activeActive), provisioningState = tostring(properties.provisioningState) | extend status = case(provisioningState == 'Succeeded', 'Operational', provisioningState == 'Updating', 'Updating', provisioningState == 'Failed', 'Failed', 'Unknown') | order by name asc",
+                    "size": 0,
+                    "title": "Lista de VPN Gateways",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "skuName", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "skuTier", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "gatewayType", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "vpnType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "RouteBased", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "PolicyBased", "representation": "2", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "activeActive", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Sim"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "2", "text": "Não"}
+                        ]}},
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "3", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "skuName", "label": "SKU"},
+                        {"columnId": "skuTier", "label": "Tier"},
+                        {"columnId": "gatewayType", "label": "Tipo de Gateway"},
+                        {"columnId": "vpnType", "label": "Tipo de VPN"},
+                        {"columnId": "generation", "label": "Geração"},
+                        {"columnId": "activeActive", "label": "Ativo-Ativo"},
+                        {"columnId": "provisioningState", "label": "Estado"}
+                      ]
+                    }
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-list"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
+                    "query": "resources | where type =~ 'microsoft.network/virtualnetworkgateways' and properties.gatewayType =~ 'Vpn' | mvexpand connection = properties.connections | extend connectionName = tostring(connection.name), connectionId = tostring(connection.id), connectionPropertiesId = tostring(connection.properties.id) | where isnotempty(connectionId) | join kind=leftouter (resources | where type =~ 'microsoft.network/connections' | project connectionId = id, connectionName = name, connectionType = tostring(properties.connectionType), connectionStatus = tostring(properties.connectionStatus), enableBgp = tobool(properties.enableBgp), routingWeight = toint(properties.routingWeight)) on connectionId | project gatewayName = name, connectionName, connectionType, connectionStatus, enableBgp, routingWeight | where isnotempty(connectionName)",
+                    "size": 0,
+                    "title": "Conexões VPN",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "connectionStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Connected", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Connecting", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "NotConnected", "representation": "3", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Unknown", "representation": "1", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "enableBgp", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Habilitado"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "disabled", "text": "Desabilitado"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "gatewayName", "label": "VPN Gateway"},
+                        {"columnId": "connectionName", "label": "Conexão"},
+                        {"columnId": "connectionType", "label": "Tipo"},
+                        {"columnId": "connectionStatus", "label": "Status"},
+                        {"columnId": "enableBgp", "label": "BGP"},
+                        {"columnId": "routingWeight", "label": "Peso de Roteamento"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-connections"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/virtualnetworkgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "VPNGatewayResource",
+                    "resourceIds": ["{VPNGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelIngressBytes", "aggregation": 1},
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelEgressBytes", "aggregation": 1}
+                    ],
+                    "title": "Tráfego de Túneis VPN (Bytes)",
+                    "gridSettings": {"rowLimit": 10000}
                   },
                   "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-tunnel-traffic"
+                },
                 {
-                  "type": 11,
+                  "type": 10,
                   "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/virtualnetworkgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "VPNGatewayResource",
+                    "resourceIds": ["{VPNGatewayResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelTotalFlowCount", "aggregation": 1},
+                      {"namespace": "microsoft.network/virtualnetworkgateways", "metric": "microsoft.network/virtualnetworkgateways--TunnelP2SBandwidth", "aggregation": 1}
+                    ],
+                    "title": "Fluxo de Túneis e Largura de Banda P2S",
+                    "gridSettings": {"rowLimit": 10000}
                   },
-                  "name": "submenu-networking"
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VPNGW"},
+                  "name": "net-vpngw-tunnel-flow"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
-                },
-                {
-                  "type": 3,
-                  "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
+                  "content": {"json": "<b style=\"color:#003366\">Firewall</b> - KPIs, regras, políticas, tráfego, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw"
                 },
                 {
                   "type": 1,
-                  "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
+                  "content": {"json": "<h2 style=\"color:#003366\">Azure Firewall</h2><p style=\"color:#003366\">Monitoramento e análise de Azure Firewalls, incluindo status, regras, políticas e tráfego de rede.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-header"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
+                    "query": "resources | where type == 'microsoft.network/azurefirewalls' | project id, name, resourceGroup, location, sku = properties.sku.tier, threatIntelMode = tostring(properties.threatIntelMode), zones = array_length(zones), provisioningState = tostring(properties.provisioningState), ipConfigs = array_length(properties.ipConfigurations) | order by name asc",
+                    "size": 0,
+                    "title": "Lista de Azure Firewalls",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "sku", "formatter": 1, "formatOptions": {"customColumnWidthSetting": "15ch"}},
+                        {"columnMatch": "threatIntelMode", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Alert", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deny", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Off", "representation": "disabled", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "zones", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": ">=", "thresholdValue": "2", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "1", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "0", "representation": "disabled", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "3", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "sku", "label": "SKU"},
+                        {"columnId": "threatIntelMode", "label": "Modo Intel. Ameaças"},
+                        {"columnId": "zones", "label": "Zonas"},
+                        {"columnId": "provisioningState", "label": "Estado"},
+                        {"columnId": "ipConfigs", "label": "IP Configs"}
+                      ]
+                    }
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-list"
                 },
                 {
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
+                    "query": "resources | where type == 'microsoft.network/azurefirewalls' | project id, name, ipConfigs = properties.ipConfigurations | mvexpand ipConfig = ipConfigs | project name, ipConfigName = tostring(ipConfig.name), publicIP = tostring(ipConfig.properties.publicIPAddress.id), subnet = tostring(ipConfig.properties.subnet.id) | extend publicIPName = tostring(split(publicIP, '/')[-1]), subnetName = tostring(split(subnet, '/')[-1]) | project name, ipConfigName, publicIPName, subnetName",
+                    "size": 0,
+                    "title": "Configurações de IP dos Azure Firewalls",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Firewall"},
+                        {"columnId": "ipConfigName", "label": "Nome da Config"},
+                        {"columnId": "publicIPName", "label": "IP Público"},
+                        {"columnId": "subnetName", "label": "Subnet"}
+                      ]
+                    }
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
-                {
-                  "type": 11,
-                  "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "TrafficManager"}
-                    ]
-                  },
-                  "name": "submenu-networking"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-ipconfigs"
                 },
                 {
-                  "type": 1,
+                  "type": 10,
                   "content": {
-                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada e centralizada dos recursos de rede do Azure. Selecione um tipo específico de recurso nos submenus acima para visualizar métricas, status e detalhes.</p>"
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--FirewallHealth", "aggregation": 4}
+                    ],
+                    "title": "Saúde do Firewall",
+                    "gridSettings": {"rowLimit": 10000}
                   },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-overview-header"
+                  "customWidth": "33",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-health"
                 },
                 {
-                  "type": 3,
+                  "type": 10,
                   "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by tipo=type | order by count_ desc",
-                    "size": 1,
-                    "title": "Recursos de Rede por Tipo",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "piechart"
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--DataProcessed", "aggregation": 1}
+                    ],
+                    "title": "Dados Processados",
+                    "gridSettings": {"rowLimit": 10000}
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-type"
+                  "customWidth": "33",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-data"
                 },
                 {
-                  "type": 3,
+                  "type": 10,
                   "content": {
-                    "version": "KqlItem/1.0",
-                    "query": "resources | where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/virtualnetworkgateways', 'microsoft.network/azurefirewalls', 'microsoft.network/trafficmanagerprofiles') | summarize count() by resourceGroup | order by count_ desc | limit 10",
-                    "size": 1,
-                    "title": "Top 10 Grupos de Recursos por Recursos de Rede",
-                    "queryType": 1,
-                    "resourceType": "microsoft.resourcegraph/resources",
-                    "crossComponentResources": ["{Subscription}"],
-                    "visualization": "barchart"
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--Throughput", "aggregation": 4}
+                    ],
+                    "title": "Throughput",
+                    "gridSettings": {"rowLimit": 10000}
                   },
-                  "customWidth": "50",
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "NetOverview"},
-                  "name": "net-resources-by-rg"
-                }
-              ]
-            },
-            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
-            "name": "Network Futurist"
-          },
-          {
-            "type": 12,
-            "content": {
-              "version": "NotebookGroup/1.0",
-              "groupType": "editable",
-              "items": [
+                  "customWidth": "33",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
+                  "name": "net-fw-throughput"
+                },
                 {
-                  "type": 11,
+                  "type": 10,
                   "content": {
-                    "version": "LinkItem/1.0",
-                    "style": "toolbar",
-                    "links": [
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🗺️ Visão Geral", "subTarget": "NetOverview", "style": "link", "icon": "Dashboard"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link", "icon": "Network"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ NSG", "subTarget": "NSG", "style": "link", "icon": "Shield"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "👥 ASG", "subTarget": "ASG", "style": "link", "icon": "Group"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔀 Load Balancer", "subTarget": "LB", "style": "link", "icon": "Switch"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌀 Application Gateway", "subTarget": "AppGW", "style": "link", "icon": "Gateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 VPN Gateway", "subTarget": "VPNGW", "style": "link", "icon": "VpnGateway"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚡ ExpressRoute", "subTarget": "ExpressRoute", "style": "link", "icon": "ExpressRoute"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔥 Firewall", "subTarget": "FW", "style": "link", "icon": "Firewall"},
-                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚦 Traffic Manager", "subTarget": "TrafficManager", "style": "link", "icon": "Traffic
-                    ]
-                  },
-                  "name
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "FirewallResource",
+                    "resourceIds": ["{FirewallResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/azurefirewalls", "metric": "microsoft.network/azurefirewalls--SNATPortUtilization", "aggregation": 4}
                     ],
                     "title": "Utilização de Portas SNAT",
                     "gridSettings": {"rowLimit": 10000}
@@ -1080,11 +1117,10 @@
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "FW"},
                   "name": "net-fw-connections"
                 },
-                {
-                  "type": 3,
+                {                  "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallApplicationRule\"\n| where TimeGenerated {timerange}\n| project TimeGenerated, Resource, action_s, ruleName_s, fqdn_s, sourceIP_s, clientIP_s, port_s, targetUrl_s, msg_s\n| order by TimeGenerated desc",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"AZUREFIREWALLS\"\n| where Category == \"AzureFirewallApplicationRule\"\n| where TimeGenerated > ago(3h)\n| where FirewallResource == "{FirewallResource}" or isempty(\"{FirewallResource}\")\n| project TimeGenerated, Resource, action_s, ruleName_s, fqdn_s, sourceIP_s, clientIP_s, port_s, targetUrl_s, msg_s\n| order by TimeGenerated desc\n| limit 100",
                     "size": 0,
                     "title": "Logs de Regras de Aplicação",
                     "timeContext": {"durationMs": 86400000},
@@ -1174,11 +1210,10 @@
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
                   "name": "net-tm-header"
                 },
-                {
-                  "type": 3,
+                {                  "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.network/trafficmanagerprofiles' | project id, name, resourceGroup, location, monitorStatus = tostring(properties.monitoringStatus), profileStatus = tostring(properties.profileStatus), dnsttl = toint(properties.dnsConfig.ttl), routingMethod = tostring(properties.trafficRoutingMethod), monitorProtocol = tostring(properties.monitorConfig.protocol), monitorPort = toint(properties.monitorConfig.port), monitorPath = tostring(properties.monitorConfig.path), endpointCount = array_length(properties.endpoints) | extend status = case(profileStatus == 'Enabled' && monitorStatus == 'Online', 'Healthy', profileStatus == 'Enabled' && monitorStatus == 'Degraded', 'Degraded', profileStatus == 'Enabled' && monitorStatus == 'CheckingEndpoint', 'Checking', profileStatus == 'Disabled', 'Disabled', 'Unknown') | order by name asc",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| extend monitorStatus = tostring(properties.monitoringStatus)\r\n| extend profileStatus = tostring(properties.profileStatus)\r\n| extend dnsttl = toint(properties.dnsConfig.ttl)\r\n| extend routingMethod = tostring(properties.trafficRoutingMethod) \r\n| extend monitorProtocol = tostring(properties.monitorConfig.protocol)\r\n| extend monitorPort = toint(properties.monitorConfig.port)\r\n| extend monitorPath = tostring(properties.monitorConfig.path)\r\n| extend endpointCount = iff(isnotempty(properties.endpoints), array_length(properties.endpoints), 0)\r\n| extend status = case(\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Online', 'Healthy', \r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Degraded', 'Degraded',\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'CheckingEndpoint', 'Checking',\r\n    profileStatus =~ 'Disabled', 'Disabled',\r\n    'Unknown')\r\n| project id, name, resourceGroup, location, monitorStatus, profileStatus, dnsttl, routingMethod, monitorProtocol, monitorPort, monitorPath, endpointCount, status\r\n| order by name asc",
                     "size": 0,
                     "title": "Lista de Traffic Manager Profiles",
                     "queryType": 1,
@@ -1229,7 +1264,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources | where type == 'microsoft.network/trafficmanagerendpoints' | project id, name, resourceGroup, location, endpointStatus = tostring(properties.endpointStatus), weight = toint(properties.weight), priority = toint(properties.priority), endpointType = tostring(properties.endpointType), hostName = tostring(properties.hostName), targetResourceId = tostring(properties.targetResourceId) | extend status = case(endpointStatus == 'Online', 'Saudável', endpointStatus == 'Degraded', 'Degradado', endpointStatus == 'Offline', 'Indisponível', 'Desconhecido') | order by name asc",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| mv-expand endpoint = properties.endpoints\r\n| project profileName = name,\r\n    endpointName = tostring(endpoint.name),\r\n    endpointStatus = tostring(endpoint.properties.endpointStatus),\r\n    weight = toint(endpoint.properties.weight),\r\n    priority = toint(endpoint.properties.priority),\r\n    endpointType = tostring(endpoint.properties.type),\r\n    targetResource = tostring(endpoint.properties.targetResourceId),\r\n    endpointLocation = tostring(endpoint.properties.endpointLocation)\r\n| extend status = case(\r\n    endpointStatus =~ 'Online', 'Saudável', \r\n    endpointStatus =~ 'Degraded', 'Degradado', \r\n    endpointStatus =~ 'Offline', 'Indisponível', \r\n    'Desconhecido')\r\n| order by profileName, priority asc",
                     "size": 0,
                     "title": "Lista de Endpoints do Traffic Manager",
                     "queryType": 1,
@@ -1420,6 +1455,69 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
                   "name": "net-asg-rules"
+                },                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "tabs",
+                    "links": [
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "💻 Máquinas Virtuais", "subTarget": "VMs", "style": "link"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "🔌 Network", "subTarget": "Network", "style": "link"},
+                      {"cellValue": "SubTabInfra", "linkTarget": "parameter", "linkLabel": "💾 Storage", "subTarget": "Storage", "style": "link"}
+                    ]
+                  },
+                  "name": "infra-tabs"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Recursos de Rede na Infraestrutura</h2>\n<p style=\"color:#003366;\">Visão geral de recursos de rede e suas conexões.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Network"},
+                  "name": "infra-network-description"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources\r\n| where type in~ ('microsoft.network/virtualnetworks', 'microsoft.network/networksecuritygroups', 'microsoft.network/applicationgateways', 'microsoft.network/loadbalancers', 'microsoft.network/networkinterfaces', 'microsoft.network/publicipaddresses', 'microsoft.network/privateendpoints', 'microsoft.network/vpngateways', 'microsoft.network/expressroutegateways')\r\n| summarize count() by type\r\n| order by count_ desc\r\n| project ['Tipo de Recurso']=case(\r\n    type =~ 'microsoft.network/virtualnetworks', 'Virtual Networks',\r\n    type =~ 'microsoft.network/networksecuritygroups', 'Network Security Groups',\r\n    type =~ 'microsoft.network/applicationgateways', 'Application Gateways',\r\n    type =~ 'microsoft.network/loadbalancers', 'Load Balancers',\r\n    type =~ 'microsoft.network/networkinterfaces', 'Network Interfaces',\r\n    type =~ 'microsoft.network/publicipaddresses', 'Public IP Addresses',\r\n    type =~ 'microsoft.network/privateendpoints', 'Private Endpoints',\r\n    type =~ 'microsoft.network/vpngateways', 'VPN Gateways',\r\n    type =~ 'microsoft.network/expressroutegateways', 'ExpressRoute Gateways',\r\n    type), ['Quantidade']=count_",
+                    "size": 0,
+                    "title": "Recursos de Rede por Tipo",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Quantidade",
+                          "formatter": 4,
+                          "formatOptions": {
+                            "palette": "blue"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Network"},
+                  "name": "infra-network-resources"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| extend addressSpace = tostring(properties.addressSpace.addressPrefixes[0])\r\n| extend subnets = array_length(properties.subnets)\r\n| extend peerings = array_length(properties.virtualNetworkPeerings)\r\n| project name, resourceGroup, location, addressSpace, ['Subnets']=subnets, ['Peerings']=peerings",
+                    "size": 0,
+                    "title": "Virtual Networks",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabInfra", "comparison": "isEqualTo", "value": "Network"},
+                  "name": "infra-virtual-networks"
                 },
                 {
                   "type": 1,
@@ -1429,10 +1527,957 @@
                   "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Infra"},
                   "name": "legenda-infra"
                 }
-              ]
-            },
+              ]            },
             "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Infra"},
             "name": "Infra Futurist"
+          },          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h1 style=\"color: #003366; background: linear-gradient(90deg,#e6f7ff,#b3c6e6); padding: 15px; border-radius: 10px;\">🕸️ Networking</h1>\n<p style=\"color:#003366; font-size:1.1em;\">Monitoramento abrangente de recursos de rede no Azure, incluindo Virtual Networks, Application Gateways, Firewalls e mais.</p>"
+                  },
+                  "name": "header-networking"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "tabs",
+                    "links": [
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🌐 Virtual Network", "subTarget": "VNet", "style": "link"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🛡️ Firewall", "subTarget": "Firewall", "style": "link"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🚪 Application Gateway", "subTarget": "AppGateway", "style": "link"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "⚖️ Load Balancer", "subTarget": "LoadBalancer", "style": "link"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔒 NSG", "subTarget": "NSG", "style": "link"},
+                      {"cellValue": "SubTabNet", "linkTarget": "parameter", "linkLabel": "🔑 ASG", "subTarget": "ASG", "style": "link"}
+                    ]
+                  },
+                  "name": "submenu-networking"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Networking</h2><p style=\"color:#003366\">Visão detalhada de recursos de rede. Selecione um submenu acima.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isNotEqualTo", "value": "VNet"},
+                  "name": "networking-overview"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Virtual Networks</h2><p style=\"color:#003366\">Visão geral, métricas e status das redes virtuais no Azure.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "header-vnet"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "Resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| extend addressSpace = tostring(properties.addressSpace.addressPrefixes[0])\r\n| extend subnets = array_length(properties.subnets)\r\n| extend peerings = array_length(properties.virtualNetworkPeerings)\r\n| project name, resourceGroup, location, addressSpace, ['Subnets']=subnets, ['Peerings']=peerings",
+                    "size": 0,
+                    "title": "Virtual Networks",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {"filter": true}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "query-vnets"
+                },
+                {                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| mv-expand subnet=properties.subnets\r\n| extend subnetName = tostring(subnet.name)\r\n| extend prefix = tostring(subnet.properties.addressPrefix)\r\n| extend nsgId = iff(isnotempty(subnet.properties.networkSecurityGroup.id), tostring(subnet.properties.networkSecurityGroup.id), 'Sem NSG')\r\n| extend nsgName = iff(isnotempty(nsgId) and nsgId != 'Sem NSG', split(nsgId, '/')[-1], 'Sem NSG')\r\n| extend delegations = array_length(iff(isnotempty(subnet.properties.delegations), subnet.properties.delegations, dynamic([])))\r\n| project vnetName = name, resourceGroup, subnetName, prefix, cidrSize = split(prefix, '/')[-1], nsgName, subnet_type = iff(subnetName startswith 'AzureBastionSubnet', '🔑 Bastion', iff(subnetName startswith 'GatewaySubnet', '🌐 Gateway', iff(subnetName startswith 'AzureFirewall', '🛡️ Firewall', '🖧 Padrão'))), delegations\r\n| order by tostring(vnetName) asc, tostring(subnetName) asc",
+                    "size": 0,
+                    "title": "Subnets por Virtual Network",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {"filter": true, "labelSettings": [
+                      {"columnId": "vnetName", "label": "Virtual Network"},
+                      {"columnId": "subnetName", "label": "Subnet"},
+                      {"columnId": "prefix", "label": "Prefixo CIDR"},
+                      {"columnId": "nsg", "label": "NSG Associado"}
+                    ]}
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "query-subnets"
+                },                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/virtualnetworks'\r\n| mv-expand peering=properties.virtualNetworkPeerings\r\n| extend peeringName = peering.name\r\n| extend remoteVNet = split(peering.properties.remoteVirtualNetwork.id, '/')[8]\r\n| extend peeringState = peering.properties.peeringState\r\n| extend allowGatewayTransit = peering.properties.allowGatewayTransit\r\n| extend allowForwardedTraffic = peering.properties.allowForwardedTraffic\r\n| project vnetName = name, peeringName, remoteVNet, peeringState, allowGatewayTransit, allowForwardedTraffic\r\n| order by vnetName asc",
+                    "size": 0,
+                    "title": "VNet Peerings",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "vnetName", "label": "VNet Origem"},
+                        {"columnId": "peeringName", "label": "Nome do Peering"},
+                        {"columnId": "remoteVNet", "label": "VNet Destino"},
+                        {"columnId": "peeringState", "label": "Estado"},
+                        {"columnId": "allowGatewayTransit", "label": "Gateway Transit"},
+                        {"columnId": "allowForwardedTraffic", "label": "Forward Traffic"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "VNet"},
+                  "name": "query-peerings"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Azure Firewalls</h2><p style=\"color:#003366\">Visão geral dos firewalls, regras e tráfego.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "Firewall"},
+                  "name": "header-firewall"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/azurefirewalls'\r\n| extend fwSku = properties.sku.tier\r\n| extend threatIntelMode = properties.threatIntelMode\r\n| extend provisioningState = properties.provisioningState\r\n| extend zones = array_length(zones)\r\n| project name, resourceGroup, location, fwSku, threatIntelMode, provisioningState, zones",
+                    "size": 0,
+                    "title": "Azure Firewalls",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "fwSku", "label": "SKU"},
+                        {"columnId": "threatIntelMode", "label": "Modo Intel Ameaças"},
+                        {"columnId": "provisioningState", "label": "Estado"},
+                        {"columnId": "zones", "label": "Zonas"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "Firewall"},
+                  "name": "query-firewalls"
+                },                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook3b98d9e4-9dd1-4069-8bbd-44d056612069",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/azurefirewalls",
+                    "metricScope": 0,
+                    "resourceParameter": "Resource",
+                    "resourceIds": [
+                      "{Resource}"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {
+                        "namespace": "microsoft.network/azurefirewalls",
+                        "metric": "microsoft.network/azurefirewalls--FirewallHealth",
+                        "aggregation": 4,
+                        "splitBy": null
+                      }
+                    ],
+                    "title": "Saúde dos Firewalls",
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    }
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SubTabNet",
+                      "comparison": "isEqualTo",
+                      "value": "Firewall"
+                    },
+                    {
+                      "parameterName": "Resource",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "firewall-health"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Application Gateways</h2><p style=\"color:#003366\">Visão geral dos Application Gateways, sua saúde e métricas.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGateway"},
+                  "name": "header-appgw"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/applicationgateways'\r\n| extend tier = tostring(properties.sku.tier)\r\n| extend capacity = toint(properties.sku.capacity)\r\n| extend status = properties.operationalState\r\n| extend wafMode = iff(isnotempty(properties.webApplicationFirewallConfiguration.firewallMode), properties.webApplicationFirewallConfiguration.firewallMode, 'Não configurado')\r\n| extend hasWaf = iff(isnotempty(properties.webApplicationFirewallConfiguration), true, false)\r\n| extend backendPools = array_length(properties.backendAddressPools)\r\n| extend httpListeners = array_length(properties.httpListeners)\r\n| project name, resourceGroup, location, tier, capacity, status, wafMode, hasWaf, backendPools, httpListeners",
+                    "size": 0,
+                    "title": "Application Gateways",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "hasWaf",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "true",
+                                "representation": "Sev0",
+                                "text": "Sim"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "false",
+                                "representation": "disabled",
+                                "text": "Não"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "Unknown",
+                                "text": "{0}"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "tier", "label": "Tier"},
+                        {"columnId": "capacity", "label": "Capacidade"},
+                        {"columnId": "status", "label": "Status"},
+                        {"columnId": "wafMode", "label": "Modo WAF"},
+                        {"columnId": "hasWaf", "label": "WAF Habilitado"},
+                        {"columnId": "backendPools", "label": "Backend Pools"},
+                        {"columnId": "httpListeners", "label": "HTTP Listeners"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "AppGateway"},
+                  "name": "query-appgw"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbooke82187c4-807a-413c-85c6-6229c4b1da95",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/applicationgateways",
+                    "metricScope": 0,
+                    "resourceParameter": "Resource",
+                    "resourceIds": [
+                      "{Resource}"
+                    ],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {
+                      "durationMs": 86400000
+                    },
+                    "metrics": [
+                      {
+                        "namespace": "microsoft.network/applicationgateways",
+                        "metric": "microsoft.network/applicationgateways--HealthyHostCount",
+                        "aggregation": 4,
+                        "splitBy": null
+                      },
+                      {
+                        "namespace": "microsoft.network/applicationgateways",
+                        "metric": "microsoft.network/applicationgateways--UnhealthyHostCount",
+                        "aggregation": 4,
+                        "splitBy": null
+                      }
+                    ],
+                    "title": "Contagem de Hosts Saudáveis/Não-Saudáveis",
+                    "gridSettings": {
+                      "rowLimit": 10000
+                    }
+                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "SubTabNet",
+                      "comparison": "isEqualTo",
+                      "value": "AppGateway"
+                    },
+                    {
+                      "parameterName": "Resource",
+                      "comparison": "isNotEqualTo"
+                    }
+                  ],
+                  "name": "appgw-host-health"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Networking"},
+            "name": "Networking Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h1 style=\"color: #003366; background: linear-gradient(90deg,#e6f7ff,#b3c6e6); padding: 15px; border-radius: 10px;\">🧠 IA & Machine Learning</h1>\n<p style=\"color:#003366; font-size:1.1em;\">Visão completa de serviços cognitivos, Azure OpenAI, Machine Learning e outros serviços de IA no Azure.</p>"
+                  },
+                  "name": "header-ai"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "tabs",
+                    "links": [
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🔍 Visão Geral", "subTarget": "AIOverview", "style": "link"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🤖 OpenAI", "subTarget": "OpenAI", "style": "link"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🧪 ML Services", "subTarget": "MachineLearning", "style": "link"},
+                      {"cellValue": "SubTabAI", "linkTarget": "parameter", "linkLabel": "🔎 Serviços Cognitivos", "subTarget": "CognitiveServices", "style": "link"}
+                    ]
+                  },
+                  "name": "ai-tabs"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Serviços de IA no Azure</h2>\n<p style=\"color:#003366;\">Visão geral dos serviços de IA, incluindo uso, métricas e status.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
+                  "name": "ai-overview-description"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.cognitiveservices/accounts' or type =~ 'microsoft.machinelearningservices/workspaces' or type =~ 'microsoft.search/searchservices'\r\n| extend kind = case(\r\n    type =~ 'microsoft.cognitiveservices/accounts' and properties.kind =~ 'OpenAI', 'Azure OpenAI',\r\n    type =~ 'microsoft.cognitiveservices/accounts', 'Cognitive Services',\r\n    type =~ 'microsoft.machinelearningservices/workspaces', 'Machine Learning',\r\n    type =~ 'microsoft.search/searchservices', 'AI Search',\r\n    'Outros')\r\n| summarize count() by kind\r\n| order by count_ desc",
+                    "size": 1,
+                    "title": "Distribuição de Serviços de IA",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "piechart"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
+                  "name": "ai-services-distribution"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.cognitiveservices/accounts' or type =~ 'microsoft.machinelearningservices/workspaces' or type =~ 'microsoft.search/searchservices'\r\n| extend kind = case(\r\n    type =~ 'microsoft.cognitiveservices/accounts' and properties.kind =~ 'OpenAI', 'Azure OpenAI',\r\n    type =~ 'microsoft.cognitiveservices/accounts', strcat('Cognitive Services - ', properties.kind),\r\n    type =~ 'microsoft.machinelearningservices/workspaces', 'Machine Learning',\r\n    type =~ 'microsoft.search/searchservices', 'AI Search',\r\n    'Outros')\r\n| extend sku = case(\r\n    type =~ 'microsoft.cognitiveservices/accounts', properties.sku.name,\r\n    type =~ 'microsoft.machinelearningservices/workspaces', properties.sku,\r\n    type =~ 'microsoft.search/searchservices', properties.sku.name,\r\n    'N/A')\r\n| project name, kind, sku, resourceGroup, location, subscriptionId",
+                    "size": 0,
+                    "title": "Inventário de Recursos de IA",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true,
+                      "sortBy": [
+                        {
+                          "itemKey": "kind",
+                          "sortOrder": 1
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "kind",
+                        "sortOrder": 1
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabAI", "comparison": "isEqualTo", "value": "AIOverview"},
+                  "name": "ai-resources-inventory"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "AI"},
+            "name": "AI Futurist"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h1 style=\"color: #003366; background: linear-gradient(90deg,#e6f7ff,#b3c6e6); padding: 15px; border-radius: 10px;\">📦 Containers & Orquestração</h1>\n<p style=\"color:#003366; font-size:1.1em;\">Monitoramento abrangente de plataformas de contêineres no Azure, incluindo Azure Kubernetes Service (AKS) e Azure Red Hat OpenShift (ARO).</p>"
+                  },
+                  "name": "header-containers"
+                },
+                {
+                  "type": 11,
+                  "content": {
+                    "version": "LinkItem/1.0",
+                    "style": "tabs",
+                    "links": [
+                      {"cellValue": "SubTabContainers", "linkTarget": "parameter", "linkLabel": "🔍 Visão Geral", "subTarget": "ContainersOverview", "style": "link"},
+                      {"cellValue": "SubTabContainers", "linkTarget": "parameter", "linkLabel": "🚢 Azure Kubernetes Service (AKS)", "subTarget": "AKS", "style": "link"},
+                      {"cellValue": "SubTabContainers", "linkTarget": "parameter", "linkLabel": "🎯 Azure Red Hat OpenShift (ARO)", "subTarget": "ARO", "style": "link"},
+                      {"cellValue": "SubTabContainers", "linkTarget": "parameter", "linkLabel": "📈 Métricas de Sistema", "subTarget": "ContainerMetrics", "style": "link"}
+                    ]
+                  },
+                  "name": "container-tabs"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Visão Geral de Containers</h2>\n<p style=\"color:#003366;\">Resumo das plataformas de contêineres no ambiente, clusters, status e métricas gerais.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainersOverview"},
+                  "name": "containers-overview-description"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type in ('microsoft.containerservice/managedclusters', 'microsoft.redhatopenshift/openshiftclusters')\n| extend clusterType = iif(type == 'microsoft.containerservice/managedclusters', 'AKS', 'ARO')\n| extend k8sVersion = iif(type == 'microsoft.containerservice/managedclusters', tostring(properties.kubernetesVersion), tostring(properties.clusterProfile.version))\n| extend nodeCount = case(\n    type == 'microsoft.containerservice/managedclusters' and isnotempty(properties.agentPoolProfiles) and array_length(properties.agentPoolProfiles) > 0, toint(properties.agentPoolProfiles[0].count),\n    type == 'microsoft.redhatopenshift/openshiftclusters' and isnotempty(properties.workerProfiles) and array_length(properties.workerProfiles) > 0, toint(properties.workerProfiles[0].count),\n    0)\n| extend status = tostring(properties.provisioningState)\n| project name, location, resourceGroup, clusterType, k8sVersion, nodeCount, status\n| order by clusterType asc, name asc",
+                    "size": 0,
+                    "title": "Clusters por Tipo (AKS e ARO)",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "clusterType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "AKS", "representation": "Containers", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "ARO", "representation": "RedHat", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "4", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deleting", "representation": "stopped", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainersOverview"},
+                  "name": "container-clusters-overview"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type in ('microsoft.containerservice/managedclusters', 'microsoft.redhatopenshift/openshiftclusters')\n| summarize AKS=countif(type == 'microsoft.containerservice/managedclusters'), ARO=countif(type == 'microsoft.redhatopenshift/openshiftclusters') by resourceGroup\n| sort by AKS desc, ARO desc",
+                    "size": 0,
+                    "title": "Distribuição de Clusters por Grupo de Recursos",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "AKS", "formatter": 8, "formatOptions": {"min": 0, "palette": "blue"}},
+                        {"columnMatch": "ARO", "formatter": 8, "formatOptions": {"min": 0, "palette": "red"}}
+                      ]
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainersOverview"},
+                  "name": "container-clusters-by-rg"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type in ('microsoft.containerservice/managedclusters', 'microsoft.redhatopenshift/openshiftclusters')\n| extend clusterType = iif(type == 'microsoft.containerservice/managedclusters', 'AKS', 'ARO')\n| summarize count() by location, clusterType\n| order by location asc",
+                    "size": 0,
+                    "title": "Distribuição de Clusters por Região",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "barchart"
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainersOverview"},
+                  "name": "container-clusters-by-region"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Azure Kubernetes Service (AKS)</h2>\n<p style=\"color:#003366;\">Monitoramento detalhado dos clusters AKS, nodes, pods, e outros recursos.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-header"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "aks-cluster",
+                        "name": "AKSCluster",
+                        "label": "AKS Cluster",
+                        "type": 5,
+                        "isRequired": false,
+                        "multiSelect": false,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "resources\n| where type == 'microsoft.containerservice/managedclusters'\n| project value = id, label = name\n| order by label asc",
+                        "crossComponentResources": ["{Subscription}"],
+                        "typeSettings": {"additionalResourceOptions": ["value::1"]},
+                        "defaultValue": "value::1",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      }
+                    ],
+                    "style": "formHorizontal",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-parameters"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.containerservice/managedclusters'\n| where id == '{AKSCluster}'\n| extend kubernetesVersion = tostring(properties.kubernetesVersion)\n| extend networkPlugin = iif(isnotempty(properties.networkProfile.networkPlugin), tostring(properties.networkProfile.networkPlugin), 'N/A')\n| extend networkPolicy = iif(isnotempty(properties.networkProfile.networkPolicy), tostring(properties.networkProfile.networkPolicy), 'N/A')\n| extend loadBalancerSku = iif(isnotempty(properties.networkProfile.loadBalancerSku), tostring(properties.networkProfile.loadBalancerSku), 'N/A')\n| extend nodeResourceGroup = iif(isnotempty(properties.nodeResourceGroup), tostring(properties.nodeResourceGroup), 'N/A')\n| extend provisioningState = iif(isnotempty(properties.provisioningState), tostring(properties.provisioningState), 'Unknown')\n| extend hasAgentPools = isnotempty(properties.agentPoolProfiles) and array_length(properties.agentPoolProfiles) > 0\n| extend availabilityZones = iif(hasAgentPools and isnotempty(properties.agentPoolProfiles[0].availabilityZones), tostring(properties.agentPoolProfiles[0].availabilityZones), 'None')\n| extend nodeCount = iif(hasAgentPools and isnotempty(properties.agentPoolProfiles[0].count), toint(properties.agentPoolProfiles[0].count), 0)\n| extend nodeSku = iif(hasAgentPools and isnotempty(properties.agentPoolProfiles[0].vmSize), tostring(properties.agentPoolProfiles[0].vmSize), 'N/A')\n| extend osSku = iif(hasAgentPools and isnotempty(properties.agentPoolProfiles[0].osType), tostring(properties.agentPoolProfiles[0].osType), 'N/A')\n| extend diskSize = iif(hasAgentPools and isnotempty(properties.agentPoolProfiles[0].osDiskSizeGB), toint(properties.agentPoolProfiles[0].osDiskSizeGB), 0)\n| project name, resourceGroup, location, kubernetesVersion, provisioningState, nodeCount, nodeSku, osSku, diskSize, networkPlugin, networkPolicy, loadBalancerSku, nodeResourceGroup, availabilityZones",
+                    "size": 0,
+                    "title": "Detalhes do Cluster AKS",
+                    "noDataMessage": "Selecione um cluster AKS para visualizar detalhes",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "4", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deleting", "representation": "stopped", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "nodeCount", "formatter": 4, "formatOptions": {"palette": "blue", "customColumnWidthSetting": "10ch"}}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-cluster-details"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.containerservice/managedclusters'\n| where id == '{AKSCluster}' and isnotempty(properties.agentPoolProfiles)\n| mvexpand agentPool = properties.agentPoolProfiles\n| extend poolName = tostring(agentPool.name)\n| extend vmSize = iif(isnotempty(agentPool.vmSize), tostring(agentPool.vmSize), 'N/A')\n| extend count = iif(isnotempty(agentPool.count), toint(agentPool.count), 0)\n| extend maxPods = iif(isnotempty(agentPool.maxPods), toint(agentPool.maxPods), 0)\n| extend osType = iif(isnotempty(agentPool.osType), tostring(agentPool.osType), 'N/A')\n| extend osDiskSize = iif(isnotempty(agentPool.osDiskSizeGB), toint(agentPool.osDiskSizeGB), 0)\n| extend mode = iif(isnotempty(agentPool.mode), tostring(agentPool.mode), 'N/A')\n| extend availabilityZones = iif(isnotempty(agentPool.availabilityZones), tostring(agentPool.availabilityZones), 'None')\n| extend nodeLabels = iif(isnotempty(agentPool.nodeLabels), tostring(agentPool.nodeLabels), 'None')\n| project poolName, vmSize, count, maxPods, osType, osDiskSize, mode, availabilityZones, nodeLabels\n| order by poolName asc",
+                    "size": 0,
+                    "title": "Node Pools",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "count", "formatter": 3, "formatOptions": {"palette": "blue"}},
+                        {"columnMatch": "maxPods", "formatter": 3, "formatOptions": {"palette": "greenBlue"}}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-node-pools"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook1231f9e3-f32a-44e9-bb32-4ef3df024c2a",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.containerservice/managedclusters",
+                    "metricScope": 0,
+                    "resourceParameter": "AKSCluster",
+                    "resourceIds": ["{AKSCluster}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--kube_node_status_condition", "aggregation": 3, "splitBy": null},
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--kube_node_status_allocatable_cpu_cores", "aggregation": 1}
+                    ],
+                    "title": "Status dos Nodes e CPUs Alocáveis",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-node-status"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook1231f9e3-f32a-44e9-bb32-4ef3df024c2a",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.containerservice/managedclusters",
+                    "metricScope": 0,
+                    "resourceParameter": "AKSCluster",
+                    "resourceIds": ["{AKSCluster}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--kube_pod_status_ready", "aggregation": 3},
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--kube_pod_status_phase", "aggregation": 3}
+                    ],
+                    "title": "Status dos Pods",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-pod-status"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook1231f9e3-f32a-44e9-bb32-4ef3df024c2a",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.containerservice/managedclusters",
+                    "metricScope": 0,
+                    "resourceParameter": "AKSCluster",
+                    "resourceIds": ["{AKSCluster}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},                    "metrics": [
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--node_cpu_usage_percentage", "aggregation": 3},
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--node_memory_working_set_percentage", "aggregation": 3}
+                    ],
+                    "title": "Uso de CPU e Memória dos Nodes",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-node-resources"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook1231f9e3-f32a-44e9-bb32-4ef3df024c2a",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.containerservice/managedclusters",
+                    "metricScope": 0,
+                    "resourceParameter": "AKSCluster",
+                    "resourceIds": ["{AKSCluster}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},                    "metrics": [
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--pod_cpu_usage_percentage", "aggregation": 3},
+                      {"namespace": "microsoft.containerservice/managedclusters", "metric": "microsoft.containerservice/managedclusters--pod_memory_working_set_percentage", "aggregation": 3}
+                    ],
+                    "title": "Uso de CPU e Memória dos Pods",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-pod-resources"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let clusterName = split('{AKSCluster}', '/')[8];\nKubeNodeInventory\n| where ClusterName == clusterName\n| where TimeGenerated > ago(1h) // Limitar a janela de tempo para melhor desempenho\n| summarize arg_max(TimeGenerated, *) by Computer\n| project Computer, Status, KubeletVersion, OperatingSystem, KubeProxyVersion, TimeGenerated\n| sort by Computer asc",
+                    "size": 0,
+                    "title": "Inventário de Nodes",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Ready", "representation": "success", "text": "{0}"},
+                          {"operator": "Default", "representation": "3", "text": "{0}"}
+                        ]}}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-node-inventory"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let clusterName = split('{AKSCluster}', '/')[8];\nKubePodInventory\n| where ClusterName == clusterName\n| where TimeGenerated > ago(1h) // Limita o período para evitar exceder o limite de recursos\n| summarize arg_max(TimeGenerated, *) by PodUid\n| project Namespace, Name, PodStatus, ContainerStatus, PodIp, Computer, ClusterName, TimeGenerated\n| top 100 by TimeGenerated desc // Limita a 100 recursos\n| sort by Namespace asc, Name asc",
+                    "size": 0,
+                    "title": "Inventário de Pods",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "PodStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Running", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Pending", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "4", "text": "{0}"},
+                          {"operator": "Default", "representation": "Unknown", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "hierarchySettings": {"treeType": 1, "groupBy": ["Namespace"]}
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-pod-inventory"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Azure Red Hat OpenShift (ARO)</h2>\n<p style=\"color:#003366;\">Monitoramento detalhado dos clusters ARO, master nodes, worker nodes e outros recursos.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-header"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "aro-cluster",
+                        "name": "AROCluster",
+                        "label": "ARO Cluster",
+                        "type": 5,
+                        "isRequired": false,
+                        "multiSelect": false,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "resources\n| where type == 'microsoft.redhatopenshift/openshiftclusters'\n| project value = id, label = name\n| order by label asc",
+                        "crossComponentResources": ["{Subscription}"],
+                        "typeSettings": {"additionalResourceOptions": ["value::1"]},
+                        "defaultValue": "value::1",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      }
+                    ],
+                    "style": "formHorizontal",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-parameters"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.redhatopenshift/openshiftclusters'\n| where id == '{AROCluster}'\n| extend version = properties.clusterProfile.version\n| extend consoleUrl = properties.consoleProfile.url\n| extend masterCount = toint(properties.masterProfile.count)\n| extend masterVmSize = properties.masterProfile.vmSize\n| extend workerCount = toint(properties.workerProfiles[0].count)\n| extend workerVmSize = properties.workerProfiles[0].vmSize\n| extend workerDiskSize = toint(properties.workerProfiles[0].diskSizeGB)\n| extend networkVnet = tolower(split(properties.masterProfile.subnetId, '/')[8])\n| extend apiVisibility = properties.apiserverProfile.visibility\n| extend ingressVisibility = properties.ingressProfiles[0].visibility\n| extend provisioningState = properties.provisioningState\n| project name, resourceGroup, location, version, provisioningState, masterCount, masterVmSize, workerCount, workerVmSize, workerDiskSize, networkVnet, apiVisibility, ingressVisibility, consoleUrl",
+                    "size": 0,
+                    "title": "Detalhes do Cluster ARO",
+                    "noDataMessage": "Selecione um cluster ARO para visualizar detalhes",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "4", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deleting", "representation": "stopped", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "masterCount", "formatter": 4, "formatOptions": {"palette": "blue", "customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "workerCount", "formatter": 4, "formatOptions": {"palette": "redBright", "customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "consoleUrl", "formatter": 7, "formatOptions": {"linkTarget": "Url", "linkLabel": "Abrir Console"}}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-cluster-details"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.redhatopenshift/openshiftclusters'\n| where id == '{AROCluster}'\n| mvexpand workerPool = properties.workerProfiles\n| project poolName = tostring(workerPool.name), vmSize = tostring(workerPool.vmSize), count = toint(workerPool.count), diskSize = toint(workerPool.diskSizeGB), subnetId = tostring(workerPool.subnetId)\n| extend subnetName = tolower(split(subnetId, '/')[10])\n| order by poolName asc",
+                    "size": 0,
+                    "title": "Worker Pools",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "count", "formatter": 3, "formatOptions": {"palette": "redBright"}},
+                        {"columnMatch": "diskSize", "formatter": 3, "formatOptions": {"palette": "greenRed"}}
+                      ],
+                      "labelSettings": [
+                        {"columnId": "poolName", "label": "Nome do Pool"},
+                        {"columnId": "vmSize", "label": "Tamanho VM"},
+                        {"columnId": "count", "label": "Contagem"},
+                        {"columnId": "diskSize", "label": "Tamanho Disco (GB)"},
+                        {"columnId": "subnetName", "label": "Subnet"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-worker-pools"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let clusterName = split('{AROCluster}', '/')[8];\nContainerLog\n| where LogEntry has \"ARO\" or LogEntry has clusterName\n| where LogEntry has_any (\"error\", \"warning\", \"critical\")\n| project TimeGenerated, LogEntry, Computer\n| sort by TimeGenerated desc",
+                    "size": 0,
+                    "title": "Logs de Erros e Alertas de ARO",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "gridSettings": {
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-error-logs"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do ARO, é necessário configurar as integrações de monitoramento específicas para o Red Hat OpenShift. Consulte a <a href='https://docs.microsoft.com/azure/openshift/howto-azure-monitor' target='_blank'>documentação oficial</a> para mais informações.</p>\n</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-integration-note"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Métricas de Sistema de Containers</h2>\n<p style=\"color:#003366;\">Visualizações detalhadas de métricas de sistema para plataformas de contêineres.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainerMetrics"},
+                  "name": "container-metrics-header"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\n| where Namespace == \"container.azm.ms/cpu\" \n| where Name == \"usageNanoCores\"\n| where TimeGenerated > ago(2h) // Limitar a janela de tempo para evitar timeout\n| summarize avg(Val) by bin(TimeGenerated, 10m), Computer, Tags\n| where isnotempty(Tags) and Tags has \"container.azm.ms/containerName\" // Verificar se a tag existe\n| extend containerName = tostring(Tags[\"container.azm.ms/containerName\"])\n| where isnotempty(containerName) // Garantir que temos um nome de container válido\n| project TimeGenerated, Computer, containerName, avgVal = avg_Val/1000000 // Convert to millicores\n| summarize avgCPU = avg(avgVal) by containerName\n| top 10 by avgCPU desc\n| render barchart",
+                    "size": 0,
+                    "title": "Top 10 Containers por Uso de CPU (millicores)",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "visualization": "barchart"
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainerMetrics"},
+                  "name": "container-top-cpu"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "InsightsMetrics\n| where Namespace == \"container.azm.ms/memory\" \n| where Name == \"memoryRssBytes\"\n| where TimeGenerated > ago(2h) // Limitar a janela de tempo para evitar timeout\n| summarize avg(Val) by bin(TimeGenerated, 10m), Computer, Tags\n| where isnotempty(Tags) and Tags has \"container.azm.ms/containerName\" // Verificar se a tag existe\n| extend containerName = tostring(Tags[\"container.azm.ms/containerName\"])\n| where isnotempty(containerName) // Garantir que temos um nome de container válido\n| project TimeGenerated, Computer, containerName, avgVal = avg_Val/1048576 // Convert to MB\n| summarize avgMemory = avg(avgVal) by containerName\n| top 10 by avgMemory desc\n| render barchart",
+                    "size": 0,
+                    "title": "Top 10 Containers por Uso de Memória (MB)",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "visualization": "barchart"
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainerMetrics"},
+                  "name": "container-top-memory"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "KubeNodeInventory\n| where TimeGenerated > ago(1h)\n| distinct ClusterName, Computer, Status, KubeProxyVersion\n| summarize Nodes=count() by ClusterName, Status\n| sort by ClusterName asc, Status asc",
+                    "size": 0,
+                    "title": "Status dos Nodes por Cluster",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "Status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Ready", "representation": "success", "text": "{0}"},
+                          {"operator": "Default", "representation": "3", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "Nodes", "formatter": 3, "formatOptions": {"palette": "blue"}}
+                      ]
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainerMetrics"},
+                  "name": "container-node-status"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "KubePodInventory\n| where TimeGenerated > ago(1h)\n| distinct ClusterName, Namespace, PodStatus\n| summarize Pods=count() by ClusterName, Namespace, PodStatus\n| sort by ClusterName asc, Namespace asc",
+                    "size": 0,
+                    "title": "Status dos Pods por Namespace",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "PodStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Running", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Pending", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "4", "text": "{0}"},
+                          {"operator": "Default", "representation": "Unknown", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "Pods", "formatter": 3, "formatOptions": {"palette": "greenRed"}}
+                      ],
+                      "hierarchySettings": {"treeType": 1, "groupBy": ["ClusterName", "Namespace"]}
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainerMetrics"},
+                  "name": "container-pod-status"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda do Azure Kubernetes Service (AKS):</b><br>As visualizações de containers seguem as recomendações e métricas oficiais do Azure Monitor Container Insights:<ul><li><span style='color:#00bfae;font-weight:bold;'>Saudável</span>: Todos os nodes e pods operacionais</li><li><span style='color:#ffd700;font-weight:bold;'>Atenção</span>: Alguns pods em estado pendente ou com reinicializações</li><li><span style='color:#ff4c4c;font-weight:bold;'>Crítico</span>: Nodes não saudáveis ou falhas em pods</li></ul>Para mais detalhes, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/containers/container-insights-overview' target='_blank'>documentação do Container Insights</a>.</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Containers"},
+                  "name": "legenda-containers"
+                }
+              ]
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Containers"},
+            "name": "Containers Futurist"
           }
         ]
       },
