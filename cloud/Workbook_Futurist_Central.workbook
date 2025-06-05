@@ -1296,6 +1296,95 @@
                 },
                 {
                   "type": 1,
+                  "content": {"json": "<b style=\"color:#003366\">Application Security Groups</b> - KPIs, associações, regras, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
+                  "name": "net-asg"
+                },
+                {
+                  "type": 1,
+                  "content": {"json": "<h2 style=\"color:#003366\">Application Security Groups</h2><p style=\"color:#003366\">Monitoramento e análise de ASGs, incluindo associações de rede, interfaces de rede associadas e regras aplicadas.</p>"},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
+                  "name": "net-asg-header"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.network/applicationsecuritygroups' | project id, name, resourceGroup, location, properties.resourceGuid | extend asgId = id | order by name asc",
+                    "size": 0,
+                    "title": "Lista de Application Security Groups",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "properties_resourceGuid", "label": "GUID"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
+                  "name": "net-asg-list"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.network/networkinterfaces' | mvexpand asg = properties.ipConfigurations | where isnotempty(asg.properties.applicationSecurityGroups) | mvexpand asgRef = asg.properties.applicationSecurityGroups | extend asgId = tostring(asgRef.id), nicName = name, nicId = id | project nicName, nicId, asgId | join kind=inner (resources | where type == 'microsoft.network/applicationsecuritygroups' | project asgId = id, asgName = name) on asgId | project nicName, asgName",
+                    "size": 0,
+                    "title": "Interfaces de Rede Associadas a ASGs",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "nicName", "label": "Interface de Rede"},
+                        {"columnId": "asgName", "label": "Application Security Group"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
+                  "name": "net-asg-nics"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type == 'microsoft.network/networksecuritygroups' | mvexpand rule = properties.securityRules | extend ruleName = tostring(rule.name), ruleAccess = tostring(rule.properties.access), rulePriority = toint(rule.properties.priority), ruleDirection = tostring(rule.properties.direction), ruleProtocol = tostring(rule.properties.protocol) | mvexpand asgRef = rule.properties.applicationSecurityGroups | extend asgId = tostring(asgRef.id) | where isnotempty(asgId) | join kind=inner (resources | where type == 'microsoft.network/applicationsecuritygroups' | project asgId = id, asgName = name) on asgId | project nsgName = name, ruleName, ruleAccess, rulePriority, ruleDirection, ruleProtocol, asgName",
+                    "size": 0,
+                    "title": "Regras NSG Utilizando ASGs",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "ruleAccess", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Allow", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deny", "representation": "3", "text": "{0}"}
+                        ]}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "nsgName", "label": "NSG"},
+                        {"columnId": "ruleName", "label": "Regra"},
+                        {"columnId": "ruleAccess", "label": "Acesso"},
+                        {"columnId": "rulePriority", "label": "Prioridade"},
+                        {"columnId": "ruleDirection", "label": "Direção"},
+                        {"columnId": "ruleProtocol", "label": "Protocolo"},
+                        {"columnId": "asgName", "label": "ASG"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "ASG"},
+                  "name": "net-asg-rules"
+                },
+                {
+                  "type": 1,
                   "content": {
                     "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda:</b><br>As visualizações de rede utilizam métricas e status oficiais do Azure Monitor:<ul><li><span style='color:#1976d2;font-weight:bold;'>Azul</span>: Operacional</li><li><span style='color:#fbc02d;font-weight:bold;'>Amarelo</span>: Atenção</li><li><span style='color:#d32f2f;font-weight:bold;'>Vermelho</span>: Crítico</li><li><span style='color:#616161;font-weight:bold;'>Cinza</span>: Indisponível</li></ul>Distribuições por região/SKU seguem <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial</a>.</div>"
                   },
