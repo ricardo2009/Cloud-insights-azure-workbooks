@@ -1,4 +1,4 @@
-
+*
 <!-- Banner colorido com gradiente -->
 <p align="center">
   <img src="https://img.shields.io/badge/AZURE%20WORKBOOKS-blueviolet?style=for-the-badge&logo=azure" />
@@ -31,6 +31,7 @@ flowchart TD
     B -->|🌐 Contém Workbooks de Rede| C2["📂 network/ <br>🌐 Rede"]:::folderStyle
     B -->|📜 Documentação do Workspace| C3["📄 WORKSPACE.md"]:::docStyle
     
+    
     C1 -->|📌 Monitoramento de Apps| D1["📄 azure_app_service_insights.workbook"]:::workbookStyle
     C1 -->|⚡ Monitoramento de Funções Azure| D2["📄 azure_functions_insights.workbook"]:::workbookStyle
     
@@ -39,14 +40,14 @@ flowchart TD
     C2 -->|🚦 Monitoramento do Application Gateway| D5["📄 azure_application_gateway_insights.workbook"]:::workbookStyle
     C2 -->|🛠️ Outros Workbooks| D6["..."]:::defaultStyle
     
+    
     %% Definições de Estilos
     classDef rootStyle fill:#0073e6,stroke:#005bb5,stroke-width:2px,color:white,font-size:16px;
     classDef folderStyle fill:#f2f2f2,stroke:#ccc,stroke-width:1px,color:#333,font-size:14px;
     classDef docStyle fill:#ffcc99,stroke:#d88932,stroke-width:1px,color:#5b3e00,font-size:14px;
     classDef workbookStyle fill:#cfe2f3,stroke:#6fa8dc,stroke-width:1px,color:#003366,font-size:14px;
     classDef defaultStyle fill:#d9d9d9,stroke:#8c8c8c,stroke-width:1px,color:#333,font-size:14px;
-```	
-
+```
 
 ## 🛠️ Como Usar
 
@@ -96,7 +97,10 @@ flowchart TD
 
 ## 🌈 Créditos & Licença
 
+Este projeto está sob a licença **MIT**. Isso significa que você pode usá-lo, modificar e distribuir livremente, desde que mantenha os créditos do autor.  
+Consulte o arquivo [`LICENSE`](./LICENSE) para mais detalhes.
+
 <p align="center">
   Feito por <b>ricardo2009</b> com 💙<br>
   <img src="https://img.shields.io/github/license/ricardo2009/Cloud-insights-azure-workbooks?style=flat-square" />
-</p>
+</p>*

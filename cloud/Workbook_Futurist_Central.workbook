@@ -643,7 +643,8 @@
                 },
                 {
                   "type": 1,
-                  "content": {"json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, perfis, endpoints, disponibilidade, etc."},
+                  "content": {
+                    "json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, perfis, endpoints, disponibilidade, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
                   "name": "net-tm"
                 },
@@ -716,7 +717,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| where id == \"{TrafficManagerResource}\" or isempty(\"{TrafficManagerResource}\")\r\n| mv-expand endpoint = properties.endpoints\r\n| project profileName = name,\r\n    endpointName = tostring(endpoint.name),\r\n    endpointStatus = tostring(endpoint.properties.endpointStatus),\r\n    weight = toint(iff(isnotempty(endpoint.properties.weight), endpoint.properties.weight, 0)),\r\n    priority = toint(iff(isnotempty(endpoint.properties.priority), endpoint.properties.priority, 0)),\r\n    endpointType = tostring(endpoint.properties.type),\r\n    targetResource = tostring(iff(isnotempty(endpoint.properties.targetResourceId), endpoint.properties.targetResourceId, endpoint.properties.target)),\r\n    endpointLocation = tostring(endpoint.properties.endpointLocation)\r\n| extend status = case(\r\n    endpointStatus =~ 'Online', 'Saudável ✅', \r\n    endpointStatus =~ 'Degraded', 'Degradado ⚠️', \r\n    endpointStatus =~ 'Offline', 'Indisponível ❌', \r\n    'Desconhecido ❓')\r\n| order by profileName, priority asc",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| where id == \"{TrafficManagerResource}\" or isempty(\"{TrafficManagerResource}\")\r\n| mv-expand endpoint = properties.endpoints\r\n| project profileName = name,\r\n    endpointName = tostring(endpoint.name),\r\n    endpointStatus = tostring(endpoint.properties.endpointStatus),\r\n    weight = toint(iff(isnotempty(endpoint.properties.weight), endpoint.properties.weight, 0)),\r\n    priority = toint(iff(isnotempty(endpoint.properties.priority), endpoint.properties.priority, 0)),\r\n    endpointType = tostring(endpoint.properties.type),\r\n    targetResource = tostring(iff(isnotempty(endpoint.properties.targetResourceId), endpoint.properties.targetResourceId, endpoint.properties.target)),\r\n    endpointLocation = tostring(endpoint.properties.endpointLocation)\r\n| extend status = case(\r\n    endpointStatus =~ 'Online', 'Saudável', \r\n    endpointStatus =~ 'Degraded', 'Degradado', \r\n    endpointStatus =~ 'Offline', 'Indisponível', \r\n    'Desconhecido')\r\n| order by profileName, priority asc",
                     "size": 0,
                     "title": "Lista de Endpoints do Traffic Manager",
                     "queryType": 1,
@@ -736,61 +737,6 @@
                           {"operator": "contains", "thresholdValue": "Desconhecido", "representation": "question", "text": "{0}"}
                         ]}},
                         {"columnMatch": "endpointType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
-                          {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "Datacenter", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "Globe", "text": "{0}"},
-                          {"operator": "==", "thresholdValue": "NestedEndpoint", "representation": "Folder", "text": "{0}"}
-                        ]}},
-                        {"columnMatch": "targetResource", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
-                      ],
-                      "filter": true,
-                      "labelSettings": [
-                        {"columnId": "name", "label": "Nome"},
-                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
-                        {"columnId": "location", "label": "Região"},
-                        {"columnId": "endpointStatus", "label": "Status do Endpoint"},
-                        {"columnId": "weight", "label": "Peso"},
-                        {"columnId": "priority", "label": "Prioridade"},
-                        {"columnId": "endpointType", "label": "Tipo de Endpoint"},
-                        {"columnId": "hostName", "label": "Host Name"},
-                        {"columnId": "targetResourceId", "label": "ID do Recurso Alvo"}
-                      ]
-                    }
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
-                  "name": "net-tm-endpoints"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.network/trafficmanagerprofiles",
-                    "metricScope": 0,
-                    "resourceParameter": "TrafficManagerResource",
-                    "resourceIds": ["{TrafficManagerResource}"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--QpsByEndpoint", "aggregation": 1}
-                    ],
-                    "title": "QPS por Endpoint"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
-                  "name": "net-tm-qps"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.network/trafficmanagerprofiles",
-                    "metricScope": 0,
-                    "resourceParameter": "TrafficManagerResource",
-                    "resourceIds": ["{TrafficManagerResource}"],
                           {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "Datacenter", "text": "{0}"},
                           {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "Globe", "text": "{0}"},
                           {"operator": "==", "thresholdValue": "NestedEndpoint", "representation": "Folder", "text": "{0}"}
@@ -1336,31 +1282,123 @@
                   "name": "lb-probes"
                 },
                 {
-                  "type": 10,
+                  "type": 1,
                   "content": {
-                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
-                    "version": "MetricsItem/2.0",
+                    "json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, perfis, endpoints, disponibilidade, etc."},
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366\">Traffic Manager</h2><p style=\"color:#003366\">Monitoramento e análise de Traffic Manager, incluindo status, endpoints, disponibilidade e performance.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-header"
+                },
+                {                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| extend monitorStatus = tostring(properties.monitoringStatus)\r\n| extend profileStatus = tostring(properties.profileStatus)\r\n| extend dnsttl = toint(properties.dnsConfig.ttl)\r\n| extend routingMethod = tostring(properties.trafficRoutingMethod) \r\n| extend monitorProtocol = tostring(properties.monitorConfig.protocol)\r\n| extend monitorPort = toint(properties.monitorConfig.port)\r\n| extend monitorPath = tostring(properties.monitorConfig.path)\r\n| extend endpointCount = iff(isnotempty(properties.endpoints), array_length(properties.endpoints), 0)\r\n| extend status = case(\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Online', 'Healthy', \r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'Degraded', 'Degraded',\r\n    profileStatus =~ 'Enabled' and monitorStatus =~ 'CheckingEndpoint', 'Checking',\r\n    profileStatus =~ 'Disabled', 'Disabled',\r\n    'Unknown')\r\n| where id == \"{TrafficManagerResource}\" or isempty(\"{TrafficManagerResource}\")\r\n| project id, name, resourceGroup, location, monitorStatus, profileStatus, dnsttl, routingMethod, monitorProtocol, monitorPort, monitorPath, endpointCount, status\r\n| order by name asc",
                     "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.network/loadbalancers",
-                    "metricScope": 0,
-                    "resourceParameter": "LoadBalancerResource",
-                    "resourceIds": ["{LoadBalancerResource}"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--DipAvailability", "aggregation": 4},
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--VipAvailability", "aggregation": 4}
-                    ],
-                    "title": "Disponibilidade DIP e VIP",
-                    "gridSettings": {"rowLimit": 10000}
+                    "title": "Lista de Traffic Manager Profiles",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {                      "formatters": [
+                        {"columnMatch": "monitorStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "✅ {0}"},
+                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "⚠️ {0}"},
+                          {"operator": "==", "thresholdValue": "CheckingEndpoint", "representation": "pending", "text": "🔄 {0}"},
+                          {"operator": "==", "thresholdValue": "Inactive", "representation": "stopped", "text": "⏹️ {0}"}
+                        ]}},
+                        {"columnMatch": "profileStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Enabled", "representation": "success", "text": "✅ {0}"},
+                          {"operator": "==", "thresholdValue": "Disabled", "representation": "disabled", "text": "⏹️ {0}"}
+                        ]}},
+                        {"columnMatch": "routingMethod", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Performance", "representation": "Speedometer", "text": "⚡ {0}"},
+                          {"operator": "==", "thresholdValue": "Priority", "representation": "KnowledgeArticle", "text": "🏆 {0}"},
+                          {"operator": "==", "thresholdValue": "Weighted", "representation": "Scale", "text": "⚖️ {0}"},
+                          {"operator": "==", "thresholdValue": "Geographic", "representation": "Globe", "text": "🌎 {0}"},
+                          {"operator": "==", "thresholdValue": "MultiValue", "representation": "BranchFork", "text": "🔀 {0}"},
+                          {"operator": "==", "thresholdValue": "Subnet", "representation": "Network", "text": "🔧 {0}"}
+                        ]}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Healthy", "representation": "success", "text": "✅ Saudável"},
+                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "⚠️ Degradado"},
+                          {"operator": "==", "thresholdValue": "Checking", "representation": "pending", "text": "🔄 Verificando"},
+                          {"operator": "==", "thresholdValue": "Disabled", "representation": "disabled", "text": "⏹️ Desativado"},
+                          {"operator": "==", "thresholdValue": "Unknown", "representation": "question", "text": "❓ Desconhecido"}
+                        ]}},
+                        {"columnMatch": "id", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "monitorStatus", "label": "Status do Monitor"},
+                        {"columnId": "profileStatus", "label": "Status do Perfil"},
+                        {"columnId": "dnsttl", "label": "DNS TTL"},
+                        {"columnId": "routingMethod", "label": "Método de Roteamento"},
+                        {"columnId": "monitorProtocol", "label": "Protocolo Monitor"},
+                        {"columnId": "monitorPort", "label": "Porta Monitor"},
+                        {"columnId": "monitorPath", "label": "Caminho Monitor"},
+                        {"columnId": "endpointCount", "label": "Qtd. Endpoints"}
+                      ]
+                    }
                   },
-                  "customWidth": "50",
-                  "conditionalVisibilities": [
-                    {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "LoadBalancer"},
-                    {"parameterName": "LoadBalancerResource", "comparison": "isNotEqualTo", "value": ""}
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-profiles"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\r\n| where type =~ 'microsoft.network/trafficmanagerprofiles'\r\n| where id == \"{TrafficManagerResource}\" or isempty(\"{TrafficManagerResource}\")\r\n| mv-expand endpoint = properties.endpoints\r\n| project profileName = name,\r\n    endpointName = tostring(endpoint.name),\r\n    endpointStatus = tostring(endpoint.properties.endpointStatus),\r\n    weight = toint(iff(isnotempty(endpoint.properties.weight), endpoint.properties.weight, 0)),\r\n    priority = toint(iff(isnotempty(endpoint.properties.priority), endpoint.properties.priority, 0)),\r\n    endpointType = tostring(endpoint.properties.type),\r\n    targetResource = tostring(iff(isnotempty(endpoint.properties.targetResourceId), endpoint.properties.targetResourceId, endpoint.properties.target)),\r\n    endpointLocation = tostring(endpoint.properties.endpointLocation)\r\n| extend status = case(\r\n    endpointStatus =~ 'Online', 'Saudável', \r\n    endpointStatus =~ 'Degraded', 'Degradado', \r\n    endpointStatus =~ 'Offline', 'Indisponível', \r\n    'Desconhecido')\r\n| order by profileName, priority asc",
+                    "size": 0,
+                    "title": "Lista de Endpoints do Traffic Manager",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {                      "formatters": [
+                        {"columnMatch": "endpointStatus", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Online", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Degraded", "representation": "warning", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Offline", "representation": "failed", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "status", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "contains", "thresholdValue": "Saudável", "representation": "success", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Degradado", "representation": "warning", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Indisponível", "representation": "failed", "text": "{0}"},
+                          {"operator": "contains", "thresholdValue": "Desconhecido", "representation": "question", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "endpointType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "Datacenter", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "Globe", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "NestedEndpoint", "representation": "Folder", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "targetResource", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "endpointStatus", "label": "Status do Endpoint"},
+                        {"columnId": "weight", "label": "Peso"},
+                        {"columnId": "priority", "label": "Prioridade"},
+                        {"columnId": "endpointType", "label": "Tipo de Endpoint"},
+                        {"columnId": "hostName", "label": "Host Name"},
+                        {"columnId": "targetResourceId", "label": "ID do Recurso Alvo"}
+                      ]
+                    }
                   },
-                  "name": "lb-availability"
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-endpoints"
                 },
                 {
                   "type": 10,
@@ -1369,25 +1407,325 @@
                     "version": "MetricsItem/2.0",
                     "size": 0,
                     "chartType": 2,
-                    "resourceType": "microsoft.network/loadbalancers",
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
                     "metricScope": 0,
-                    "resourceParameter": "LoadBalancerResource",
-                    "resourceIds": ["{LoadBalancerResource}"],
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
                     "timeContextFromParameter": "timerange",
                     "timeContext": {"durationMs": 86400000},
                     "metrics": [
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--ByteCount", "aggregation": 1},
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--PacketCount", "aggregation": 1}
+                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--QpsByEndpoint", "aggregation": 1}
                     ],
-                    "title": "Bytes e Pacotes",
+                    "title": "QPS por Endpoint"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-qps"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
+                    "metricScope": 0,
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--EndpointStatusByEndpoint", "aggregation": 3}
+                    ],
+                    "title": "Status dos Endpoints",
                     "gridSettings": {"rowLimit": 10000}
                   },
                   "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-endpoint-status"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
+                    "metricScope": 0,
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--ProbeAgentCurrentEndpointStateByEndpoint", "aggregation": 3}
+                    ],
+                    "title": "Estado Atual dos Probe Agents",
+                    "gridSettings": {"rowLimit": 10000}
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-probe-agent"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Azure Red Hat OpenShift (ARO)</h2>\n<p style=\"color:#003366;\">Monitoramento detalhado dos clusters ARO, master nodes, worker nodes e outros recursos.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-header"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "aro-cluster",
+                        "name": "AROCluster",
+                        "label": "ARO Cluster",
+                        "type": 5,
+                        "isRequired": false,
+                        "multiSelect": false,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "resources\n| where type == 'microsoft.redhatopenshift/openshiftclusters'\n| project value = id, label = name\n| order by label asc",
+                        "crossComponentResources": ["{Subscription}"],
+                        "typeSettings": {"additionalResourceOptions": ["value::1"]},
+                        "defaultValue": "value::1",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      }
+                    ],
+                    "style": "formHorizontal",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-parameters"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.redhatopenshift/openshiftclusters'\n| extend version = properties.clusterProfile.version\n| extend consoleUrl = properties.consoleProfile.url\n| extend masterCount = toint(properties.masterProfile.count)\n| extend masterVmSize = properties.masterProfile.vmSize\n| extend hasWorkerProfiles = isnotempty(properties.workerProfiles) and array_length(properties.workerProfiles) > 0\n| extend workerCount = iif(hasWorkerProfiles, toint(properties.workerProfiles[0].count), 0)\n| extend workerVmSize = iif(hasWorkerProfiles, tostring(properties.workerProfiles[0].vmSize), 'N/A')\n| extend workerDiskSize = iif(hasWorkerProfiles, toint(properties.workerProfiles[0].diskSizeGB), 0)\n| extend networkVnet = tolower(split(properties.masterProfile.subnetId, '/')[8])\n| extend apiVisibility = properties.apiserverProfile.visibility\n| extend ingressVisibility = properties.ingressProfiles[0].visibility\n| extend provisioningState = properties.provisioningState\n| project name, resourceGroup, location, version, provisioningState, masterCount, masterVmSize, workerCount, workerVmSize, workerDiskSize, networkVnet, apiVisibility, ingressVisibility, consoleUrl",
+                    "size": 0,
+                    "title": "Azure Red Hat OpenShift Clusters",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "provisioningState", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "Succeeded", "representation": "success", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Creating", "representation": "pending", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Updating", "representation": "2", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Failed", "representation": "4", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "Deleting", "representation": "stopped", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "masterCount", "formatter": 4, "formatOptions": {"palette": "blue", "customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "workerCount", "formatter": 4, "formatOptions": {"palette": "redBright", "customColumnWidthSetting": "12ch"}},
+                        {"columnMatch": "consoleUrl", "formatter": 7, "formatOptions": {"linkTarget": "Url", "linkLabel": "Abrir Console"}}
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-clusters"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.redhatopenshift/openshiftclusters'\n| where id == '{AROCluster}'\n| mvexpand workerPool = properties.workerProfiles\n| project poolName = tostring(workerPool.name), vmSize = tostring(workerPool.vmSize), count = toint(workerPool.count), diskSize = toint(workerPool.diskSizeGB), subnetId = tostring(workerPool.subnetId)\n| extend subnetName = tolower(split(subnetId, '/')[10])\n| order by poolName asc",
+                    "size": 0,
+                    "title": "Worker Pools",
+                    "noDataMessage": "Selecione um cluster ARO para visualizar detalhes",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "count", "formatter": 3, "formatOptions": {"palette": "redBright"}},
+                        {"columnMatch": "diskSize", "formatter": 3, "formatOptions": {"palette": "greenRed"}}
+                      ],
+                      "labelSettings": [
+                        {"columnId": "poolName", "label": "Nome do Pool"},
+                        {"columnId": "vmSize", "label": "Tamanho VM"},
+                        {"columnId": "count", "label": "Contagem"},
+                        {"columnId": "diskSize", "label": "Tamanho Disco (GB)"},
+                        {"columnId": "subnetName", "label": "Subnet"}
+                      ]
+                    }
+                  },
                   "conditionalVisibilities": [
-                    {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "LoadBalancer"},
-                    {"parameterName": "LoadBalancerResource", "comparison": "isNotEqualTo", "value": ""}
+                    {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                    {"parameterName": "AROCluster", "comparison": "isNotEqualTo", "value": ""}
                   ],
-                  "name": "lb-packets"
+                  "name": "aro-worker-pools"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let clusterName = split('{AROCluster}', '/')[8];\nContainerLog\n| where LogEntry has \"ARO\" or LogEntry has clusterName\n| where LogEntry has_any (\"error\", \"warning\", \"critical\")\n| project TimeGenerated, LogEntry, Computer\n| sort by TimeGenerated desc\n| take 100",
+                    "size": 0,
+                    "title": "Logs de Erros e Alertas de ARO",
+                    "noDataMessage": "Não foram encontrados logs de erro - o cluster pode não ter integração com Log Analytics ou não há erros recentes",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "gridSettings": {
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibilities": [
+                    {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                    {"parameterName": "AROCluster", "comparison": "isNotEqualTo", "value": ""}
+                  ],
+                  "name": "aro-error-logs"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do ARO, é necessário configurar as integrações de monitoramento específicas para o Red Hat OpenShift. Consulte a <a href='https://docs.microsoft.com/azure/openshift/howto-azure-monitor' target='_blank'>documentação oficial</a> para mais informações.</p>\n</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
+                  "name": "aro-integration-note"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<h2 style=\"color:#003366;\">Azure Kubernetes Service (AKS)</h2>\n<p style=\"color:#003366;\">Monitoramento detalhado dos clusters AKS, nós master, nós de trabalho e outros recursos.</p>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-header"
+                },
+                {
+                  "type": 9,
+                  "content": {
+                    "version": "KqlParameterItem/1.0",
+                    "parameters": [
+                      {
+                        "id": "aks-cluster",
+                        "name": "AKSCluster",
+                        "label": "AKS Cluster",
+                        "type": 5,
+                        "isRequired": false,
+                        "multiSelect": false,
+                        "quote": "'",
+                        "delimiter": ",",
+                        "query": "resources\n| where type == 'microsoft.aks/managedClusters'\n| project value = id, label = name\n| order by label asc",
+                        "crossComponentResources": ["{Subscription}"],
+                        "typeSettings": {"additionalResourceOptions": ["value::1"]},
+                        "defaultValue": "value::1",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources"
+                      }
+                    ],
+                    "style": "formHorizontal",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-parameters"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.aks/managedClusters'\n| extend version = properties.kubernetesVersion\n| extend nodeResourceGroup = properties.nodeResourceGroup\n| extend dnsPrefix = properties.dnsPrefix\n| extend agentPoolProfiles = properties.agentPoolProfiles\n| extend networkProfile = properties.networkProfile\n| project name, resourceGroup, location, version, nodeResourceGroup, dnsPrefix, agentPoolProfiles, networkProfile",
+                    "size": 0,
+                    "title": "Azure Kubernetes Service Clusters",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "agentPoolProfiles", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "has", "thresholdValue": "availabilityZones", "representation": "Globe", "text": "Zonas de Disponibilidade"},
+                          {"operator": "has", "thresholdValue": "virtualMachineScaleSets", "representation": "Scale", "text": "VMSS"},
+                          {"operator": "has", "thresholdValue": "kubernetes", "representation": "Kubernetes", "text": "K8s"}
+                        ]}},
+                        {"columnMatch": "networkProfile", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "true", "representation": "success", "text": "Sim"},
+                          {"operator": "==", "thresholdValue": "false", "representation": "disabled", "text": "Não"}
+                        ]}},
+                        {"columnMatch": "dnsPrefix", "formatter": 7, "formatOptions": {"linkTarget": "Url", "linkLabel": "Abrir DNS"}}
+                      ],
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-clusters"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.aks/managedClusters'\n| where id == '{AKSCluster}'\n| mvexpand agentPool = properties.agentPoolProfiles\n| project poolName = tostring(agentPool.name), vmSize = tostring(agentPool.vmSize), count = toint(agentPool.count), diskSize = toint(agentPool.diskSizeGB), subnetId = tostring(agentPool.subnetId)\n| extend subnetName = tolower(split(subnetId, '/')[10])\n| order by poolName asc",
+                    "size": 0,
+                    "title": "Agent Pools",
+                    "noDataMessage": "Selecione um cluster AKS para visualizar detalhes",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {"columnMatch": "count", "formatter": 3, "formatOptions": {"palette": "redBright"}},
+                        {"columnMatch": "diskSize", "formatter": 3, "formatOptions": {"palette": "greenRed"}}
+                      ],
+                      "labelSettings": [
+                        {"columnId": "poolName", "label": "Nome do Pool"},
+                        {"columnId": "vmSize", "label": "Tamanho VM"},
+                        {"columnId": "count", "label": "Contagem"},
+                        {"columnId": "diskSize", "label": "Tamanho Disco (GB)"},
+                        {"columnId": "subnetName", "label": "Subnet"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibilities": [
+                    {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                    {"parameterName": "AKSCluster", "comparison": "isNotEqualTo", "value": ""}
+                  ],
+                  "name": "aks-agent-pools"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let clusterName = split('{AKSCluster}', '/')[8];\nContainerLog\n| where LogEntry has \"K8s\" or LogEntry has clusterName\n| where LogEntry has_any (\"error\", \"warning\", \"critical\")\n| project TimeGenerated, LogEntry, Computer\n| sort by TimeGenerated desc\n| take 100",
+                    "size": 0,
+                    "title": "Logs de Erros e Alertas de AKS",
+                    "noDataMessage": "Não foram encontrados logs de erro - o cluster pode não ter integração com Log Analytics ou não há erros recentes",
+                    "timeContext": {"durationMs": 86400000},
+                    "timeContextFromParameter": "timerange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "gridSettings": {
+                      "filter": true
+                    }
+                  },
+                  "conditionalVisibilities": [
+                    {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                    {"parameterName": "AKSCluster", "comparison": "isNotEqualTo", "value": ""}
+                  ],
+                  "name": "aks-error-logs"
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do AKS, é necessário configurar as integrações de monitoramento específicas para o Azure Kubernetes Service. Consulte a <a href='https://docs.microsoft.com/azure/aks/monitor-aks' target='_blank'>documentação oficial</a> para mais informações.</p>\n</div>"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
+                  "name": "aks-integration-note"
                 }
           }
         ]
