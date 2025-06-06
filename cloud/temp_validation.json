@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "Notebook/1.0",
   "items": [
     {
@@ -1118,17 +1118,4 @@
                 },                {
                   "type": 1,
                   "content": {
-                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do AKS, é necessário configurar as integrações de monitoramento específicas para o Azure Kubernetes Service. Consulte a <a href=\"https://docs.microsoft.com/azure/aks/monitor-aks\" target=\"_blank\">documentação oficial</a> para mais informações.</p>\n</div>"
-                  },
-                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
-                  "name": "aks-integration-note"
-                }
-              ]
-            }
-          }
-        ]
-      },
-      "name": "Header Futurist"
-    }
-  ]
-}
+                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do AKS, é necessário configurar as integrações de monitoramento 

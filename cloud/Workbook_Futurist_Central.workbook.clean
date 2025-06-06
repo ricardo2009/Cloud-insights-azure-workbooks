@@ -194,7 +194,8 @@
                   "defaultValue": "value::all",
                   "value": [
                     "value::all"
-                  ]                },                {
+                  ]
+                },                {
                   "id": "namespace",
                   "name": "Namespace",
                   "label": "Namespace",
@@ -219,39 +220,6 @@
                   "value": [
                     "value::all"
                   ]
-                },
-                {
-                  "id": "TabMain",
-                  "name": "TabMain",
-                  "label": "Abas Principais",
-                  "type": 1,
-                  "isRequired": false,
-                  "value": "Overview",
-                  "typeSettings": {
-                    "parameterMode": "navigation"
-                  }
-                },
-                {
-                  "id": "SubTabNet",
-                  "name": "SubTabNet",
-                  "label": "Sub-abas Networking",
-                  "type": 1,
-                  "isRequired": false,
-                  "value": "NetOverview",
-                  "typeSettings": {
-                    "parameterMode": "navigation"
-                  }
-                },
-                {
-                  "id": "SubTabContainers",
-                  "name": "SubTabContainers",
-                  "label": "Sub-abas Containers",
-                  "type": 1,
-                  "isRequired": false,
-                  "value": "AKS",
-                  "typeSettings": {
-                    "parameterMode": "navigation"
-                  }
                 }
               ],
               "style": "formVertical",
@@ -1115,18 +1083,18 @@
                     {"parameterName": "AKSCluster", "comparison": "isNotEqualTo", "value": ""}
                   ],
                   "name": "aks-error-logs"
-                },                {
-                  "type": 1,
-                  "content": {
-                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do AKS, é necessário configurar as integrações de monitoramento específicas para o Azure Kubernetes Service. Consulte a <a href=\"https://docs.microsoft.com/azure/aks/monitor-aks\" target=\"_blank\">documentação oficial</a> para mais informações.</p>\n</div>"
+                },
+                {
+                  "type": 1,                  "content": {
+                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do AKS, é necessário configurar as integrações de monitoramento específicas para o Azure Kubernetes Service. Consulte a <a href='https://docs.microsoft.com/azure/aks/monitor-aks' target='_blank'>documentação oficial</a> para mais informações.</p>\n</div>"
                   },
                   "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
                   "name": "aks-integration-note"
                 }
               ]
             }
-          }
-        ]
+          ]
+        }
       },
       "name": "Header Futurist"
     }

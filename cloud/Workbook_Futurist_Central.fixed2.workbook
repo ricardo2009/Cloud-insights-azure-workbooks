@@ -349,7 +349,7 @@
                 },                {
                   "type": 1,
                   "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda dos KPIs:</b><br>Os KPIs exibem o total de recursos, quantidade em execução, parados e não saudáveis. Os status seguem a semântica oficial do Azure Monitor:<br><ul><li><span style='color:#00bfae;font-weight:bold;'>Executando</span>: Recurso operacional</li><li><span style='color:#ffd700;font-weight:bold;'>Parado</span>: Recurso desligado</li><li><span style='color:#ff4c4c;font-weight:bold;'>Não saudável</span>: Recurso com falha ou indisponível</li></ul>Para mais detalhes, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial do Azure Monitor</a>.</div>"
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda dos KPIs:</b><br>Os KPIs exibem o total de recursos, quantidade em execução, parados e não saudáveis. Os status seguem a semântica oficial do Azure Monitor:<br><ul><li><span style='color:#00bfae;font-weight:bold;'>Executando</span>: Recurso operacional</li><li><span style='color:#ffd700;font-weight:bold;'>Parado</span>: Recurso desligado</li><li><span style='color:#ff4c4c;font-weight:bold;'>Não saudável</span>: Recurso com falha ou indisponível</li></ul>Para mais detalhes, consulte a <a href=\"https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data\" target=\"_blank\">documentação oficial do Azure Monitor</a>.</div>"
                   },
                   "name": "legenda-kpi"
                 },
@@ -989,7 +989,7 @@
                 {
                   "type": 1,
                   "content": {
-                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do ARO, é necessário configurar as integrações de monitoramento específicas para o Red Hat OpenShift. Consulte a <a href='https://docs.microsoft.com/azure/openshift/howto-azure-monitor' target='_blank'>documentação oficial</a> para mais informações.</p>\n</div>"
+                    "json": "<div style=\"background:#eff4f9;padding:10px;border-radius:4px;margin:10px 0px\">\n<p><i>⚠️ Nota:</i> Para obter métricas mais detalhadas do ARO, é necessário configurar as integrações de monitoramento específicas para o Red Hat OpenShift. Consulte a <a href=\"https://docs.microsoft.com/azure/openshift/howto-azure-monitor\" target=\"_blank\">documentação oficial</a> para mais informações.</p>\n</div>"
                   },
                   "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ARO"},
                   "name": "aro-integration-note"
@@ -1125,10 +1125,11 @@
                 }
               ]
             }
-          }
-        ]
+          ]
+        }
       },
       "name": "Header Futurist"
     }
   ]
 }
+
