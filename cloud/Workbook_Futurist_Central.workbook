@@ -642,63 +642,8 @@
                   "name": "lb-probes"
                 },
                 {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.network/loadbalancers",
-                    "metricScope": 0,
-                    "resourceParameter": "LoadBalancerResource",
-                    "resourceIds": ["{LoadBalancerResource}"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--DipAvailability", "aggregation": 4},
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--VipAvailability", "aggregation": 4}
-                    ],
-                    "title": "Disponibilidade DIP e VIP",
-                    "gridSettings": {"rowLimit": 10000}
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibilities": [
-                    {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "LoadBalancer"},
-                    {"parameterName": "LoadBalancerResource", "comparison": "isNotEqualTo", "value": ""}
-                  ],
-                  "name": "lb-availability"
-                },
-                {
-                  "type": 10,
-                  "content": {
-                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
-                    "version": "MetricsItem/2.0",
-                    "size": 0,
-                    "chartType": 2,
-                    "resourceType": "microsoft.network/loadbalancers",
-                    "metricScope": 0,
-                    "resourceParameter": "LoadBalancerResource",
-                    "resourceIds": ["{LoadBalancerResource}"],
-                    "timeContextFromParameter": "timerange",
-                    "timeContext": {"durationMs": 86400000},
-                    "metrics": [
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--ByteCount", "aggregation": 1},
-                      {"namespace": "microsoft.network/loadbalancers", "metric": "microsoft.network/loadbalancers--PacketCount", "aggregation": 1}
-                    ],
-                    "title": "Bytes e Pacotes",
-                    "gridSettings": {"rowLimit": 10000}
-                  },
-                  "customWidth": "50",
-                  "conditionalVisibilities": [
-                    {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "LoadBalancer"},
-                    {"parameterName": "LoadBalancerResource", "comparison": "isNotEqualTo", "value": ""}
-                  ],
-                  "name": "lb-packets"
-                },
-                {
                   "type": 1,
-                  "content": {
-                    "json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, perfis, endpoints, disponibilidade, etc."},
+                  "content": {"json": "<b style=\"color:#003366\">Traffic Manager</b> - KPIs, perfis, endpoints, disponibilidade, etc."},
                   "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
                   "name": "net-tm"
                 },
@@ -791,6 +736,61 @@
                           {"operator": "contains", "thresholdValue": "Desconhecido", "representation": "question", "text": "{0}"}
                         ]}},
                         {"columnMatch": "endpointType", "formatter": 18, "formatOptions": {"thresholdsOptions": "icons", "thresholdsGrid": [
+                          {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "Datacenter", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "Globe", "text": "{0}"},
+                          {"operator": "==", "thresholdValue": "NestedEndpoint", "representation": "Folder", "text": "{0}"}
+                        ]}},
+                        {"columnMatch": "targetResource", "formatter": 13, "formatOptions": {"linkTarget": "Resource", "showIcon": true}}
+                      ],
+                      "filter": true,
+                      "labelSettings": [
+                        {"columnId": "name", "label": "Nome"},
+                        {"columnId": "resourceGroup", "label": "Grupo de Recursos"},
+                        {"columnId": "location", "label": "Região"},
+                        {"columnId": "endpointStatus", "label": "Status do Endpoint"},
+                        {"columnId": "weight", "label": "Peso"},
+                        {"columnId": "priority", "label": "Prioridade"},
+                        {"columnId": "endpointType", "label": "Tipo de Endpoint"},
+                        {"columnId": "hostName", "label": "Host Name"},
+                        {"columnId": "targetResourceId", "label": "ID do Recurso Alvo"}
+                      ]
+                    }
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-endpoints"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
+                    "metricScope": 0,
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
+                    "timeContextFromParameter": "timerange",
+                    "timeContext": {"durationMs": 86400000},
+                    "metrics": [
+                      {"namespace": "microsoft.network/trafficmanagerprofiles", "metric": "microsoft.network/trafficmanagerprofiles--QpsByEndpoint", "aggregation": 1}
+                    ],
+                    "title": "QPS por Endpoint"
+                  },
+                  "conditionalVisibility": {"parameterName": "SubTabNet", "comparison": "isEqualTo", "value": "TrafficManager"},
+                  "name": "net-tm-qps"
+                },
+                {
+                  "type": 10,
+                  "content": {
+                    "chartId": "workbook175668a0-c2a6-4dd7-b3a4-9d0df52d445c",
+                    "version": "MetricsItem/2.0",
+                    "size": 0,
+                    "chartType": 2,
+                    "resourceType": "microsoft.network/trafficmanagerprofiles",
+                    "metricScope": 0,
+                    "resourceParameter": "TrafficManagerResource",
+                    "resourceIds": ["{TrafficManagerResource}"],
                           {"operator": "==", "thresholdValue": "AzureEndpoint", "representation": "Datacenter", "text": "{0}"},
                           {"operator": "==", "thresholdValue": "ExternalEndpoint", "representation": "Globe", "text": "{0}"},
                           {"operator": "==", "thresholdValue": "NestedEndpoint", "representation": "Folder", "text": "{0}"}
