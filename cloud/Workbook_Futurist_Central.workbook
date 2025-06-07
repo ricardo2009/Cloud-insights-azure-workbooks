@@ -248,7 +248,7 @@
                   "label": "Sub-abas Containers",
                   "type": 1,
                   "isRequired": false,
-                  "value": "AKS",
+                  "value": "ContainersOverview",
                   "typeSettings": {
                     "parameterMode": "navigation"
                   }
@@ -1122,9 +1122,32 @@
                   },
                   "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "AKS"},
                   "name": "aks-integration-note"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type =~ 'microsoft.containerservice/managedclusters' or type =~ 'microsoft.redhatopenshift/openshiftclusters'\n| extend clusterType = iff(type =~ 'microsoft.containerservice/managedclusters', 'AKS', 'ARO')\n| extend version = iff(clusterType == 'AKS', properties.kubernetesVersion, properties.clusterProfile.version)\n| summarize count() by clusterType, version\n| order by clusterType asc, version desc",
+                    "title": "Distribuição de Clusters por Versão",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "piechart",
+                    "chartSettings": {
+                      "seriesLabelSettings": [
+                        {"seriesName": "AKS", "color": "#0078D4"},
+                        {"seriesName": "ARO", "color": "#EE0000"}
+                      ]
+                    }
+                  },
+                  "customWidth": "50",
+                  "conditionalVisibility": {"parameterName": "SubTabContainers", "comparison": "isEqualTo", "value": "ContainersOverview"},
+                  "name": "containers-overview-chart"
                 }
               ]
-            }
+            },
+            "conditionalVisibility": {"parameterName": "TabMain", "comparison": "isEqualTo", "value": "Containers"},
+            "name": "containers-group"
           }
         ]
       },
