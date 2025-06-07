@@ -1,0 +1,234 @@
+{
+  "type": 12,
+  "content": {
+    "version": "NotebookGroup/1.0",
+    "groupType": "editable",
+    "items": [
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize total=count(), running=countif(properties.provisioningState == 'Succeeded'), stopped=countif(properties.provisioningState == 'Stopped' or properties.provisioningState == 'Deallocated'), unhealthy=countif(properties.provisioningState != 'Succeeded' and properties.provisioningState != 'Stopped' and properties.provisioningState != 'Deallocated') | project total, running, stopped, unhealthy",
+          "size": 1,
+          "title": "Status Global de Recursos",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "visualization": {
+            "type": 2,
+            "title": "Status Global de Recursos",
+            "subtitle": "Total, Executando, Parados e Não Saudáveis",
+            "showLegend": true,
+            "legendPosition": 0,
+            "showTitle": true,
+            "showSubtitle": true,
+            "showBorder": true,
+            "palette": "auto",
+            "showGrid": true
+          },
+          "gridSettings": {
+            "formatters": [
+              {
+                "columnMatch": "unhealthy",
+                "formatter": {
+                  "type": 18,
+                  "formatOptions": {
+                    "thresholdsOptions": "icons",
+                    "thresholdsGrid": [
+                      {
+                        "operator": ">=",
+                        "thresholdValue": "10",
+                        "representation": "error",
+                        "text": "Ruim"
+                      },
+                      {
+                        "operator": ">=",
+                        "thresholdValue": "3",
+                        "representation": "warning",
+                        "text": "Atenção"
+                      },
+                      {
+                        "operator": "Default",
+                        "representation": "success",
+                        "text": "Excelente"
+                      }
+                    ]
+                  }
+                },
+                "numberFormat": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal"
+                  }
+                }
+              }
+            ]
+          },
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "total",
+              "formatter": 1
+            },
+            "leftContent": {
+              "columnMatch": "running",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "auto"
+              }
+            },
+            "rightContent": {
+              "columnMatch": "unhealthy",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "icons",
+                "thresholdsGrid": [
+                  {
+                    "operator": ">=",
+                    "thresholdValue": "10",
+                    "representation": "error",
+                    "text": "Ruim",
+                    "icon": "Error",
+                    "iconColor": "#ff4c4c",
+                    "iconSize": "large",
+                    "iconStyle": "solid"
+                  },
+                  {
+                    "operator": ">=",
+                    "thresholdValue": "3",
+                    "representation": "warning",
+                    "text": "Atenção",
+                    "icon": "Warning",
+                    "iconColor": "#ffd700",
+                    "iconSize": "large",
+                    "iconStyle": "solid"
+                  },
+                  {
+                    "operator": "Default",
+                    "representation": "success",
+                    "text": "Excelente",
+                    "icon": "Success",
+                    "iconColor": "#4caf50",
+                    "iconSize": "large",
+                    "iconStyle": "solid"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "name": "kpi-global-status"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize total=count(), openai=countif(kind =~ 'OpenAI'), cognitive=countif(kind != 'OpenAI'), search=countif(type =~ 'microsoft.search/searchservices'), ml=countif(type =~ 'microsoft.machinelearningservices/workspaces') | project total, openai, cognitive, search, ml",
+          "size": 1,
+          "title": "Recursos de IA & ML",
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "visualization": "tiles",
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "total",
+              "formatter": 1,
+              "formatOptions": {
+                "showIcon": true
+              }
+            },
+            "leftContent": {
+              "columnMatch": "openai",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "purpleBlue"
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": true
+                }
+              }
+            },
+            "rightContent": {
+              "columnMatch": "ml",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "greenBlue"
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": true
+                }
+              }
+            },
+            "secondaryContent": {
+              "columnMatch": "cognitive",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "purple"
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": true
+                }
+              }
+            },
+            "showBorder": true
+          },
+          "mapSettings": {
+            "locInfo": "LatLong"
+          }
+        },
+        "name": "ai-resources-overview"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda dos KPIs:</b><br>Os KPIs exibem o total de recursos, quantidade em execução, parados e não saudáveis. Os status seguem a semântica oficial do Azure Monitor:<br><ul><li><span style='color:#00bfae;font-weight:bold;'>Executando</span>: Recurso operacional</li><li><span style='color:#ffd700;font-weight:bold;'>Parado</span>: Recurso desligado</li><li><span style='color:#ff4c4c;font-weight:bold;'>Não saudável</span>: Recurso com falha ou indisponível</li></ul>Para mais detalhes, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial do Azure Monitor</a>.</div>"
+        },
+        "name": "legenda-kpi"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | extend SKU = tostring(sku.name), Kind = kind | join kind=leftouter ( resources | where type =~ 'microsoft.machinelearningservices/workspaces' | extend Kind = 'Machine Learning', SKU = tostring(sku.name) ) on Kind | summarize count() by SKU, Kind | order by Kind, SKU",
+          "size": 1,
+          "title": "Distribuição de SKUs de IA por Serviço",
+          "queryType": 1,
+          "resourceType": "microsoft.resourcegraph/resources",
+          "visualization": "categoricalbar",
+          "gridSettings": {
+            "filter": true
+          },
+          "chartSettings": {
+            "xAxis": "SKU",
+            "yAxis": [
+              "count_"
+            ],
+            "group": "Kind",
+            "createOtherGroup": null
+          }
+        },
+        "name": "ai-sku-distribution"
+      },
+      {
+        "type": 1,
+        "content": {
+          "json": "<div style=\"background:#f3f9ff;padding:10px;border-radius:8px;margin-top:10px;\"><b>🔍 Sabia mais sobre IA na guia principal:</b><br>Acesse a guia <b>🧠 IA & ML</b> para visualizações detalhadas sobre todos os serviços de IA do Azure, incluindo OpenAI, Azure AI Search, ML Services, Visão Computacional e mais. Métricas detalhadas de uso, performance e disponibilidade estão disponíveis para cada serviço.<br><span style=\"color:#1976d2;\">Clique na guia IA & ML para explorar métricas detalhadas de todos os seus serviços de inteligência artificial.</span></div>"
+        },
+        "name": "ai-tab-promo"
+      }
+    ]
+  },
+  "conditionalVisibility": {
+    "parameterName": "TabMain",
+    "comparison": "isEqualTo",
+    "value": "Overview"
+  },
+  "name": "Overview Futurist"
+}

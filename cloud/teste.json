@@ -1,0 +1,313 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "<h1 style=\"color: #003366; background: linear-gradient(90deg,#e6f7ff,#b3c6e6); padding: 20px; border-radius: 12px; text-shadow: 0 2px 8px #000; font-size: 2.5em; letter-spacing: 2px;\">🌌 Azure Futurist Observability Center</h1>\n<p style=\"color:#003366; font-size:1.2em;\">Visão centralizada, interativa e visualmente impactante de toda a sua nuvem Azure. KPIs, status, tendências e insights em tempo real, com navegação intuitiva e legendas explicativas.\n</p>"
+            },
+            "name": "header-futurist"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"display:flex;align-items:center;justify-content:space-between;background:#e3f2fd;padding:10px 20px;border-radius:10px;margin-bottom:10px;\"><span style=\"font-size:1.1em;color:#003366;\"><b>Bem-vindo ao Futurist Workbook!</b> <span style=\"background:#ffd700;color:#003366;padding:2px 8px;border-radius:6px;font-size:0.9em;\">Novo</span></span><button onclick=\"window.open('https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-overview','_blank')\" style=\"background:#003366;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:0.95em;\">Ajuda & Exemplos</button></div>"
+            },
+            "name": "header-onboarding"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "199eea3c-8bcd-476b-9725-bd30f531678a",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscription",
+                  "label": "Subscriptions",
+                  "type": 6,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "value": [],
+                  "typeSettings": {
+                    "additionalResourceOptions": ["value::all"],
+                    "includeAll": true,
+                    "showDefault": false
+                  }
+                },
+                {
+                  "id": "f41ba5f7-61b4-457e-8700-2e4e70d69264",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "LogAnalyticsWorkspace",
+                  "label": "Log Analytics Workspace",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+                  "crossComponentResources": ["value::all"],
+                  "typeSettings": {
+                    "additionalResourceOptions": ["value::all"],
+                    "showDefault": false
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "bd401b11-047b-4fa5-9a5d-6eef4d5195d4",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "timerange",
+                  "label": "Time Range",
+                  "type": 4,
+                  "value": {
+                    "durationMs": 900000
+                  },
+                  "typeSettings": {
+                    "selectableValues": [
+                      {
+                        "durationMs": 900000
+                      },
+                      {
+                        "durationMs": 1800000
+                      },
+                      {
+                        "durationMs": 3600000
+                      },
+                      {
+                        "durationMs": 14400000
+                      },
+                      {
+                        "durationMs": 43200000
+                      },
+                      {
+                        "durationMs": 86400000
+                      },
+                      {
+                        "durationMs": 259200000
+                      },
+                      {
+                        "durationMs": 604800000
+                      },
+                      {
+                        "durationMs": 1209600000
+                      },
+                      {
+                        "durationMs": 2419200000
+                      },
+                      {
+                        "durationMs": 2592000000
+                      },
+                      {
+                        "durationMs": 5184000000
+                      },
+                      {
+                        "durationMs": 10368000000
+                      }
+                    ],
+                    "additionalResourceOptions": ["value::all"],
+                    "includeAll": true,
+                    "showDefault": false
+                  }
+                }
+              ]
+            },
+            "name": "parameters"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"background-color:#ffffff;padding:20px;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.1);\"><h2 style=\"color:#003366;font-size:1.8em;margin-bottom:10px;\">📊 Visão Geral da Assinatura</h2><p style=\"color:#666666;font-size:1.1em;line-height:1.6;\">Esta seção fornece uma visão geral do estado de saúde e desempenho da sua assinatura Azure. Utilize os filtros acima para selecionar a assinatura e o intervalo de tempo desejados.</p></div>"
+            },
+            "name": "introduction"
+          },
+          {
+            "type": 19,
+            "content": {
+              "version": "Tile/1.0",
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "total",
+                  "formatter": {
+                    "type": 1,
+                    "formatOptions": {
+                      "showIcon": true,
+                      "icon": "Dashboard",
+                      "iconColor": "#1976d2",
+                      "iconSize": "large",
+                      "iconStyle": "solid"
+                    },
+                    "numberFormat": {
+                      "unit": {
+                        "type": 17,
+                        "options": {
+                          "style": "decimal",
+                          "useGrouping": true
+                        }
+                      },
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": true,
+                        "minimumFractionDigits": 0,
+                        "maximumFractionDigits": 0
+                      }
+                    }
+                  }
+                },
+                "leftContent": {
+                  "columnMatch": "running",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  }
+                },
+                "rightContent": {
+                  "columnMatch": "unhealthy",
+                  "formatter": 18,
+                  "formatOptions": {
+                    "thresholdsOptions": "icons",
+                    "thresholdsGrid": [
+                      {
+                        "operator": ">=",
+                        "thresholdValue": "10",
+                        "representation": "error",
+                        "text": "Ruim",
+                        "icon": "Error",
+                        "iconColor": "#ff4c4c",
+                        "iconSize": "large",
+                        "iconStyle": "solid"
+                      },
+                      {
+                        "operator": ">=",
+                        "thresholdValue": "3",
+                        "representation": "warning",
+                        "text": "Atenção",
+                        "icon": "Warning",
+                        "iconColor": "#ffd700",
+                        "iconSize": "large",
+                        "iconStyle": "solid"
+                      },
+                      {
+                        "operator": "Default",
+                        "representation": "success",
+                        "text": "Excelente",
+                        "icon": "Success",
+                        "iconColor": "#4caf50",
+                        "iconSize": "large",
+                        "iconStyle": "solid"
+                      }
+                    ]
+                  }
+                },
+                "showBorder": true
+              }
+            },
+            "name": "subscriptionOverviewTile"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "<div style=\"background-color:#ffffff;padding:20px;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.1);\"><h2 style=\"color:#003366;font-size:1.8em;margin-bottom:10px;\">🔍 Detalhes da Assinatura</h2><p style=\"color:#666666;font-size:1.1em;line-height:1.6;\">Aqui você pode encontrar detalhes específicos sobre a sua assinatura, incluindo recursos utilizados, custos e recomendações de otimização.</p></div>"
+            },
+            "name": "detailsSection"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "199eea3c-8bcd-476b-9725-bd30f531678a",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscription",
+                  "label": "Subscriptions",
+                  "type": 6,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "value": [],
+                  "typeSettings": {
+                    "additionalResourceOptions": ["value::all"],
+                    "includeAll": true,
+                    "showDefault": false
+                  }
+                },
+                {
+                  "id": "f41ba5f7-61b4-457e-8700-2e4e70d69264",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "LogAnalyticsWorkspace",
+                  "label": "Log Analytics Workspace",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "where type =~ 'microsoft.operationalinsights/workspaces'\r\n| summarize by id, name\r\n| project id",
+                  "crossComponentResources": ["value::all"],
+                  "typeSettings": {
+                    "additionalResourceOptions": ["value::all"],
+                    "showDefault": false
+                  },
+                  "defaultValue": "value::all",
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "bd401b11-047b-4fa5-9a5d-6eef4d5195d4",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "timerange",
+                  "label": "Time Range",
+                  "type": 4,
+                  "value": {
+                    "durationMs": 900000
+                  },
+                  "typeSettings": {
+                    "selectableValues": [
+                      {
+                        "durationMs": 900000
+                      },
+                      {
+                        "durationMs": 1800000
+                      },
+                      {
+                        "durationMs": 3600000
+                      },
+                      {
+                        "durationMs": 14400000
+                      },
+                      {
+                        "durationMs": 43200000
+                      },
+                      {
+                        "durationMs": 86400000
+                      },
+                      {
+                        "durationMs": 259200000
+                      },
+                      {
+                        "durationMs": 604800000
+                      },
+                      {
+                        "durationMs": 1209600000
+                      },
+                      {
+                        "durationMs": 2419200000
+                      },
+                      {
+                        "durationMs": 2592000000
+                      },
+                      {
+                        "durationMs": 5184000000
+                      },
+                      {
+   
