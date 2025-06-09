@@ -36,7 +36,7 @@
                   "multiSelect": true,
                   "quote": "'",
                   "delimiter": ",",
-                  "value": [],
+                  "value": ["/subscriptions/d3b59231-fb7a-4c67-abba-26d95b6954c5"],
                   "typeSettings": {
                     "additionalResourceOptions": ["value::all"],
                     "includeAll": true,
@@ -61,7 +61,10 @@
                   },
                   "defaultValue": "value::all",
                   "queryType": 1,
-                  "resourceType": "microsoft.resourcegraph/resources"
+                  "resourceType": "microsoft.resourcegraph/resources",
+                  "value": [
+                    "/subscriptions/79d9bbaa-3859-44cf-b27c-279bee846294/resourceGroups/rg-aixa-ai-des/providers/Microsoft.OperationalInsights/workspaces/aiw6x47u4o4wr6y"
+                  ]
                 },
                 {
                   "id": "bd401b11-047b-4fa5-9a5d-6eef4d5195d4",
@@ -156,10 +159,7 @@
                   "linkLabel": "🌐 Visão Geral",
                   "subTarget": "Overview",
                   "style": "link",
-                  "icon": "Dashboard",
-                    "isDefault": true,
-                    "isSelected": true,
-                    "isActive": true
+                  "icon": "Dashboard"
                 },
                 {
                   "id": "911c3304-600a-42dc-9494-7a6385802a08",
@@ -168,10 +168,7 @@
                   "linkLabel": "🕸️ Networking",
                   "subTarget": "Networking",
                   "style": "link",
-                  "icon": "Connect",
-                    "isDefault": false,
-                    "isSelected": false,
-                    "isActive": false
+                  "icon": "Connect"
                 },
                 {
                   "id": "4cf1773e-4562-40be-8011-94146094c124",
@@ -247,6 +244,7 @@
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
                     "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "visualization": "tiles",
                     "gridSettings": {
                       "formatters": [
                         {
@@ -261,32 +259,32 @@
                                   "thresholdValue": "10",
                                   "representation": "error",
                                   "text": "Ruim",
-                                    "icon": "Error",
-                                    "iconColor": "#ff4c4c",
-                                    "iconSize": "large",
-                                    "iconStyle": "solid",
-                                    "iconTooltip": "Recursos com falha ou indisponíveis"
+                                  "icon": "Error",
+                                  "iconColor": "#ff4c4c",
+                                  "iconSize": "large",
+                                  "iconStyle": "solid",
+                                  "iconTooltip": "Recursos com falha ou indisponíveis"
                                 },
                                 {
                                   "operator": ">=",
                                   "thresholdValue": "3",
                                   "representation": "warning",
                                   "text": "Atenção",
-                                    "icon": "Warning",
-                                    "iconColor": "#ffd700",
-                                    "iconSize": "large",
-                                    "iconStyle": "solid",
-                                    "iconTooltip": "Recursos com problemas intermitentes"
+                                  "icon": "Warning",
+                                  "iconColor": "#ffd700",
+                                  "iconSize": "large",
+                                  "iconStyle": "solid",
+                                  "iconTooltip": "Recursos com problemas intermitentes"
                                 },
                                 {
                                   "operator": "Default",
                                   "representation": "success",
                                   "text": "Excelente",
-                                    "icon": "Success",
-                                    "iconColor": "#4caf50",
-                                    "iconSize": "large",
-                                    "iconStyle": "solid",
-                                    "iconTooltip": "Recursos funcionando normalmente"
+                                  "icon": "Success",
+                                  "iconColor": "#4caf50",
+                                  "iconSize": "large",
+                                  "iconStyle": "solid",
+                                  "iconTooltip": "Recursos funcionando normalmente"
                                 }
                               ]
                             }
@@ -295,9 +293,9 @@
                             "unit": 1,
                             "options": {
                               "style": "decimal",
-                                "useGrouping": true,
-                                "minimumFractionDigits": 0,
-                                "maximumFractionDigits": 0
+                              "useGrouping": true,
+                              "minimumFractionDigits": 0,
+                              "maximumFractionDigits": 0
                             },
                             "showIcon": true,
                             "icon": "Status"
@@ -309,42 +307,42 @@
                       "titleContent": {
                         "columnMatch": "total",
                         "formatter": {
-                            "type": 1,
-                            "formatOptions": {
-                                "showIcon": true,
-                                "icon": "Dashboard",
-                                "iconColor": "#1976d2",
-                                "iconSize": "large",
-                                "iconStyle": "solid"
+                          "type": 1,
+                          "formatOptions": {
+                            "showIcon": true,
+                            "icon": "Dashboard",
+                            "iconColor": "#1976d2",
+                            "iconSize": "large",
+                            "iconStyle": "solid"
+                          },
+                          "numberFormat": {
+                            "unit": {
+                              "type": 17,
+                              "options": {
+                                "style": "decimal",
+                                "useGrouping": true
+                              },
+                              "showIcon": true,
+                              "icon": "Resource",
+                              "iconColor": "#1976d2",
+                              "iconSize": "large",
+                              "iconStyle": "solid"
                             },
-                            "numberFormat": {
-                                "unit": {
-                                    "type": 17,
-                                    "options": {
-                                        "style": "decimal",
-                                        "useGrouping": true
-                                    },
-                                    "showIcon": true,
-                                    "icon": "Resource",
-                                    "iconColor": "#1976d2",
-                                    "iconSize": "large",
-                                    "iconStyle": "solid"
-                                },
-                                "options": {
-                                    "style": "decimal",
-                                    "useGrouping": true,
-                                    "minimumFractionDigits": 0,
-                                    "maximumFractionDigits": 0,
-                                    "notation": "standard",
-                                    "signDisplay": "auto"
-                                },
-                                "showIcon": true,
-                                "icon": "Dashboard",
-                                "iconColor": "#1976d2",
-                                "iconSize": "large",
-                                "iconStyle": "solid"
+                            "options": {
+                              "style": "decimal",
+                              "useGrouping": true,
+                              "minimumFractionDigits": 0,
+                              "maximumFractionDigits": 0,
+                              "notation": "standard",
+                              "signDisplay": "auto"
                             },
-                            "text": "Total de Recursos"
+                            "showIcon": true,
+                            "icon": "Dashboard",
+                            "iconColor": "#1976d2",
+                            "iconSize": "large",
+                            "iconStyle": "solid"
+                          },
+                          "text": "Total de Recursos"
                         }
                       },
                       "leftContent": {
@@ -401,263 +399,98 @@
                   "content": {
                     "version": "KqlItem/1.0",
                     "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | summarize total=count(), openai=countif(kind =~ 'OpenAI'), cognitive=countif(kind != 'OpenAI'), search=countif(type =~ 'microsoft.search/searchservices'), ml=countif(type =~ 'microsoft.machinelearningservices/workspaces') | project total, openai, cognitive, search, ml",
-                    "size": {
-                        "width": 2,
-                        "height": 1,
-                        "minWidth": 2,
-                        "minHeight": 1
-                    },
+                    "size": 1,
                     "title": "Recursos de IA & ML",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
-                    "visualization": {
-                        "type": 2,
-                        "palette": "auto",
-                        "chartType": 1,
-                        "xAxis": "total",
-                        "yAxis": ["openai", "cognitive", "search", "ml"],
-                        "group": null,
-                        "createOtherGroup": null,
-                        "showLegend": true,
-                        "legendPosition": "top",
-                        "legendOrientation": "horizontal",
-                        "showDataLabels": true,
-                        "dataLabelPosition": "outside",
-                        "dataLabelFormat": "{value}",
-                        "dataLabelFontSize": 12,
-                        "dataLabelColor": "#000",
-                        "dataLabelFontWeight": "normal",
-                        "dataLabelBackgroundColor": "#fff",
-                        "dataLabelBorderColor": "#ccc"
-                    },
+                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "visualization": "tiles",
                     "tileSettings": {
                       "titleContent": {
                         "columnMatch": "total",
-                        "formatter": {
-                          "type": 1,
-                          "formatOptions": {
-                            "icon": "CognitiveServicesAI",
-                            "iconColor": "#1976d2",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "showIcon": true,
-                            "text": "Recursos de IA & ML"
-                          },
-                          "numberFormat": {
-                            "unit": 17,
-                            "options": {
-                              "style": "decimal",
-                              "useGrouping": true,
-                                "minimumFractionDigits": 0,
-                                "maximumFractionDigits": 0
-                            },
-                            "showIcon": true,
-                            "icon": "CognitiveServicesAI",
-                            "iconColor": "#1976d2",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "Total de Recursos"
-                          },
+                        "formatter": 1,
                         "formatOptions": {
-                          "showIcon": true,
-                            "icon": "CognitiveServicesAI",
-                            "iconColor": "#1976d2",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "Recursos de IA & ML"
-                        },
-                        "numberFormat": {
-                          "unit": 17,
-                          "options": {
-                            "style": "decimal",
-                            "useGrouping": true,
-                            "minimumFractionDigits": 0,
-                            "maximumFractionDigits": 0
-                          }
+                          "showIcon": true
                         }
                       },
                       "leftContent": {
                         "columnMatch": "openai",
                         "formatter": 12,
                         "formatOptions": {
-                          "palette": "purpleBlue",
-                            "showIcon": true,
-                            "icon": "OpenAI",
-                            "iconColor": "#673ab7",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "OpenAI"
+                          "palette": "purpleBlue"
                         },
                         "numberFormat": {
                           "unit": 17,
                           "options": {
                             "style": "decimal",
-                            "useGrouping": true,
-                            "minimumFractionDigits": 0,
-                            "maximumFractionDigits": 0,
-                            "showIcon": true,
-                            "icon": "OpenAI",
-                            "iconColor": "#673ab7",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "OpenAI"
-                          },
-                            "showIcon": true,
-                            "icon": "OpenAI",
-                            "iconColor": "#673ab7",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "OpenAI"
+                            "useGrouping": true
+                          }
                         }
                       },
                       "rightContent": {
                         "columnMatch": "ml",
-                        "formatter": {
-                            "type": 12,
-                            "formatOptions": {
-                                "palette": "blue",
-                                "showIcon": true,
-                                "icon": "MachineLearning",
-                                "iconColor": "#2196f3",
-                                "iconSize": "large",
-                                "iconStyle": "solid",
-                                "text": "Machine Learning"
-                            },
-                            "numberFormat": {
-                                "unit": 17,
-                                "options": {
-                                "style": "decimal",
-                                "useGrouping": true,
-                                "minimumFractionDigits": 0,
-                                "maximumFractionDigits": 0,
-                                "showIcon": true,
-                                "icon": "MachineLearning",
-                                "iconColor": "#2196f3",
-                                "iconSize": "large",
-                                "iconStyle": "solid",
-                                "text": "Machine Learning"
-                                }
-                            }
-                        },
+                        "formatter": 12,
                         "formatOptions": {
-                          "palette": "greenBlue",
-                            "showIcon": true,
-                            "icon": "MachineLearning",
-                            "iconColor": "#2196f3",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "Machine Learning"
+                          "palette": "greenBlue"
                         },
                         "numberFormat": {
                           "unit": 17,
                           "options": {
                             "style": "decimal",
-                            "useGrouping": true,
-                            "minimumFractionDigits": 0,
-                            "maximumFractionDigits": 0,
-                            "showIcon": true,
-                            "icon": "MachineLearning",
-                            "iconColor": "#2196f3",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "Machine Learning"
+                            "useGrouping": true
                           }
                         }
                       },
                       "secondaryContent": {
                         "columnMatch": "cognitive",
-                        "formatter": {
-                            "type": 12,
-                            "formatOptions": {
-                                "palette": "blue",
-                                "showIcon": true,
-                                "icon": "CognitiveServices",
-                                "iconColor": "#42a5f5",
-                                "iconSize": "large",
-                                "iconStyle": "solid",
-                                "text": "Cognitive Services"
-                            },
-                            "numberFormat": {
-                                "unit": 17,
-                                "options": {
-                                "style": "decimal",
-                                "useGrouping": true,
-                                "minimumFractionDigits": 0,
-                                "maximumFractionDigits": 0,
-                                "showIcon": true,
-                                "icon": "CognitiveServices",
-                                "iconColor": "#42a5f5",
-                                "iconSize": "large",
-                                "iconStyle": "solid",
-                                "text": "Cognitive Services"
-                                }
-                            }
-                        },
+                        "formatter": 12,
                         "formatOptions": {
-                          "palette": "purple",
-                            "showIcon": true,
-                            "icon": "CognitiveServices",
-                            "iconColor": "#42a5f5",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "Cognitive Services"
+                          "palette": "purple"
                         },
                         "numberFormat": {
                           "unit": 17,
                           "options": {
                             "style": "decimal",
-                            "useGrouping": true,
-                            "minimumFractionDigits": 0,
-                            "maximumFractionDigits": 0,
-                            "showIcon": true,
-                            "icon": "CognitiveServices",
-                            "iconColor": "#42a5f5",
-                            "iconSize": "large",
-                            "iconStyle": "solid",
-                            "text": "Cognitive Services"
+                            "useGrouping": true
                           }
                         }
                       },
-                      "showBorder": true,
-                        "borderColor": "#ccc",
-                        "borderWidth": 1,
-                        "borderRadius": 8,
-                        "backgroundColor": "#f3f9ff",
-                        "padding": 10,
-                        "margin": 10
+                      "showBorder": true
                     },
                     "mapSettings": {
-                      "locInfo": "LatLong",
-                        "mapType": "world",
-                        "showLegend": true,
-                        "legendPosition": "bottom",
-                        "legendOrientation": "horizontal",
-                        "showDataLabels": true,
-                        "dataLabelPosition": "outside",
-                        "dataLabelFormat": "{value}",
-                        "dataLabelFontSize": 12,
-                        "dataLabelColor": "#000",
-                        "dataLabelFontWeight": "normal",
-                        "dataLabelBackgroundColor": "#fff",
-                        "dataLabelBorderColor": "#ccc"
+                      "locInfo": "LatLong"
                     }
                   },
-                  "name": "ai-resources-overview",
-                  "description": "Visão geral dos recursos de IA"
+                  "name": "ai-resources-overview"
                 },
                 {
                   "type": 1,
                   "content": {
-                    "json": "<h2 style=\"color:#003366\">Visão Geral do Futurist</h2><p style=\"color:#003366\">Explore os principais KPIs, status e insights da sua nuvem Azure. Navegue pelos recursos e descubra tendências em tempo real.</p>"
+                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>Legenda dos KPIs:</b><br>Os KPIs exibem o total de recursos, quantidade em execução, parados e não saudáveis. Os status seguem a semântica oficial do Azure Monitor:<br><ul><li><span style='color:#00bfae;font-weight:bold;'>Executando</span>: Recurso operacional</li><li><span style='color:#ffd700;font-weight:bold;'>Parado</span>: Recurso desligado</li><li><span style='color:#ff4c4c;font-weight:bold;'>Não saudável</span>: Recurso com falha ou indisponível</li></ul>Para mais detalhes, consulte a <a href='https://learn.microsoft.com/azure/azure-monitor/essentials/workbooks-monitor-data' target='_blank'>documentação oficial do Azure Monitor</a>.</div>"
                   },
-                  "name": "overview-header"
+                  "name": "legenda-kpi"
                 },
                 {
-                  "type": 1,
+                  "type": 3,
                   "content": {
-                    "json": "<div style=\"background:#e3f2fd;padding:10px;border-radius:8px;margin-top:10px;\"><b>🌟 Dica:</b> Use os parâmetros acima para filtrar por assinatura e workspace. A atualização automática está ativada para manter os dados sempre atualizados.</div>"
+                    "version": "KqlItem/1.0",
+                    "query": "resources | where type =~ 'microsoft.cognitiveservices/accounts' | extend SKU = tostring(sku.name), Kind = kind | join kind=leftouter ( resources | where type =~ 'microsoft.machinelearningservices/workspaces' | extend Kind = 'Machine Learning', SKU = tostring(sku.name) ) on Kind | summarize count() by SKU, Kind | order by Kind, SKU",
+                    "size": 1,
+                    "title": "Distribuição de SKUs de IA por Serviço",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "visualization": "categoricalbar",
+                    "gridSettings": {
+                      "filter": true
+                    },
+                    "chartSettings": {
+                      "xAxis": "SKU",
+                      "yAxis": ["count_"],
+                      "group": "Kind",
+                      "createOtherGroup": null
+                    }
                   },
-                  "name": "overview-tips"
+                  "name": "ai-sku-distribution"
                 },
                 {
                   "type": 1,
@@ -669,11 +502,9 @@
               ]
             },
             "conditionalVisibility": {
-                "parameterName": "TabMain",
-                "comparison": "isEqualTo",
-                "value": "AI",
-                "isDefault": true,
-                "isSelected": true
+              "parameterName": "TabMain",
+              "comparison": "isEqualTo",
+              "value": "Overview"
             },
             "name": "Overview Futurist"
           },
@@ -1424,6 +1255,7 @@
             },
             "name": "group-networking"
           },
+          --------
           {
             "type": 12,
             "content": {
@@ -3219,4 +3051,819 @@
   ],
   "fallbackResourceIds": ["Azure Monitor"],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
-}
+},
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 2,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "nav",
+              "links": [
+                {
+                  "id": "d3f4c5b6-7e8f-4a9b-bcde-f01234567890",
+                  "cellValue": "TabMain",
+                  "linkTarget": "parameter",
+                  "linkLabel": "📊 Visão Geral",
+                  "subTarget": "DataOverview",
+                  "style": "link"
+                },
+                {
+                  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                  "cellValue": "TabMain",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🔄 SQL",
+                  "subTarget": "SQL",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "submenu-main"
+          }
+        ]
+      },
+      "name": "Header Futurist",
+      "conditionalVisibility": {
+        "parameterName": "TabMain",
+        "comparison": "isEqualTo",
+        "value": "DataOverview"
+      },
+      "children": [
+        {
+          "type": 11,
+          "content": {
+            "version": "LinkItem/1.0",
+            "style": "nav",
+            "links": [
+              {
+                "id": "f1e2d3c4-b5a6-7890-abcd-ef1234567890",
+                "cellValue": "TabData",
+                "linkTarget": "parameter",
+                "linkLabel": "📊 Visão Geral dos Dados",
+                "subTarget": "DataOverview",
+                "style": "link"
+              },
+              {
+                "id": "c4b3a2d1-e0f9-8765-4321-fedcba098765",
+                "cellValue": "TabData",
+                "linkTarget": "parameter",
+                "linkLabel": "🐬 MySQL",
+                "subTarget": "MySQL",
+                "style": "link"
+              },
+              {
+                "id": "b2a1c3d4-e5f6-7890-abcd-ef1234567890",
+                "cellValue": "TabData",
+                "linkTarget": "parameter",
+                "linkLabel": "🐘 PostgreSQL",
+                "subTarget": "PostgreSQL",
+                "style": "link"
+              },
+              {
+                "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "cellValue": "TabData",
+                "linkTarget": "parameter",
+                "linkLabel": "🗄️ Cosmos DB",
+                "subTarget": "CosmosDB",
+                "style": "link"
+              },
+              {
+                "id": "d4c3b2a1-e0f9-8765-4321-fedcba098765",
+                "cellValue": "TabData",
+                "linkTarget": "parameter",
+                "linkLabel": "🗃️ Redis Cache",  
+                "subTarget": "RedisCache",
+                "style": "link"
+              }
+            ]
+          },
+          "name": "submenu-data",
+          "conditionalVisibility": {
+            "parameterName": "TabMain",
+            "comparison": "isEqualTo",
+            "value": "Data"
+          },
+          "children": []
+        },
+        {
+          "type": 1,
+          "content": {
+            "version": "GroupItem/1.0",
+            "items": [
+              {
+                "type": 4,
+                "content": {
+                  "version": "MarkdownItem/1.0",
+                  "markdown": "<h2 style=\"color:#003366\">Dados</h2>\n<p style=\"color:#003366\">Visão geral dos serviços de dados no Azure, incluindo bancos de dados relacionais, não relacionais e serviços de cache.</p>",
+                  "markdownHtml": "<h2 style=\"color:#003366\">Dados</h2>\n<p style=\"color:#003366\">Visão geral dos serviços de dados no Azure, incluindo bancos de dados relacionais, não relacionais e serviços de cache.</p>"
+                },
+                "name": "header-data"
+              },
+              {
+                "type": 1,
+                "content": {
+                  "version": "GroupItem/1.0",
+                  "items": [
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "resources | where type =~ 'microsoft.sql/servers' | project name, resourceGroup, location, sku = properties.sku.name, tier = properties.sku.tier, capacity = properties.sku.capacity, provisioningState | order by name asc",
+                        "title": "Servidores SQL",
+                        "queryType": 1, 
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": ["{Subscription}"],
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "name",
+                              "formatter": 13,
+                              "formatOptions": {
+                                "linkTarget": "Resource",
+                                "showIcon": true
+                              }
+                            },
+                            {
+                              "columnMatch": "sku",
+                              "formatter": 4,
+                              "formatOptions": {
+                                "palette": "blue",
+                                "customColumnWidthSetting": "15ch"
+                              }
+                            },
+                            {
+                              "columnMatch": "provisioningState",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Succeeded",
+                                    "representation": "success",
+                                    "text": "{0}",
+                                    "icon": "success",
+                                    "iconColor": "#28a745",
+                                    "iconSize": "small"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Failed",
+                                    "representation": "failed",
+                                    "text": "{0}",
+                                    "icon": "failed",
+                                    "iconColor": "#dc3545",
+                                    "iconSize": "small"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pending",
+                                    "representation": "pending",
+                                    "text": "{0}",
+                                    "icon": "pending",
+                                    "iconColor": "#ffc107",
+                                    "iconSize": "small"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Canceled",
+                                    "representation": "canceled",
+                                    "text": "{0}",
+                                    "icon": "canceled",
+                                    "iconColor": "#6c757d",
+                                    "iconSize": "small"
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "labelSettings": [
+                            {
+                              "columnId": "name",
+                              "label": "Nome"
+                            },
+                            {
+                              "columnId": "resourceGroup",
+                              "label": "Grupo de Recursos"
+                            },
+                            {
+                              "columnId": "location",
+                              "label": "Região"
+                            },
+                            {
+                              "columnId": "sku",
+                              "label": "SKU"
+                            },
+                            {
+                              "columnId": "tier",
+                              "label": "Camada"
+                            },
+                            {
+                              "columnId": "capacity",
+                              "label": "Capacidade"
+                            },
+                            {
+                              "columnId": "provisioningState",
+                              "label": "Estado"
+                            }
+                          ]
+                        }
+                      },
+                      "name": "sql-servers",
+                      "conditionalVisibility": {
+                        "parameterName": "TabData",
+                        "comparison": "isEqualTo",
+                        "value": "SQL"
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "resources | where type =~ 'microsoft.mysql/servers' | project name, resourceGroup, location, sku = properties.sku.name, tier = properties.sku.tier, capacity = properties.sku.capacity, provisioningState | order by name asc",
+                        "title": "Servidores MySQL",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": ["{Subscription}"],
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "name",
+                              "formatter": 13,
+                              "formatOptions": {
+                                "linkTarget": "Resource",
+                                "showIcon": true
+                              }
+                            },
+                            {
+                              "columnMatch": "sku",
+                              "formatter": 4,
+                              "formatOptions": {
+                                "palette": "blue",
+                                "customColumnWidthSetting": "15ch"
+                              }
+                            },
+                            {
+                              "columnMatch": "provisioningState",
+                              "formatter": {
+                                "18",
+                                "formatOptions": {
+                                  "thresholdsOptions": "icons",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Succeeded",
+                                      "representation": "success",
+                                      "text": "{0}",
+                                      "icon": "success",
+                                      "iconColor": "#28a745",
+                                      "iconSize": "small"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Failed",
+                                      "representation": "failed",
+                                      "text": "{0}",
+                                      "icon": "failed",
+                                      "iconColor": "#dc3545",
+                                      "iconSize": "small"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Pending",
+                                      "representation": "pending",
+                                      "text": "{0}",
+                                      "icon": "pending",
+                                      "iconColor": "#ffc107",
+                                      "iconSize": "small"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Canceled",
+                                      "representation": "canceled",
+                                      "text": "{0}",
+                                      "icon": "canceled",
+                                      "iconColor": "#6c757d",
+                                      "iconSize": "small"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "labelSettings": [
+                            {
+                              "columnId": "name",
+                              "label": "Nome"
+                            },
+                            {
+                              "columnId": "resourceGroup",
+                              "label": "Grupo de Recursos"
+                            },
+                            {
+                              "columnId": "location",
+                              "label": "Região"
+                            },
+                            {
+                              "columnId": "sku",
+                              "label": "SKU"
+                            },
+                            {
+                              "columnId": "tier",
+                              "label": "Camada"
+                            },
+                            {
+                              "columnId": "capacity",
+                              "label": "Capacidade"
+                            },
+                            {
+                              "columnId": "provisioningState",
+                              "label": "Estado"
+                            }
+                          ]
+                        }
+                      },
+                      "name": "mysql-servers",
+                      "conditionalVisibility": {
+                        "parameterName": "TabData",
+                        "comparison": "isEqualTo",
+                        "value": "MySQL"
+                      }
+                    },
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "resources | where type =~ 'microsoft.postgresql/servers' | project name, resourceGroup, location, sku = properties.sku.name, tier = properties.sku.tier, capacity = properties.sku.capacity, provisioningState | order by name asc",
+                        "title": "Servidores PostgreSQL",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": ["{Subscription}"],
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "name",
+                              "formatter": 13,
+                              "formatOptions": {
+                                "linkTarget": "Resource",
+                                "showIcon": true
+                              }
+                            },
+                            {
+                              "columnMatch": "sku",
+                              "formatter": 4,
+                              "formatOptions": {
+                                "palette": "blue",
+                                "customColumnWidthSetting": "15ch"
+                              }
+                            },
+                            {
+                              "columnMatch": "provisioningState",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Succeeded",
+                                    "representation": "success",
+                                    "text": "{0}",
+                                    "icon": "success",
+                                    "iconColor": "#28a745",
+                                    "iconSize": "small"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Failed",
+                                    "representation": "failed",
+                                    "text": "{0}",
+                                    "icon": "failed",
+                                    "iconColor": "#dc3545",
+                                    "iconSize": "small"
+                                  },
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": "Pending",
+                                    "representation": "pending",
+                                    "text": "{0}",
+                                    "icon": "pending",
+                                    "iconColor": "#ffc107",
+                                    "iconSize": "small"
+                                  }
+                                ],
+                                "icon": "canceled",
+                                "iconColor": "#6c757d",
+                                "iconSize": "small"
+                              }
+                            }
+                          ],
+                          "labelSettings": [
+                            {
+                              "columnId": "name",
+                              "label": "Nome"
+                            },
+                            {
+                              "columnId": "resourceGroup",
+                              "label": "Grupo de Recursos"
+                            },
+                            {
+                              "columnId": "location",
+                              "label": "Região"
+                            },
+                            {
+                              "columnId": "sku",
+                              "label": "SKU"
+                            },
+                            {
+                              "columnId": "tier",
+                              "label": "Camada"
+                            },
+                            {
+                              "columnId": "capacity",
+                              "label": "Capacidade"
+                            },
+                            {
+                              "columnId": "provisioningState",
+                              "label": "Estado"
+                            }
+                          ]
+                        }
+                      },
+                      "name": "postgresql-servers",
+                      "conditionalVisibility": {
+                        "parameterName": "TabData",
+                        "comparison": "isEqualTo",
+                        "value": "PostgreSQL"
+                      }
+                    },
+                    {
+                      "type": "table",
+                      "data": {
+                        "columns": [
+                          {
+                            "id": "name",
+                            "name": "Nome"
+                          },
+                          {
+                            "id": "resourceGroup",
+                            "name": "Grupo de Recursos"
+                          },
+                          {
+                            "id": "location",
+                            "name": "Região"
+                          },
+                          {
+                            "id": "sku",
+                            "name": "SKU"
+                          },
+                          {
+                            "id": "tier",
+                            "name": "Camada"
+                          },
+                          {
+                            "id": "capacity",
+                            "name": "Capacidade"
+                          },
+                          {
+                            "id": "provisioningState",
+                            "name": "Estado"
+                          }
+                        ]
+                      }
+                    }
+                    {
+                      "type": 3,
+                      "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "resources | where type =~ 'microsoft.documentdb/databaseaccounts' | project name, resourceGroup, location, kind, consistencyPolicy = properties.consistencyPolicy.defaultConsistencyLevel, geoLocations = properties.geoLocations, enableAutomaticFailover = properties.enableAutomaticFailover | order by name asc",
+                        "title": "Contas do Cosmos DB",
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": ["{Subscription}"],
+                        "visualization": "table",
+                        "gridSettings": {
+                          "formatters": [
+                            {
+                              "columnMatch": "name",
+                              "formatter": 13,
+                              "formatOptions": {
+                                "linkTarget": "Resource",
+                                "showIcon": true
+                              }
+                            },
+                            {
+                              "columnMatch": "consistencyPolicy",
+                              "formatter": 4,
+                              "formatOptions": {
+                                "palette": "blue",
+                                "customColumnWidthSetting": "15ch"
+                              }
+                            },
+                            {
+                              "columnMatch": "geoLocations",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "linkTarget": "Resource",
+                                "showIcon": true
+                              }
+                            },
+                            {
+                              "columnMatch": "enableAutomaticFailover",
+                              "formatter": 18,
+                              "formatOptions": {
+                                "thresholdsOptions": "icons",
+                                "thresholdsGrid": [
+                                  {
+                                    "operator": "==",
+                                    "thresholdValue": true,
+                                    "representation": "success",
+                                    "text": "{0}",
+                                    "icon": "success",
+                                    "iconColor": "#28a745",
+                                    "iconSize": "small"
+                                  },
+                                  {
+                                    "operator": "=",
+                                    "thresholdValue": false,
+                                    "representation": "",
+                                    ""
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "labelSettings": [
+                            {
+                              "columnId": "",
+                              ""
+                            },
+                            {
+                              "columnId": "",
+                              "label": ""
+                            },
+                            {
+                              "columnId": "resourceGroup",
+                              "label": "Grupo de Recursos"
+                            },
+                            {
+                              "columnId": "location",
+                              "label": "Região"
+                            },
+                            {
+                              "columnId": "kind",
+                              "label": "Tipo"
+                            },
+                            {
+                              "columnId": "consistencyPolicy",
+                              "label": "Política de Consistência"
+                            },
+                            {
+                              "columnId": "geoLocations",
+                              "label": "Localizações Geográficas"
+                            },
+                            {
+                              "columnId": "enableAutomaticFailover",
+                              "label": "Failover Automático"
+                            }
+                          ]
+                        }
+                      },
+                      "name": "cosmosdb-accounts",
+                      "description": "Contas do Cosmos DB",
+                      "conditionalVisibility": {
+                        "parameterName": "TabData",
+                        "comparison": "isEqualTo",
+                        "value": "CosmosDB"
+                      }
+                    },
+                    {
+                      "type": "table",
+                      "data": {
+                        "columns": [
+                          {
+                            "id": "name",
+                            "label": "Nome"
+                          },
+                          {
+                            "id": "resourceGroup",
+                            "label": "Grupo de Recursos"
+                          },
+                          {
+                            "id": "location",
+                            "label": "Região"
+                          },
+                          {
+                            "id": "kind",
+                            "label": "Tipo"
+                          },
+                          {
+                            "id": "consistencyPolicy",
+                            "label": "Política de Consistência"
+                          },
+                          {
+                            "id": "geoLocations",
+                            "label": "Localizações Geográficas"
+                          },
+                          {
+                            "id": "enableAutomaticFailover",
+                            "label": "Failover Automático"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": 1,
+                  "content": {
+                    "version": "GroupItem/1.0",
+                    "items": [
+                      {
+                        "type": 3,
+                        "content": {
+                          "version": "KqlItem/1.0",
+                          "query": "resources | where type =~ 'microsoft.cache/redis' | project name, resourceGroup, location, sku = properties.sku.name, tier = properties.sku.tier, capacity = properties.sku.capacity, enableNonSslPort = properties.enableNonSslPort, sslPort = properties.sslPort, provisioningState | order by name asc",
+                          "title": "Caches Redis",
+                          "queryType": 1,
+                          "resourceType": "microsoft.resourcegraph/resources",
+                          "crossComponentResources": ["{Subscription}"],
+                          "visualization": "table",
+                          "gridSettings": {
+                            "formatters": [
+                              {
+                                "columnMatch": "name",
+                                "formatter": 13,
+                                "formatOptions": {
+                                  "linkTarget": "Resource",
+                                  "showIcon": true
+                                }
+                              },
+                              {
+                                "columnMatch": "sku",
+                                "formatter": 4,
+                                "formatOptions": {
+                                  "palette": "blue",
+                                  "customColumnWidthSetting": "15ch"
+                                }
+                              },
+                              {
+                                "columnMatch": "provisioningState",
+                                "formatter": 18,
+                                "formatOptions": {
+                                  "thresholdsOptions": "icons",
+                                  "thresholdsGrid": [
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Succeeded",
+                                      "representation": "",
+                                      ""
+                                      "text": "{0}",
+                                      "icon": "success",
+                                      "iconColor": "#28a745",
+                                      "iconSize": "small"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Failed",
+                                      "representation": "failed",
+                                      "text": "{0}",
+                                      "icon": "failed",
+                                      "iconColor": "#dc3545",
+                                      "iconSize": "small"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Pending",
+                                      "representation": "pending",
+                                      "text": "{0}",
+                                      "icon": "pending",
+                                      "iconColor": "#ffc107",
+                                      "iconSize": "small"
+                                    },
+                                    {
+                                      "operator": "==",
+                                      "thresholdValue": "Canceled",
+                                      "representation": "",
+                                      "text": "{0}",
+                                      "icon": "canceled",
+                                      "iconColor": "#6c757d",
+                                      "iconSize": "small"
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "gridOptions": {
+                              "enableSorting": true,
+                              "enableFiltering": true,
+                              "enableColumnResizing": true
+                            }
+                          },
+                          "labelSettings": [
+                            {
+                              "columnId": "name",
+                              "label": "Nome"
+                            },
+                            {
+                              "columnId": "resourceGroup",
+                              "label": "Grupo de Recursos"
+                            },
+                            {
+                              "columnId": "location",
+                              "label": "Região"
+                            },
+                            {
+                              "columnId": "sku",
+                              "label": "SKU"
+                            },
+                            {
+                              "columnId": "tier",
+                              "label": "Camada"
+                            },
+                            {
+                              "columnId": "capacity",
+                              "label": "Capacidade"
+                            },
+                            {
+                              "columnId": "enableNonSslPort",
+                              "label": "Porta Não SSL"
+                            },
+                            {
+                              "columnId": "sslPort",
+                              "label": "Porta SSL"
+                            },
+                            {
+                              "columnId": "provisioningState",
+                              "label": "Estado"
+                            }
+                          ]
+                        },
+                        "name": "redis-caches",
+                        "description": "Caches Redis",
+                        "conditionalVisibility": {
+                          "parameterName": "TabData",
+                          "comparison": "isEqualTo",
+                          "value": "Redis"
+                        }
+                      },
+                      {
+                        "type": "table",
+                        "data": {
+                          "columns": [
+                            {
+                              "id": "name",
+                              "label": "Nome"
+                            },
+                            {
+                              "id": "resourceGroup",
+                              "label": "Grupo de Recursos"
+                            },
+                            {
+                              "id": "location",
+                              "label": "Região"
+                            },
+                            {
+                              "id": "sku",
+                              "label": "SKU"
+                            },
+                            {
+                              "id": "tier",
+                              "label": "Camada"
+                            },
+                            {
+                              "id": "capacity",
+                              "label": "Capacidade"
+                            },
+                            {
+                              "id": "enableNonSslPort",
+                              "label": "Porta Não SSL"
+                            },
+                            {
+                              "id": "sslPort",
+                              "label": "Porta SSL"
+                            },
+                            {
+                              "id": "provisioningState",
+                              "label": "Estado"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
