@@ -674,12 +674,7 @@
                 }
               ]
             },
-            "conditionalVisibility": {
-              "parameterName": "TabMain",
-              "comparison": "isEqualTo",
-              "value": "Overview"
-            },
-            "name": "Overview-main"
+            "name": "group-main"
           },
           {
             "type": 12,
