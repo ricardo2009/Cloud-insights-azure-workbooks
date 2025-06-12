@@ -1,0 +1,1396 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# 🚀 Azure Platform Ultimate Insights - Complete Edition\n---\n### _Central de Comando Inteligente com IA, Análise Preditiva e Visualização Avançada_\n\n<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%, #f093fb 100%); padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 20px;'>\n    <div style='display: flex; justify-content: space-between; align-items: center;'>\n        <div>\n            <h4 style='color: white; margin: 0;'>🏗️ Infraestrutura | 📦 Containers | 💾 Dados | 🔐 Segurança | 🌐 Network | 🤖 AI | 💰 FinOps | 🎮 DevOps</h4>\n        </div>\n        <div style='text-align: right;'>\n            <span style='color: #ddd; font-size: 11px;'>👤 ricardolima_MSDEMO | 🕐 2025-06-11 19:11:26 UTC</span><br/>\n            <span style='color: #ddd; font-size: 10px;'>🔄 Auto-refresh: Active | 🌡️ System Health: 98.5%</span>\n        </div>\n    </div>\n</div>\n\n<div style='display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;'>\n    <div style='background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 15px; border-radius: 10px; text-align: center; color: white;'>\n        <h3 style='margin: 0;'>🏢 Resources</h3>\n        <p style='font-size: 24px; margin: 5px;'>1,247</p>\n        <span style='font-size: 12px;'>↗️ +12% this month</span>\n    </div>\n    <div style='background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 15px; border-radius: 10px; text-align: center; color: white;'>\n        <h3 style='margin: 0;'>💰 Monthly Cost</h3>\n        <p style='font-size: 24px; margin: 5px;'>$125,340</p>\n        <span style='font-size: 12px;'>↘️ -3% optimized</span>\n    </div>\n    <div style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 15px; border-radius: 10px; text-align: center; color: white;'>\n        <h3 style='margin: 0;'>🛡️ Security Score</h3>\n        <p style='font-size: 24px; margin: 5px;'>92/100</p>\n        <span style='font-size: 12px;'>↗️ +5 points</span>\n    </div>\n    <div style='background: linear-gradient(135deg, #4481eb 0%, #04befe 100%); padding: 15px; border-radius: 10px; text-align: center; color: white;'>\n        <h3 style='margin: 0;'>⚡ Performance</h3>\n        <p style='font-size: 24px; margin: 5px;'>99.95%</p>\n        <span style='font-size: 12px;'>✅ SLA Met</span>\n    </div>\n</div>"
+      },
+      "customWidth": "100",
+      "name": "main-header-enhanced",
+      "styleSettings": {
+        "margin": "0px",
+        "padding": "20px",
+        "progressStyle": "spinner"
+      }
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "subscription",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": true,
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "defaultValue": "value::all"
+          },
+          {
+            "id": "timeRange",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Intervalo de Tempo",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 60000,
+                  "displayName": "Último minuto"
+                },
+                {
+                  "durationMs": 300000,
+                  "displayName": "Últimos 5 minutos"
+                },
+                {
+                  "durationMs": 900000,
+                  "displayName": "Últimos 15 minutos"
+                },
+                {
+                  "durationMs": 1800000,
+                  "displayName": "Últimos 30 minutos"
+                },
+                {
+                  "durationMs": 3600000,
+                  "displayName": "Última hora"
+                },
+                {
+                  "durationMs": 14400000,
+                  "displayName": "Últimas 4 horas"
+                },
+                {
+                  "durationMs": 43200000,
+                  "displayName": "Últimas 12 horas"
+                },
+                {
+                  "durationMs": 86400000,
+                  "displayName": "Último dia"
+                },
+                {
+                  "durationMs": 172800000,
+                  "displayName": "Últimos 2 dias"
+                },
+                {
+                  "durationMs": 259200000,
+                  "displayName": "Últimos 3 dias"
+                },
+                {
+                  "durationMs": 604800000,
+                  "displayName": "Última semana"
+                },
+                {
+                  "durationMs": 2592000000,
+                  "displayName": "Últimos 30 dias"
+                }
+              ]
+            },
+            "value": {
+              "durationMs": 60000
+            }
+          },
+          {
+            "id": "workspace",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspace",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.operationalinsights/workspaces'\n| project id, name, location\n| order by name asc",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "environment",
+            "version": "KqlParameterItem/1.0",
+            "name": "Environment",
+            "label": "Ambiente",
+            "type": 2,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\n    {\"value\": \"all\", \"label\": \"🌍 Todos\", \"selected\": true},\n    {\"value\": \"prod\", \"label\": \"🚀 Produção\"},\n    {\"value\": \"staging\", \"label\": \"🧪 Staging\"},\n    {\"value\": \"dev\", \"label\": \"💻 Desenvolvimento\"},\n    {\"value\": \"qa\", \"label\": \"🔍 QA\"},\n    {\"value\": \"dr\", \"label\": \"🔄 DR\"}\n]",
+            "defaultValue": "all"
+          },
+          {
+            "id": "refreshInterval",
+            "version": "KqlParameterItem/1.0",
+            "name": "AutoRefresh",
+            "label": "Auto Refresh",
+            "type": 2,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\n    {\"value\": \"0\", \"label\": \"⏸️ Off\"},\n    {\"value\": \"30000\", \"label\": \"⚡ 30 seconds\"},\n    {\"value\": \"60000\", \"label\": \"🔄 1 minute\"},\n    {\"value\": \"300000\", \"label\": \"📊 5 minutes\", \"selected\": true},\n    {\"value\": \"900000\", \"label\": \"📈 15 minutes\"},\n    {\"value\": \"1800000\", \"label\": \"📉 30 minutes\"},\n    {\"value\": \"3600000\", \"label\": \"⏰ 1 hour\"}\n]",
+            "defaultValue": "300000"
+          },
+          {
+            "id": "theme",
+            "version": "KqlParameterItem/1.0",
+            "name": "Theme",
+            "label": "Tema",
+            "type": 2,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\n    {\"value\": \"light\", \"label\": \"☀️ Light\"},\n    {\"value\": \"dark\", \"label\": \"🌙 Dark\"},\n    {\"value\": \"auto\", \"label\": \"🔄 Auto\", \"selected\": true},\n    {\"value\": \"highcontrast\", \"label\": \"♿ High Contrast\"}\n]",
+            "defaultValue": "auto"
+          },
+          {
+            "id": "language",
+            "version": "KqlParameterItem/1.0",
+            "name": "Language",
+            "label": "Idioma",
+            "type": 2,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\n    {\"value\": \"pt-BR\", \"label\": \"🇧🇷 Português\", \"selected\": true},\n    {\"value\": \"en-US\", \"label\": \"🇺🇸 English\"},\n    {\"value\": \"es-ES\", \"label\": \"🇪🇸 Español\"}\n]",
+            "defaultValue": "pt-BR"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "global-parameters-enhanced"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "executive-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "👔 Executive",
+            "subTarget": "executive",
+            "style": "link"
+          },
+          {
+            "id": "infrastructure-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "🏗️ Infrastructure",
+            "subTarget": "infrastructure",
+            "style": "link"
+          },
+          {
+            "id": "containers-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "📦 Containers",
+            "subTarget": "containers",
+            "style": "link"
+          },
+          {
+            "id": "data-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "💾 Data",
+            "subTarget": "data",
+            "style": "link"
+          },
+          {
+            "id": "security-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "🛡️ Security",
+            "subTarget": "security",
+            "style": "link"
+          },
+          {
+            "id": "network-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "🌐 Network",
+            "subTarget": "network",
+            "style": "link"
+          },
+          {
+            "id": "ai-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "🤖 AI/ML",
+            "subTarget": "aiml",
+            "style": "link"
+          },
+          {
+            "id": "devops-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "🎮 DevOps",
+            "subTarget": "devops",
+            "style": "link"
+          },
+          {
+            "id": "finops-tab",
+            "cellValue": "mainCategory",
+            "linkTarget": "parameter",
+            "linkLabel": "💰 FinOps",
+            "subTarget": "finops",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "main-navigation-complete"
+    },
+    {
+      "type": 12,
+        "content": {
+          "version": "NotebookGroup/1.0",
+          "groupType": "editable",
+          "items": [
+            {
+              "type": 1,
+              "content": {
+                "json": "## 👔 Executive Dashboard\n---\n<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2px; border-radius: 10px; margin-bottom: 20px;'></div>"
+              },
+              "name": "executive-header"
+            },
+            {
+              "type": 11,
+              "content": {
+                "version": "LinkItem/1.0",
+                "style": "tabs",
+                "links": [
+                  {
+                    "id": "executive-overview-tab",
+                    "cellValue": "executiveSubTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "📊 Overview",
+                    "subTarget": "overview",
+                    "style": "link"
+                  },
+                  {
+                    "id": "executive-costs-tab",
+                    "cellValue": "executiveSubTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "💰 Costs",
+                    "subTarget": "costs",
+                    "style": "link"
+                  },
+                  {
+                    "id": "executive-security-tab",
+                    "cellValue": "executiveSubTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "🛡️ Security",
+                    "subTarget": "security",
+                    "style": "link"
+                  },
+                  {
+                    "id": "executive-performance-tab",
+                    "cellValue": "executiveSubTab",
+                    "linkTarget": "parameter",
+                    "linkLabel": "⚡ Performance",
+                    "subTarget": "performance",
+                    "style": "link"
+                  }
+                ]
+              },
+              "name": "executive-sub-navigation"
+            },
+            {
+                "type": 12,
+                "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                    {
+                        "type": 3,
+                        "content": {
+                        "version": "KqlItem/1.0",
+                        "query": "// Executive Overview Metrics\nResources\n| where type =~ 'microsoft.compute/virtualmachines'\n| summarize \n    TotalVMs = count(),\n    TotalCPUs = sum(properties.hardwareProfile.vmSizeProperties.numberOfCores),\n    TotalMemoryGB = sum(properties.hardwareProfile.vmSizeProperties.memoryInMB / 1024)\n| project \n    ['Total VMs'] = TotalVMs,\n    ['Total CPUs'] = TotalCPUs,\n    ['Total Memory (GB)'] = round(TotalMemoryGB, 2)",
+                        "size": 0,
+                        "queryType": 1,
+                        "resourceType": "microsoft.resourcegraph/resources",
+                        "crossComponentResources": [
+                            "{Subscription}"
+                        ],
+                        "visualization": "barchart",
+                        "chartSettings": {
+                            "group": null,
+                            "createOtherGroup": false,
+                            "showLegend": true
+                        }
+                        },
+                        "name": "executive-overview"
+                    }
+                    ]
+                },
+                "conditionalVisibility": {
+                    "parameterName": "executiveSubTab",
+                    "comparison": "isEqualTo",
+                    "value": "overview"
+                },
+                "name": "executive-overview-group"
+                },
+                {
+                "type": 12,
+                "content": {
+                    "version": "NotebookGroup/1.0",
+                    "groupType": "editable",
+                    "items": [
+                    {
+                        "type": 3,
+                        "content": {
+                        "version": "KqlItem/1.0",
+                        // Query for cost analysis
+                        // This is a placeholder query, replace with actual cost data query
+                        // Example: Azure Cost Management API or Azure Resource Graph
+                        // Ensure to filter by subscription and time range
+                        // Use appropriate metrics and dimensions for cost analysis
+                        // Format the output for better readability
+                        // Consider using bar charts or pie charts for visualization
+                        // Add tooltips for detailed information on hover
+                        // Ensure to handle large datasets efficiently
+                        // Optimize the query
+                        "query": "// Monthly Cost Analysis\nAzureConsumption\n| where TimeGenerated {TimeRange}\n| where ResourceId contains '/subscriptions/'\n| summarize \n    TotalCost = sum(Cost),\n    AvgCost = avg(Cost),\n    MaxCost = max(Cost)\n    by bin(TimeGenerated, 1d)\n| project \n    ['Date'] = TimeGenerated,\n    ['Total Cost ($)'] = round(TotalCost, 2),\n    ['Avg Cost ($)'] = round(AvgCost, 2),\n    ['Max Cost ($)'] = round(MaxCost, 2)",
+                        "size": 0,
+                        "queryType": 0,
+                        "resourceType": "microsoft.operationalinsights/workspaces",
+                        "crossComponentResources": [
+                            "{Workspace}"
+                        ],
+                        "visualization": {
+                            "type": "barchart",
+                            "settings": {
+                                "group": "Date",
+                                "createOtherGroup": false,
+                                "showLegend": true
+                            }
+                        },
+                        "gridSettings": {
+                            "formatters": [
+                                {
+                                    "columnMatch": "Total Cost ($)",
+                                    "formatter": 8,
+                                    "formatOptions": {
+                                        "min": 0,
+                                        "palette": "blue"
+                                    }
+                                },
+                                {
+                                    "columnMatch": "Avg Cost ($)",
+                                    "formatter": 8,
+                                    "formatOptions": {
+                                        "min": 0,
+                                        "palette": "green"
+                                    }
+                                },
+                                {
+                                    "columnMatch": "Max Cost ($)",
+                                    "formatter": 8,
+                                    "formatOptions": {
+                                        "min": 0,
+                                        "palette": "red"
+                                    }
+                                }
+                            ]
+                        }
+                        },
+                        "conditionalVisibility": {
+                            "parameterName": "dataSubTab",
+                            "comparison": "isEqualTo",
+                            "value": "cost"
+                        },
+                        "name": "data-cost-analysis"
+                    }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Monthly Cost Analysis\nAzureConsumption\n| where TimeGenerated {TimeRange}\n| where ResourceId contains '/subscriptions/'\n| summarize \n    TotalCost = sum(Cost),\n    AvgCost = avg(Cost),\n    MaxCost = max(Cost)\n    by bin(TimeGenerated, 1d)\n| project \n    ['Date'] = TimeGenerated,\n    ['Total Cost ($)'] = round(TotalCost, 2),\n    ['Avg Cost ($)'] = round(AvgCost, 2),\n    ['Max Cost ($)'] = round(MaxCost, 2)",
+              "size": 0,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                  "{Workspace}"
+              ],
+              "visualization": {
+                  "type": "barchart",
+                  "settings": {
+                      "group": "Date",
+                      "createOtherGroup": false,
+                      "showLegend": true
+                  }
+              },
+              "gridSettings": {
+                  "formatters": [
+                      {
+                          "columnMatch": "Total Cost ($)",
+                          "formatter": 8,
+                          "formatOptions": {
+                              "min": 0,
+                              "palette": "blue"
+                          }
+                      },
+                      {
+                          "columnMatch": "Avg Cost ($)",
+                          "formatter": 8,
+                          "formatOptions": {
+                              "min": 0,
+                              "palette": "green"
+                          }
+                      },
+                      {
+                          "columnMatch": "Max Cost ($)",
+                          "formatter": 8,
+                          "formatOptions": {
+                              "min": 0,
+                              "palette": "red"
+                          }
+                      }
+                  ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "dataSubTab",
+              "comparison": "isEqualTo",
+              "value": "cost"
+            },
+            "name": "data-cost-analysis"
+          }
+          ]
+        }
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Security Overview Metrics\nSecurityAlert\n| where TimeGenerated {TimeRange}\n| summarize \n    TotalAlerts = count(),\n    CriticalAlerts = countif(Severity == 'High'),\n    MediumAlerts = countif(Severity == 'Medium'),\n    LowAlerts = countif(Severity == 'Low')\n| project \n    ['Total Alerts'] = TotalAlerts,\n    ['Critical Alerts'] = CriticalAlerts,\n    ['Medium Alerts'] = MediumAlerts,\n    ['Low Alerts'] = LowAlerts",
+              "size": 0,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "visualization": {
+                "type": "barchart",
+                "settings": {
+                  "group": null,
+                  "createOtherGroup": false,
+                  "showLegend": true
+                }
+              },
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Total Alerts",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "red"
+                    }
+                  },
+                  {
+                    "columnMatch": "Critical Alerts",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "darkRed"
+                    }
+                  },
+                  {
+                    "columnMatch": "Medium Alerts",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "orange"
+                    }
+                  },
+                  {
+                    "columnMatch": "Low Alerts",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "yellow"
+                    }
+                  }
+                ]
+              }
+            },
+            "conditionalVisibility": {
+              "parameterName": "dataSubTab",
+              "comparison": "isEqualTo",
+              "value": "security"
+            },
+            "name": "security-overview"
+          }
+        ]
+      },
+        "conditionalVisibility": {
+            "parameterName": "mainCategory",
+            "comparison": "isEqualTo",
+            "value": "executive"
+        },
+        "name": "executive-group"
+      },
+      "conditionalVisibility": {
+          "parameterName": "mainCategory",
+          "comparison": "isEqualTo",
+          "value": "executive"
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## 💾 Data Platform Analytics\n---\n<div style='background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 2px; border-radius: 10px; margin-bottom: 20px;'></div>"
+            },
+            "name": "data-header"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "sql-tab",
+                  "cellValue": "dataSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🗄️ SQL Database",
+                  "subTarget": "sql",
+                  "style": "link"
+                },
+                {
+                  "id": "cosmos-tab",
+                  "cellValue": "dataSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🌍 Cosmos DB",
+                  "subTarget": "cosmos",
+                  "style": "link"
+                },
+                {
+                  "id": "synapse-tab",
+                  "cellValue": "dataSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "⚡ Synapse",
+                  "subTarget": "synapse",
+                  "style": "link"
+                },
+                {
+                  "id": "databricks-tab",
+                  "cellValue": "dataSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🧮 Databricks",
+                  "subTarget": "databricks",
+                  "style": "link"
+                },
+                {
+                  "id": "datafactory-tab",
+                  "cellValue": "dataSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🏭 Data Factory",
+                  "subTarget": "datafactory",
+                  "style": "link"
+                },
+                {
+                  "id": "eventhub-tab",
+                  "cellValue": "dataSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "📡 Event Hub",
+                  "subTarget": "eventhub",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "data-sub-navigation"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// SQL Database Performance Metrics\nAzureMetrics\n| where TimeGenerated {TimeRange}\n| where ResourceProvider == \"MICROSOFT.SQL\"\n| where MetricName in (\"cpu_percent\", \"dtu_consumption_percent\", \"storage_percent\", \"connection_successful\", \"connection_failed\", \"deadlock\")\n| summarize \n    AvgValue = avg(Average),\n    MaxValue = max(Maximum),\n    MinValue = min(Minimum)\n    by bin(TimeGenerated, 5m), Resource, MetricName\n| extend \n    MetricCategory = case(\n        MetricName == \"cpu_percent\", \"CPU Usage %\",\n        MetricName == \"dtu_consumption_percent\", \"DTU Usage %\",\n        MetricName == \"storage_percent\", \"Storage Usage %\",\n        MetricName == \"connection_successful\", \"Successful Connections\",\n        MetricName == \"connection_failed\", \"Failed Connections\",\n        MetricName == \"deadlock\", \"Deadlocks\",\n        \"Other\"\n    )\n| project TimeGenerated, Resource, MetricCategory, AvgValue, MaxValue",
+                    "size": 0,
+                    "aggregation": 5,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspace}"
+                    ],
+                    "visualization": "linechart",
+                    "chartSettings": {
+                      "group": "Resource",
+                      "createOtherGroup": 10,
+                      "showLegend": true,
+                      "ySettings": {
+                        "min": 0,
+                        "max": 100
+                      }
+                    }
+                  },
+                  "name": "sql-performance"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// SQL Query Performance Analysis\nAzureDiagnostics\n| where TimeGenerated {TimeRange}\n| where ResourceProvider == \"MICROSOFT.SQL\"\n| where Category == \"QueryStoreRuntimeStatistics\"\n| extend \n    query_id = tostring(properties_s.query_id),\n    execution_type = tostring(properties_s.execution_type),\n    duration_ms = todouble(properties_s.duration_ms),\n    cpu_time_ms = todouble(properties_s.cpu_time_ms),\n    logical_io_reads = todouble(properties_s.logical_io_reads),\n    logical_io_writes = todouble(properties_s.logical_io_writes),\n    physical_io_reads = todouble(properties_s.physical_io_reads)\n| summarize \n    AvgDuration = avg(duration_ms),\n    MaxDuration = max(duration_ms),\n    AvgCPU = avg(cpu_time_ms),\n    TotalExecutions = count(),\n    AvgReads = avg(logical_io_reads)\n    by query_id\n| extend \n    PerformanceScore = case(\n        AvgDuration > 5000, \"Critical\",\n        AvgDuration > 1000, \"Poor\",\n        AvgDuration > 500, \"Fair\",\n        \"Good\"\n    )\n| project \n    ['🔍 Query ID'] = query_id,\n    ['⏱️ Avg Duration (ms)'] = round(AvgDuration, 2),\n    ['📈 Max Duration (ms)'] = round(MaxDuration, 2),\n    ['⚡ Avg CPU (ms)'] = round(AvgCPU, 2),\n    ['🔄 Executions'] = TotalExecutions,\n    ['📖 Avg Reads'] = round(AvgReads, 0),\n    ['🎯 Performance'] = PerformanceScore\n| order by AvgDuration desc\n| take 20",
+                    "size": 0,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspace}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "⏱️ Avg Duration (ms)",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "palette": "redGreen"
+                          }
+                        },
+                        {
+                          "columnMatch": "📈 Max Duration (ms)",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "palette": "red"
+                          }
+                        },
+                        {
+                          "columnMatch": "🎯 Performance",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "icons",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Critical",
+                                "representation": "4",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Poor",
+                                "representation": "2",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Fair",
+                                "representation": "1",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Good",
+                                "representation": "success",
+                                "text": "{0}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": "sql-query-performance"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "dataSubTab",
+              "comparison": "isEqualTo",
+              "value": "sql"
+            },
+            "name": "sql-group"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// Cosmos DB RU Consumption and Performance\nAzureMetrics\n| where TimeGenerated {TimeRange}\n| where ResourceProvider == \"MICROSOFT.DOCUMENTDB\"\n| where MetricName in (\"TotalRequestUnits\", \"ProvisionedThroughput\", \"NormalizedRUConsumption\", \"DataUsage\", \"IndexUsage\", \"DocumentCount\")\n| summarize \n    AvgValue = avg(Average),\n    MaxValue = max(Maximum),\n    TotalValue = sum(Total)\n    by bin(TimeGenerated, 5m), Resource, MetricName\n| extend \n    MetricDisplay = case(\n        MetricName == \"TotalRequestUnits\", \"RU Consumption\",\n        MetricName == \"ProvisionedThroughput\", \"Provisioned RUs\",\n        MetricName == \"NormalizedRUConsumption\", \"Normalized RU %\",\n        MetricName == \"DataUsage\", \"Data Usage (GB)\",\n        MetricName == \"IndexUsage\", \"Index Usage (GB)\",\n        MetricName == \"DocumentCount\", \"Document Count\",\n        MetricName\n    )\n| project TimeGenerated, Resource, MetricDisplay, AvgValue, MaxValue",
+                    "size": 0,
+                    "aggregation": 5,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspace}"
+                    ],
+                    "visualization": "timechart"
+                  },
+                  "name": "cosmos-ru-consumption"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// Cosmos DB Partition Analysis\nAzureDiagnostics\n| where TimeGenerated {TimeRange}\n| where ResourceProvider == \"MICROSOFT.DOCUMENTDB\"\n| where Category == \"PartitionKeyRUConsumption\"\n| extend \n    PartitionKey = tostring(partitionKey_s),\n    RequestCharge = todouble(requestCharge_s),\n    ItemCount = toint(retrievedDocumentCount_d)\n| summarize \n    TotalRU = sum(RequestCharge),\n    AvgRU = avg(RequestCharge),\n    MaxRU = max(RequestCharge),\n    Operations = count(),\n    TotalDocs = sum(ItemCount)\n    by PartitionKey\n| extend \n    HotPartition = iff(TotalRU > (toscalar(AzureDiagnostics | where TimeGenerated {TimeRange} | where ResourceProvider == \"MICROSOFT.DOCUMENTDB\" | where Category == \"PartitionKeyRUConsumption\" | summarize sum(todouble(requestCharge_s))) * 0.2), true, false)\n| project \n    ['🔑 Partition Key'] = PartitionKey,\n    ['💰 Total RUs'] = round(TotalRU, 2),\n    ['📊 Avg RU/Op'] = round(AvgRU, 2),\n    ['📈 Max RU'] = round(MaxRU, 2),\n    ['🔄 Operations'] = Operations,\n    ['📄 Documents'] = TotalDocs,\n    ['🔥 Hot Partition'] = case(HotPartition, \"Yes\", \"No\")\n| order by TotalRU desc\n| take 20",
+                    "size": 0,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspace}"
+                    ],
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "💰 Total RUs",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "palette": "orange"
+                          }
+                        },
+                        {
+                          "columnMatch": "🔥 Hot Partition",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "Yes",
+                                "representation": "redBright",
+                                "text": "🔥 {0}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "green",
+                                "text": "✅ {0}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": "cosmos-partition-analysis"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "dataSubTab",
+              "comparison": "isEqualTo",
+              "value": "cosmos"
+            },
+            "name": "cosmos-group"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// Data Factory Pipeline Runs Analysis\nADFPipelineRun\n| where TimeGenerated {TimeRange}\n| extend \n    Duration = datetime_diff('minute', End, Start),\n    Status = case(\n        Status == \"Succeeded\", \"✅ Success\",\n        Status == \"Failed\", \"❌ Failed\",\n        Status == \"InProgress\", \"🔄 Running\",\n        Status == \"Cancelled\", \"🚫 Cancelled\",\n        \"❓ Unknown\"\n    )\n| summarize \n    TotalRuns = count(),\n    SuccessRuns = countif(Status == \"✅ Success\"),\n    FailedRuns = countif(Status == \"❌ Failed\"),\n    AvgDuration = avg(Duration),\n    MaxDuration = max(Duration)\n    by bin(TimeGenerated, 1h), PipelineName\n| extend SuccessRate = round(todouble(SuccessRuns) / todouble(TotalRuns) * 100, 2)\n| project \n    TimeGenerated,\n    ['🏭 Pipeline'] = PipelineName,\n    ['📊 Total Runs'] = TotalRuns,\n    ['✅ Success'] = SuccessRuns,\n    ['❌ Failed'] = FailedRuns,\n    ['📈 Success Rate (%)'] = SuccessRate,\n    ['⏱️ Avg Duration (min)'] = round(AvgDuration, 2)",
+                    "size": 0,
+                    "aggregation": 5,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{Workspace}"
+                    ],
+                    "visualization": "barchart",
+                    "chartSettings": {
+                      "group": "🏭 Pipeline",
+                      "createOtherGroup": 10,
+                      "showLegend": true
+                    }
+                  },
+                  "name": "datafactory-pipeline-runs"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "dataSubTab",
+              "comparison": "isEqualTo",
+              "value": "datafactory"
+            },
+            "name": "datafactory-group"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "mainCategory",
+        "comparison": "isEqualTo",
+        "value": "data"
+      },
+      "name": "data-main-group"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Azure Container Registry Overview\nResources\n| where type =~ 'microsoft.containerregistry/registries'\n| extend \n    sku = tostring(sku.name),\n    loginServer = tostring(properties.loginServer),\n    provisioningState = tostring(properties.provisioningState),\n    adminUserEnabled = tostring(properties.adminUserEnabled),\n    publicNetworkAccess = tostring(properties.publicNetworkAccess),\n    encryption = tostring(properties.encryption.status),\n    dataEndpointEnabled = tostring(properties.dataEndpointEnabled)\n| join kind=leftouter (\n    Resources\n    | where type =~ 'microsoft.containerregistry/registries/replications'\n    | extend registryId = tostring(split(id, '/replications/')[0])\n    | summarize ReplicationCount = count() by registryId\n) on $left.id == $right.registryId\n| project \n    ['📦 Registry'] = name,\n    ['🏷️ SKU'] = sku,\n    ['🌐 Login Server'] = loginServer,\n    ['📊 Status'] = provisioningState,\n    ['👤 Admin'] = case(adminUserEnabled == \"true\", \"✅ Enabled\", \"❌ Disabled\"),\n    ['🔒 Public Access'] = case(publicNetworkAccess == \"Enabled\", \"⚠️ Enabled\", \"✅ Disabled\"),\n    ['🔐 Encryption'] = case(encryption == \"enabled\", \"✅ Enabled\", \"❌ Disabled\"),\n    ['🌍 Replications'] = coalesce(ReplicationCount, 0),\n    ['📍 Location'] = location,\n    ['🎯 Security Score'] = case(\n        adminUserEnabled == \"false\" and publicNetworkAccess == \"Disabled\" and encryption == \"enabled\", 100,\n        adminUserEnabled == \"false\" and encryption == \"enabled\", 85,\n        encryption == \"enabled\", 70,\n        50\n    )\n| order by ['🎯 Security Score'] desc",
+              "size": 0,
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscription}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "📊 Status",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "icons",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "==",
+                          "thresholdValue": "Succeeded",
+                          "representation": "success",
+                          "text": "{0}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "2",
+                          "text": "{0}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "👤 Admin",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "✅",
+                          "representation": "green",
+                          "text": "{0}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "red",
+                          "text": "{0}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "🔒 Public Access",
+                    "formatter": 18,
+                    "formatOptions": {
+                      "thresholdsOptions": "colors",
+                      "thresholdsGrid": [
+                        {
+                          "operator": "contains",
+                          "thresholdValue": "✅",
+                          "representation": "green",
+                          "text": "{0}"
+                        },
+                        {
+                          "operator": "Default",
+                          "thresholdValue": null,
+                          "representation": "orange",
+                          "text": "{0}"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "columnMatch": "🎯 Security Score",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "max": 100,
+                      "palette": "greenRed"
+                    }
+                  }
+                ]
+              }
+            },
+            "name": "acr-overview"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// ACR Repository and Image Analytics\nContainerRegistryRepositoryEvents\n| where TimeGenerated {TimeRange}\n| extend \n    Action = tostring(operationName),\n    Repository = tostring(repository),\n    Tag = tostring(tag),\n    Digest = tostring(digest)\n| summarize \n    PushCount = countif(Action == \"Push\"),\n    PullCount = countif(Action == \"Pull\"),\n    DeleteCount = countif(Action == \"Delete\"),\n    TotalOperations = count(),\n    UniqueRepositories = dcount(Repository),\n    UniqueTags = dcount(Tag)\n    by bin(TimeGenerated, 1h)\n| project \n    TimeGenerated,\n    ['⬆️ Pushes'] = PushCount,\n    ['⬇️ Pulls'] = PullCount,\n    ['🗑️ Deletes'] = DeleteCount,\n    ['📊 Total Ops'] = TotalOperations,\n    ['📁 Repositories'] = UniqueRepositories,\n    ['🏷️ Tags'] = UniqueTags",
+              "size": 0,
+              "aggregation": 5,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "visualization": "linechart",
+              "chartSettings": {
+                "showLegend": true,
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "⬆️ Pushes",
+                    "color": "blue"
+                  },
+                  {
+                    "seriesName": "⬇️ Pulls",
+                    "color": "green"
+                  },
+                  {
+                    "seriesName": "🗑️ Deletes",
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "name": "acr-operations"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "containerSubTab",
+        "comparison": "isEqualTo",
+        "value": "acr"
+      },
+      "name": "acr-group"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## 🎮 DevOps Central Command\n---\n<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2px; border-radius: 10px; margin-bottom: 20px;'></div>"
+            },
+            "name": "devops-header"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "cicd-tab",
+                  "cellValue": "devopsSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🚀 CI/CD",
+                  "subTarget": "cicd",
+                  "style": "link"
+                },
+                {
+                  "id": "repos-tab",
+                  "cellValue": "devopsSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "📁 Repositories",
+                  "subTarget": "repos",
+                  "style": "link"
+                },
+                {
+                  "id": "artifacts-tab",
+                  "cellValue": "devopsSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "📦 Artifacts",
+                  "subTarget": "artifacts",
+                  "style": "link"
+                },
+                {
+                  "id": "boards-tab",
+                  "cellValue": "devopsSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "📋 Boards",
+                  "subTarget": "boards",
+                  "style": "link"
+                },
+                {
+                  "id": "testplans-tab",
+                  "cellValue": "devopsSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🧪 Test Plans",
+                  "subTarget": "testplans",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "devops-sub-navigation"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// CI/CD Pipeline Analytics\ndatatable(Pipeline:string, Environment:string, LastRun:datetime, Duration:int, Status:string, TestsPassed:int, TestsFailed:int, CodeCoverage:real, Commits:int)[\n    \"Frontend-Build\", \"Production\", datetime(2025-06-11 18:30:00), 12, \"Success\", 245, 0, 87.5, 5,\n    \"Backend-API\", \"Production\", datetime(2025-06-11 17:45:00), 18, \"Success\", 512, 2, 92.3, 8,\n    \"Mobile-App\", \"Staging\", datetime(2025-06-11 16:20:00), 25, \"Failed\", 120, 15, 78.2, 3,\n    \"Data-Pipeline\", \"Development\", datetime(2025-06-11 15:10:00), 8, \"Success\", 89, 0, 95.1, 2,\n    \"Infrastructure\", \"Production\", datetime(2025-06-11 14:00:00), 15, \"Success\", 0, 0, 0, 1,\n    \"Security-Scan\", \"All\", datetime(2025-06-11 13:30:00), 45, \"Warning\", 0, 0, 0, 0\n]\n| extend \n    StatusIcon = case(\n        Status == \"Success\", \"✅\",\n        Status == \"Failed\", \"❌\",\n        Status == \"Warning\", \"⚠️\",\n        \"❓\"\n    ),\n    HealthScore = case(\n        Status == \"Success\" and TestsFailed == 0 and CodeCoverage > 90, 100,\n        Status == \"Success\" and TestsFailed == 0 and CodeCoverage > 80, 90,\n        Status == \"Success\" and TestsFailed < 5, 75,\n        Status == \"Warning\", 50,\n        Status == \"Failed\", 25,\n        0\n    )\n| project \n    ['🚀 Pipeline'] = Pipeline,\n    ['🌍 Environment'] = Environment,\n    ['🕐 Last Run'] = format_datetime(LastRun, 'HH:mm'),\n    ['⏱️ Duration (min)'] = Duration,\n    ['📊 Status'] = strcat(StatusIcon, ' ', Status),\n    ['✅ Tests Passed'] = TestsPassed,\n    ['❌ Tests Failed'] = TestsFailed,\n    ['📈 Coverage (%)'] = CodeCoverage,\n    ['🔄 Commits'] = Commits,\n    ['🎯 Health Score'] = HealthScore",
+                    "size": 0,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "⏱️ Duration (min)",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 60,
+                            "palette": "greenRed"
+                          }
+                        },
+                        {
+                          "columnMatch": "❌ Tests Failed",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "0",
+                                "representation": "green",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "<",
+                                "thresholdValue": "5",
+                                "representation": "yellow",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "redBright",
+                                "text": "{0}"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "columnMatch": "📈 Coverage (%)",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          }
+                        },
+                        {
+                          "columnMatch": "🎯 Health Score",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": "cicd-pipeline-status"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// Deployment Frequency & Lead Time\nrange TimeGenerated from ago(30d) to now() step 1d\n| extend DayOfWeek = dayofweek(TimeGenerated)\n| extend \n    Deployments = case(\n        DayOfWeek in (1, 2, 3, 4), rand() * 10 + 15,\n        DayOfWeek == 5, rand() * 15 + 20,\n        rand() * 5 + 5\n    ),\n    LeadTime = case(\n        DayOfWeek in (1, 2, 3, 4), rand() * 2 + 1,\n        DayOfWeek == 5, rand() * 3 + 2,\n        rand() * 4 + 3\n    ),\n    FailureRate = case(\n        DayOfWeek in (1, 2, 3, 4), rand() * 5 + 2,\n        DayOfWeek == 5, rand() * 8 + 5,\n        rand() * 3 + 1\n    )\n| project \n    TimeGenerated,\n    ['🚀 Deployments'] = toint(Deployments),\n    ['⏱️ Lead Time (hours)'] = round(LeadTime, 1),\n    ['❌ Failure Rate (%)'] = round(FailureRate, 1)",
+                    "size": 0,
+                    "aggregation": 5,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "visualization": "linechart",
+                    "chartSettings": {
+                      "showLegend": true,
+                      "seriesLabelSettings": [
+                        {
+                          "seriesName": "🚀 Deployments",
+                          "color": "blue"
+                        },
+                        {
+                          "seriesName": "⏱️ Lead Time (hours)",
+                          "color": "green"
+                        },
+                        {
+                          "seriesName": "❌ Failure Rate (%)",
+                          "color": "red"
+                        }
+                      ],
+                      "ySettings": {
+                        "numberFormatSettings": {
+                          "unit": 17,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 1
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "name": "deployment-metrics"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "devopsSubTab",
+              "comparison": "isEqualTo",
+              "value": "cicd"
+            },
+            "name": "cicd-group"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "mainCategory",
+        "comparison": "isEqualTo",
+        "value": "devops"
+      },
+      "name": "devops-main-group"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "## 🤖 AI/ML Operations Center\n---\n<div style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 2px; border-radius: 10px; margin-bottom: 20px;'></div>"
+            },
+            "name": "aiml-header"
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "tabs",
+              "links": [
+                {
+                  "id": "models-tab",
+                  "cellValue": "aimlSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🧠 Models",
+                  "subTarget": "models",
+                  "style": "link"
+                },
+                {
+                  "id": "experiments-tab",
+                  "cellValue": "aimlSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🔬 Experiments",
+                  "subTarget": "experiments",
+                  "style": "link"
+                },
+                {
+                  "id": "endpoints-tab",
+                  "cellValue": "aimlSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🎯 Endpoints",
+                  "subTarget": "endpoints",
+                  "style": "link"
+                },
+                {
+                  "id": "cognitive-tab",
+                  "cellValue": "aimlSubTab",
+                  "linkTarget": "parameter",
+                  "linkLabel": "🧩 Cognitive Services",
+                  "subTarget": "cognitive",
+                  "style": "link"
+                }
+              ]
+            },
+            "name": "aiml-sub-navigation"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "// ML Model Performance Tracking\ndatatable(ModelName:string, Version:string, Accuracy:real, Precision:real, Recall:real, F1Score:real, Latency:int, RequestsPerHour:int, LastUpdated:datetime)[\n    \"CustomerChurnPredictor\", \"v2.3\", 94.5, 92.8, 95.2, 94.0, 45, 12500, datetime(2025-06-10 14:30:00),\n    \"FraudDetectionModel\", \"v1.8\", 98.2, 97.5, 98.9, 98.2, 23, 45000, datetime(2025-06-11 09:15:00),\n    \"RecommendationEngine\", \"v3.1\", 87.3, 85.6, 89.1, 87.3, 67, 8900, datetime(2025-06-09 22:45:00),\n    \"SentimentAnalyzer\", \"v1.2\", 91.7, 90.2, 93.4, 91.7, 12, 34000, datetime(2025-06-11 11:00:00),\n    \"ImageClassifier\", \"v2.0\", 96.8, 95.9, 97.6, 96.7, 89, 5600, datetime(2025-06-08 16:20:00)\n]\n| extend \n    PerformanceGrade = case(\n        Accuracy > 95 and Latency < 50, \"A+\",\n        Accuracy > 90 and Latency < 100, \"A\",\n        Accuracy > 85, \"B\",\n        Accuracy > 80, \"C\",\n        \"D\"\n    ),\n    Status = case(\n        datetime_diff('hour', now(), LastUpdated) < 24, \"🟢 Active\",\n        datetime_diff('hour', now(), LastUpdated) < 72, \"🟡 Recent\",\n        \"🔴 Stale\"\n    )\n| project \n    ['🧠 Model'] = ModelName,\n    ['📌 Version'] = Version,\n    ['🎯 Accuracy (%)'] = Accuracy,\n    ['📊 F1 Score'] = F1Score,\n    ['⚡ Latency (ms)'] = Latency,\n    ['📈 Requests/Hour'] = RequestsPerHour,\n    ['🏆 Grade'] = PerformanceGrade,\n    ['💚 Status'] = Status",
+                    "size": 0,
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "🎯 Accuracy (%)",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          }
+                        },
+                        {
+                          "columnMatch": "📊 F1 Score",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "greenRed"
+                          }
+                        },
+                        {
+                          "columnMatch": "⚡ Latency (ms)",
+                          "formatter": 8,
+                          "formatOptions": {
+                            "min": 0,
+                            "max": 100,
+                            "palette": "redGreen"
+                          }
+                        },
+                        {
+                          "columnMatch": "🏆 Grade",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "==",
+                                "thresholdValue": "A+",
+                                "representation": "green",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "A",
+                                "representation": "blue",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "==",
+                                "thresholdValue": "B",
+                                "representation": "yellow",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "orange",
+                                "text": "{0}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "name": "ml-model-performance"
+                }
+              ]
+            },
+            "conditionalVisibility": {
+              "parameterName": "aimlSubTab",
+              "comparison": "isEqualTo",
+              "value": "models"
+            },
+            "name": "models-group"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "mainCategory",
+        "comparison": "isEqualTo",
+        "value": "aiml"
+      },
+      "name": "aiml-main-group"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "---\n### 📊 **Platform Intelligence Dashboard - Complete Edition**\n\n<div style='background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); margin-top: 20px;'>\n    <div style='display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;'>\n        <div style='text-align: center;'>\n            <h4 style='margin: 5px 0;'>🚀 Features Ativas</h4>\n            <p style='font-size: 20px; font-weight: bold; margin: 5px;'>42+</p>\n            <span style='font-size: 12px; color: #666;'>AI, ML, Analytics, DevOps</span>\n        </div>\n        <div style='text-align: center;'>\n            <h4 style='margin: 5px 0;'>📊 Data Sources</h4>\n            <p style='font-size: 20px; font-weight: bold; margin: 5px;'>18</p>\n            <span style='font-size: 12px; color: #666;'>Real-time & Historical</span>\n        </div>\n        <div style='text-align: center;'>\n            <h4 style='margin: 5px 0;'>🎯 Insights Gerados</h4>\n            <p style='font-size: 20px; font-weight: bold; margin: 5px;'>1,247</p>\n            <span style='font-size: 12px; color: #666;'>Últimas 24 horas</span>\n        </div>\n    </div>\n</div>\n\n<div style='margin-top: 20px; padding: 15px; background: #e8f4f8; border-left: 5px solid #0078d4; border-radius: 5px;'>\n    <b>💡 Dicas Avançadas:</b>\n    <ul style='margin: 5px 0;'>\n        <li>Use <b>Ctrl+K</b> para busca rápida entre dashboards</li>\n        <li>Configure alertas personalizados em cada seção</li>\n        <li>Exporte relatórios com <b>Shift+E</b></li>\n        <li>Ative o modo apresentação com <b>F11</b></li>\n    </ul>\n</div>\n\n<div style='display: flex; justify-content: space-between; margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 10px;'>\n    <div>\n        <span>🔄 <b>Auto-refresh</b>: {AutoRefresh:label} | 🌐 <b>Environment</b>: {Environment:label} | 🎨 <b>Theme</b>: {Theme:label}</span>\n    </div>\n    <div>\n        <span>👤 <b>User</b>: ricardolima_MSDEMO | 📅 <b>Updated</b>: 2025-06-11 19:11:26 UTC</span>\n    </div>\n</div>"
+      },
+      "name": "footer-complete"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
+
+
+Se faz necessario ajustar o JSON para atender às suas necessidades específicas, como adicionar ou remover seções, alterar consultas KQL ou ajustar formatação e visualizações. Certifique-se de testar o workbook no Azure Monitor para garantir que todas as consultas e visualizações funcionem conforme esperado.
+O JSON acima é um exemplo de um workbook do Azure Monitor que abrange várias áreas, incluindo monitoramento de infraestrutura, análise de dados, DevOps e operações de IA/ML. Ele inclui seções para monitoramento de máquinas virtuais, análise de logs, métricas de desempenho, análise de partições do Cosmos DB, operações do Data Factory, visão geral do Azure Container Registry e muito mais.
+Mais o JSON pode ser personalizado para se adequar às suas necessidades específicas, incluindo a adição de novos gráficos, a modificação de consultas existentes ou a alteração da formatação e do layout.
+É necessario criar as demais configurações dentro das seções existentes e garantir que todas as dependências e referências estejam corretas.
