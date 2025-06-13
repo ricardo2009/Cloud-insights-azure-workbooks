@@ -19,12 +19,137 @@
             "content": {
               "version": "KqlParameterItem/1.0",
               "parameters": [
-                {"id": "sub", "name": "Subscription", "label": "Assinatura", "type": 6, "isRequired": true, "multiSelect": true, "quote": "'", "delimiter": ",", "value": ["value::all"], "typeSettings": {"additionalResourceOptions": ["value::all"], "includeAll": true}},
-                {"id": "ws", "name": "LogAnalyticsWorkspace", "label": "Workspace", "type": 5, "isRequired": true, "multiSelect": true, "quote": "'", "delimiter": ",", "query": "where type =~ 'microsoft.operationalinsights/workspaces' | summarize by id, name | project id", "typeSettings": {"additionalResourceOptions": ["value::all"]}, "defaultValue": "value::all", "queryType": 1, "resourceType": "microsoft.resourcegraph/resources"},
-                {"id": "agw", "name": "AppGateway", "label": "Application Gateway", "type": 2, "isRequired": false, "multiSelect": true, "quote": "'", "delimiter": ",", "query": "resources | where type == 'microsoft.network/applicationgateways' | project name", "typeSettings": {"additionalResourceOptions": ["value::all"]}, "defaultValue": "value::all", "queryType": 1, "resourceType": "microsoft.resourcegraph/resources", "dependsOn": ["Subscription", "LogAnalyticsWorkspace"]},
-                {"id": "timerange", "name": "timerange", "label": "Período", "type": 4, "value": {"durationMs": 86400000}, "typeSettings": {"selectableValues": [{"durationMs": 3600000}, {"durationMs": 86400000}, {"durationMs": 604800000}]}}
+                {
+                  "id": "1a3bb311-bb9f-4f59-99a7-68a94db4c5f6",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "Subscription",
+                  "label": "Assinatura",
+                  "type": 6,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "value": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "includeAll": true,
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  }
+                },
+                {
+                  "id": "2a3bb311-bb9f-4f59-99a7-68a94db4c5f7",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "LogAnalyticsWorkspace",
+                  "label": "Workspace",
+                  "type": 5,
+                  "isRequired": true,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "Resources\n| where type =~ 'microsoft.operationalinsights/workspaces'\n| project id, name, subscriptionId\n| order by name asc",
+                  "crossComponentResources": [
+                    "{Subscription}"
+                  ],
+                  "value": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "resourceTypeFilter": {
+                      "microsoft.operationalinsights/workspaces": true
+                    },
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "3a3bb311-bb9f-4f59-99a7-68a94db4c5f8",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "AppGateway",
+                  "label": "Application Gateway",
+                  "type": 2,
+                  "isRequired": false,
+                  "multiSelect": true,
+                  "quote": "'",
+                  "delimiter": ",",
+                  "query": "Resources\n| where type =~ 'microsoft.network/applicationgateways'\n| project name, id, subscriptionId, resourceGroup, location\n| order by name asc",
+                  "crossComponentResources": [
+                    "{Subscription}"
+                  ],
+                  "value": [
+                    "value::all"
+                  ],
+                  "typeSettings": {
+                    "additionalResourceOptions": [
+                      "value::all"
+                    ],
+                    "selectAllValue": "*",
+                    "showDefault": false
+                  },
+                  "timeContext": {
+                    "durationMs": 86400000
+                  },
+                  "queryType": 1,
+                  "resourceType": "microsoft.resourcegraph/resources"
+                },
+                {
+                  "id": "4a3bb311-bb9f-4f59-99a7-68a94db4c5f9",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "timerange",
+                  "label": "Período",
+                  "type": 4,
+                  "isRequired": true,
+                  "value": {
+                    "durationMs": 86400000
+                  },
+                  "typeSettings": {
+                    "selectableValues": [
+                      {
+                        "durationMs": 3600000,
+                        "createdTime": "2024-01-01T00:00:00.000Z",
+                        "isInitialTime": false,
+                        "grain": 1,
+                        "useDashboardTimeRange": false
+                      },
+                      {
+                        "durationMs": 86400000,
+                        "createdTime": "2024-01-01T00:00:00.000Z",
+                        "isInitialTime": false,
+                        "grain": 1,
+                        "useDashboardTimeRange": false
+                      },
+                      {
+                        "durationMs": 604800000,
+                        "createdTime": "2024-01-01T00:00:00.000Z",
+                        "isInitialTime": false,
+                        "grain": 1,
+                        "useDashboardTimeRange": false
+                      },
+                      {
+                        "durationMs": 2592000000,
+                        "createdTime": "2024-01-01T00:00:00.000Z",
+                        "isInitialTime": false,
+                        "grain": 1,
+                        "useDashboardTimeRange": false
+                      }
+                    ]
+                  }
+                }
               ],
-              "style": "formVertical",
+              "style": "pills",
               "queryType": 0,
               "resourceType": "microsoft.operationalinsights/workspaces"
             },
@@ -67,54 +192,29 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "resources\n| where type == 'microsoft.network/applicationgateways'\n| summarize TotalGateways = count(), \n    ActiveGateways = countif(properties.provisioningState == 'Succeeded'),\n    WarningGateways = countif(properties.provisioningState == 'Updating'),\n    ErrorGateways = countif(properties.provisioningState == 'Failed')\n| project \n    Total = TotalGateways,\n    Active = ActiveGateways,\n    Warning = WarningGateways,\n    Error = ErrorGateways,\n    HealthScore = round((toreal(ActiveGateways) / toreal(TotalGateways)) * 100, 2)",
+                    "query": "resources\n| where type == 'microsoft.network/applicationgateways'\n| where '{AppGateway:label}' == \"All\" or name in~ ({AppGateway})\n| summarize Total = count()",
                     "size": 4,
+                    "title": "Total Gateways",
                     "queryType": 1,
                     "resourceType": "microsoft.resourcegraph/resources",
                     "crossComponentResources": ["{Subscription}"],
                     "visualization": "tiles",
                     "tileSettings": {
                       "titleContent": {
-                        "columnMatch": "Column",
                         "formatter": 1
                       },
                       "leftContent": {
-                        "columnMatch": "Value",
+                        "columnMatch": "Total",
                         "formatter": 12,
                         "formatOptions": {
-                          "palette": "auto"
-                        }
-                      },
-                      "secondaryContent": {
-                        "columnMatch": "Trend",
-                        "formatter": 21,
-                        "formatOptions": {
-                          "palette": "green"
+                          "palette": "blue"
                         }
                       },
                       "showBorder": true
-                    },
-                    "graphSettings": {
-                      "type": 0,
-                      "topContent": {
-                        "columnMatch": "Total",
-                        "formatter": 1
-                      },
-                      "centerContent": {
-                        "columnMatch": "Active",
-                        "formatter": 1,
-                        "numberFormat": {
-                          "unit": 17,
-                          "options": {
-                            "style": "decimal",
-                            "maximumFractionDigits": 2
-                          }
-                        }
-                      }
                     }
                   },
                   "customWidth": "25",
-                  "name": "kpi-tiles",
+                  "name": "kpi-total",
                   "styleSettings": {
                     "showBorder": true
                   }
@@ -123,11 +223,283 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\" and OperationName == \"ApplicationGatewayAccess\"\n| where TimeGenerated {timerange}\n| summarize \n    TotalRequests = count(),\n    SuccessfulRequests = countif(httpStatus_d < 400),\n    ClientErrors = countif(httpStatus_d >= 400 and httpStatus_d < 500),\n    ServerErrors = countif(httpStatus_d >= 500),\n    AvgLatency = round(avg(timeTaken_d), 2),\n    P95Latency = round(percentile(timeTaken_d, 95), 2),\n    P99Latency = round(percentile(timeTaken_d, 99), 2)\n| project \n    Metric = pack_array(\"Total de Requisições\", \"Taxa de Sucesso\", \"Latência Média\", \"P95 Latência\"),\n    Value = pack_array(TotalRequests, round((toreal(SuccessfulRequests)/toreal(TotalRequests))*100, 2), AvgLatency, P95Latency),\n    Status = pack_array(\n        iff(TotalRequests > 10000, \"🔥\", \"✅\"),\n        iff((toreal(SuccessfulRequests)/toreal(TotalRequests))*100 > 95, \"✅\", \"⚠️\"),\n        iff(AvgLatency < 100, \"✅\", iff(AvgLatency < 300, \"⚠️\", \"🔴\")),\n        iff(P95Latency < 500, \"✅\", \"⚠️\")\n    )\n| mvexpand Metric to typeof(string), Value to typeof(real), Status to typeof(string)\n| project Metric, Value, Status",
+                    "query": "resources\n| where type == 'microsoft.network/applicationgateways'\n| where '{AppGateway:label}' == \"All\" or name in~ ({AppGateway})\n| where properties.provisioningState == 'Succeeded'\n| summarize Active = count()",
+                    "size": 4,
+                    "title": "Gateways Ativos",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "Active",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "green"
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "25",
+                  "name": "kpi-active",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.network/applicationgateways'\n| where '{AppGateway:label}' == \"All\" or name in~ ({AppGateway})\n| where properties.provisioningState == 'Failed'\n| summarize Errors = count()",
+                    "size": 4,
+                    "title": "Gateways com Erro",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "Errors",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "red"
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "25",
+                  "name": "kpi-errors",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "resources\n| where type == 'microsoft.network/applicationgateways'\n| where '{AppGateway:label}' == \"All\" or name in~ ({AppGateway})\n| summarize Total = count(), Active = countif(properties.provisioningState == 'Succeeded')\n| extend HealthScore = iff(Total > 0, round((toreal(Active) / toreal(Total)) * 100, 2), 0)\n| project HealthScore",
+                    "size": 4,
+                    "title": "Health Score %",
+                    "queryType": 1,
+                    "resourceType": "microsoft.resourcegraph/resources",
+                    "crossComponentResources": ["{Subscription}"],
+                    "visualization": "tiles",
+                    "tileSettings": {
+                      "titleContent": {
+                        "formatter": 1
+                      },
+                      "leftContent": {
+                        "columnMatch": "HealthScore",
+                        "formatter": 12,
+                        "formatOptions": {
+                          "palette": "auto"
+                        },
+                        "numberFormat": {
+                          "unit": 1,
+                          "options": {
+                            "style": "decimal",
+                            "maximumFractionDigits": 1
+                          }
+                        }
+                      },
+                      "showBorder": true
+                    }
+                  },
+                  "customWidth": "25",
+                  "name": "kpi-health",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let timeRangeStart = {timerange:start};\nlet timeRangeEnd = {timerange:end};\nAzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\" and OperationName == \"ApplicationGatewayAccess\"\n| where TimeGenerated >= timeRangeStart and TimeGenerated < timeRangeEnd\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| summarize \n    TotalRequests = count(),\n    SuccessfulRequests = countif(httpStatus_d < 400),\n    ClientErrors = countif(httpStatus_d >= 400 and httpStatus_d < 500),\n    ServerErrors = countif(httpStatus_d >= 500)\n| extend \n    TaxaSucesso = iff(TotalRequests > 0, round((toreal(SuccessfulRequests) / toreal(TotalRequests)) * 100, 2), 0)\n| project \n    ['Total de Requisições'] = TotalRequests,\n    ['Taxa de Sucesso (%)'] = TaxaSucesso,\n    ['Erros de Cliente'] = ClientErrors,\n    ['Erros de Servidor'] = ServerErrors",
+                    "size": 0,
+                    "title": "📈 Métricas de Performance",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Total de Requisições",
+                          "formatter": 4,
+                          "formatOptions": {
+                            "min": 0,
+                            "palette": "blue",
+                            "customColumnWidthSetting": "25%"
+                          }
+                        },
+                        {
+                          "columnMatch": "Taxa de Sucesso",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": ">=",
+                                "thresholdValue": "95",
+                                "representation": "green",
+                                "text": "{0}%"
+                              },
+                              {
+                                "operator": ">=",
+                                "thresholdValue": "80",
+                                "representation": "yellow",
+                                "text": "{0}%"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "red",
+                                "text": "{0}%"
+                              }
+                            ],
+                            "customColumnWidthSetting": "25%"
+                          }
+                        },
+                        {
+                          "columnMatch": "Erros de Cliente",
+                          "formatter": 4,
+                          "formatOptions": {
+                            "min": 0,
+                            "palette": "yellow",
+                            "customColumnWidthSetting": "25%"
+                          }
+                        },
+                        {
+                          "columnMatch": "Erros de Servidor",
+                          "formatter": 4,
+                          "formatOptions": {
+                            "min": 0,
+                            "palette": "red",
+                            "customColumnWidthSetting": "25%"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "performance-metrics-fixed",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let timeRangeStart = {timerange:start};\nlet timeRangeEnd = {timerange:end};\nlet grain = {timerange:grain};\nAzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated >= timeRangeStart and TimeGenerated < timeRangeEnd\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| summarize RequestCount = count() by bin(TimeGenerated, grain)\n| order by TimeGenerated asc\n| project TimeGenerated, RequestCount",
+                    "size": 0,
+                    "title": "📊 Tendência de Requisições",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
+                    "visualization": "areachart",
+                    "chartSettings": {
+                      "showLegend": true,
+                      "seriesLabelSettings": [
+                        {
+                          "seriesName": "RequestCount",
+                          "label": "Volume de Requisições",
+                          "color": "purple"
+                        }
+                      ],
+                      "ySettings": {
+                        "numberFormatSettings": {
+                          "unit": 17,
+                          "options": {
+                            "style": "decimal",
+                            "useGrouping": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "customWidth": "50",
+                  "name": "request-trend-fixed",
+                  "styleSettings": {
+                    "showBorder": true,
+                    "padding": "10px"
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let timeRangeStart = {timerange:start};\nlet timeRangeEnd = {timerange:end};\nAzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\" and OperationName == \"ApplicationGatewayAccess\"\n| where TimeGenerated >= timeRangeStart and TimeGenerated < timeRangeEnd\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| where isnotnull(timeTaken_d) and timeTaken_d > 0\n| summarize \n    AvgLatency = round(avg(timeTaken_d), 2),\n    P50Latency = round(percentile(timeTaken_d, 50), 2),\n    P95Latency = round(percentile(timeTaken_d, 95), 2),\n    P99Latency = round(percentile(timeTaken_d, 99), 2),\n    MaxLatency = round(max(timeTaken_d), 2)\n| project \n    ['Latência Média (ms)'] = AvgLatency,\n    ['P50 (ms)'] = P50Latency,\n    ['P95 (ms)'] = P95Latency,\n    ['P99 (ms)'] = P99Latency,\n    ['Máxima (ms)'] = MaxLatency",
+                    "size": 0,
+                    "title": "⚡ Análise de Latência",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": ".*",
+                          "formatter": 18,
+                          "formatOptions": {
+                            "thresholdsOptions": "colors",
+                            "thresholdsGrid": [
+                              {
+                                "operator": "<=",
+                                "thresholdValue": "100",
+                                "representation": "green",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "<=",
+                                "thresholdValue": "300",
+                                "representation": "yellow",
+                                "text": "{0}"
+                              },
+                              {
+                                "operator": "Default",
+                                "thresholdValue": null,
+                                "representation": "red",
+                                "text": "{0}"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "customWidth": "100",
+                  "name": "latency-analysis",
+                  "styleSettings": {
+                    "showBorder": true
+                  }
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\" and OperationName == \"ApplicationGatewayAccess\"\n| where TimeGenerated {timerange}\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| summarize \n    TotalRequests = count(),\n    SuccessfulRequests = countif(httpStatus_d < 400),\n    ClientErrors = countif(httpStatus_d >= 400 and httpStatus_d < 500),\n    ServerErrors = countif(httpStatus_d >= 500),\n    AvgLatency = round(avg(timeTaken_d), 2),\n    P95Latency = round(percentile(timeTaken_d, 95), 2),\n    P99Latency = round(percentile(timeTaken_d, 99), 2)\n| project \n    Metric = pack_array(\"Total de Requisições\", \"Taxa de Sucesso\", \"Latência Média\", \"P95 Latência\"),\n    Value = pack_array(TotalRequests, round((toreal(SuccessfulRequests)/toreal(TotalRequests))*100, 2), AvgLatency, P95Latency),\n    Status = pack_array(\n        iff(TotalRequests > 10000, \"🔥\", \"✅\"),\n        iff((toreal(SuccessfulRequests)/toreal(TotalRequests))*100 > 95, \"✅\", \"⚠️\"),\n        iff(AvgLatency < 100, \"✅\", iff(AvgLatency < 300, \"⚠️\", \"🔴\")),\n        iff(P95Latency < 500, \"✅\", \"⚠️\")\n    )\n| mvexpand Metric to typeof(string), Value to typeof(real), Status to typeof(string)\n| project Metric, Value, Status",
                     "size": 0,
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "table",
                     "gridSettings": {
                       "formatters": [
@@ -192,11 +564,13 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| make-series RequestCount = count() default=0 on TimeGenerated from {timerange:start} to {timerange:end} step {timerange:grain}\n| project TimeGenerated, RequestCount, \n    Trend = case(\n        RequestCount[array_length(RequestCount)-1] > RequestCount[0], \"📈 Crescente\",\n        RequestCount[array_length(RequestCount)-1] < RequestCount[0], \"📉 Decrescente\",\n        \"➡️ Estável\"\n    )",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| make-series RequestCount = count() default=0 on TimeGenerated from {timerange:start} to {timerange:end} step {timerange:grain}\n| project TimeGenerated, RequestCount, \n    Trend = case(\n        RequestCount[array_length(RequestCount)-1] > RequestCount[0], \"📈 Crescente\",\n        RequestCount[array_length(RequestCount)-1] < RequestCount[0], \"📉 Decrescente\",\n        \"➡️ Estável\"\n    )",
                     "size": 0,
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "areachart",
                     "chartSettings": {
                       "showLegend": true,
@@ -304,12 +678,14 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| extend Hour = hourofday(TimeGenerated)\n| extend DayOfWeek = dayofweek(TimeGenerated)\n| summarize \n    RequestCount = count(),\n    AvgLatency = round(avg(timeTaken_d), 2),\n    ErrorRate = round((countif(httpStatus_d >= 400) * 100.0) / count(), 2)\n    by Hour, DayOfWeek\n| project \n    Hour,\n    Day = case(\n        DayOfWeek == 0, \"Dom\",\n        DayOfWeek == 1, \"Seg\",\n        DayOfWeek == 2, \"Ter\",\n        DayOfWeek == 3, \"Qua\",\n        DayOfWeek == 4, \"Qui\",\n        DayOfWeek == 5, \"Sex\",\n        DayOfWeek == 6, \"Sáb\",\n        \"N/A\"\n    ),\n    RequestCount,\n    AvgLatency,\n    ErrorRate,\n    HeatIndex = round((RequestCount / 1000.0) * (1 + ErrorRate / 100.0), 2)",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| extend Hour = hourofday(TimeGenerated)\n| extend DayOfWeek = dayofweek(TimeGenerated)\n| summarize \n    RequestCount = count(),\n    AvgLatency = round(avg(timeTaken_d), 2),\n    ErrorRate = round((countif(httpStatus_d >= 400) * 100.0) / count(), 2)\n    by Hour, DayOfWeek\n| project \n    Hour,\n    Day = case(\n        DayOfWeek == 0, \"Dom\",\n        DayOfWeek == 1, \"Seg\",\n        DayOfWeek == 2, \"Ter\",\n        DayOfWeek == 3, \"Qua\",\n        DayOfWeek == 4, \"Qui\",\n        DayOfWeek == 5, \"Sex\",\n        DayOfWeek == 6, \"Sáb\",\n        \"N/A\"\n    ),\n    RequestCount,\n    AvgLatency,\n    ErrorRate,\n    HeatIndex = round((RequestCount / 1000.0) * (1 + ErrorRate / 100.0), 2)",
                     "size": 0,
                     "title": "🔥 Heatmap de Atividade - Padrões de Tráfego 24x7",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "table",
                     "gridSettings": {
                       "formatters": [
@@ -402,12 +778,14 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| where httpStatus_d >= 400\n| summarize \n    ErrorCount = count(),\n    DistinctErrors = dcount(httpStatus_d)\n    by bin(TimeGenerated, 15m), httpStatus_d, ErrorType = case(\n        httpStatus_d >= 400 and httpStatus_d < 500, \"Client Error\",\n        httpStatus_d >= 500, \"Server Error\",\n        \"Unknown\"\n    )\n| project TimeGenerated, ErrorType, httpStatus_d, ErrorCount\n| order by TimeGenerated desc",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| where httpStatus_d >= 400\n| summarize \n    ErrorCount = count(),\n    DistinctErrors = dcount(httpStatus_d)\n    by bin(TimeGenerated, 15m), httpStatus_d, ErrorType = case(\n        httpStatus_d >= 400 and httpStatus_d < 500, \"Client Error\",\n        httpStatus_d >= 500, \"Server Error\",\n        \"Unknown\"\n    )\n| project TimeGenerated, ErrorType, httpStatus_d, ErrorCount\n| order by TimeGenerated desc",
                     "size": 0,
                     "title": "⚡ Timeline de Eventos Críticos",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "timechart",
                     "chartSettings": {
                       "group": "ErrorType",
@@ -532,12 +910,14 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| extend ResponseSize = toreal(sentBytes_d)\n| extend RequestSize = toreal(receivedBytes_d)\n| summarize \n    TotalDataTransferred = sum(ResponseSize + RequestSize),\n    AvgResponseSize = avg(ResponseSize),\n    AvgRequestSize = avg(RequestSize),\n    P95ResponseSize = percentile(ResponseSize, 95),\n    MaxResponseSize = max(ResponseSize)\n    by bin(TimeGenerated, 1h)\n| extend TotalDataGB = round(TotalDataTransferred / (1024*1024*1024), 2)\n| project TimeGenerated, TotalDataGB, AvgResponseSize, P95ResponseSize",
+                    "query": "AzureDiagnostics\n| where ResourceType == \"APPLICATIONGATEWAYS\"\n| where TimeGenerated {timerange}\n| where '{AppGateway:label}' == \"All\" or Resource in~ ({AppGateway})\n| extend ResponseSize = toreal(sentBytes_d)\n| extend RequestSize = toreal(receivedBytes_d)\n| summarize \n    TotalDataTransferred = sum(ResponseSize + RequestSize),\n    AvgResponseSize = avg(ResponseSize),\n    AvgRequestSize = avg(RequestSize),\n    P95ResponseSize = percentile(ResponseSize, 95),\n    MaxResponseSize = max(ResponseSize)\n    by bin(TimeGenerated, 1h)\n| extend TotalDataGB = round(TotalDataTransferred / (1024*1024*1024), 2)\n| project TimeGenerated, TotalDataGB, AvgResponseSize, P95ResponseSize",
                     "size": 0,
                     "title": "📊 Análise de Volume de Dados",
                     "queryType": 0,
                     "resourceType": "microsoft.operationalinsights/workspaces",
-                    "crossComponentResources": ["{LogAnalyticsWorkspace}"],
+                    "crossComponentResources": [
+                      "{LogAnalyticsWorkspace}"
+                    ],
                     "visualization": "linechart",
                     "chartSettings": {
                       "xAxis": "TimeGenerated",
